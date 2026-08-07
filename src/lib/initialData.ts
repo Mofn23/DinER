@@ -21,6 +21,20 @@ export interface TransactionData {
   createdAt: string;
 }
 
+export interface SubscriptionData {
+  id: string;
+  listId: string;
+  name: string;
+  emoji: string;
+  amount: number;
+  frequency: 'monthly' | 'weekly' | 'bimonthly' | 'yearly';
+  billingDay: number;
+  categoryId: string;
+  tags: string[];
+  lastPaidDate?: string;
+  createdAt: string;
+}
+
 export interface ListData {
   id: string;
   name: string;
@@ -65,11 +79,53 @@ export const INITIAL_TAGS: string[] = [
 
 // Bogota Local Dates
 const now = new Date();
-const todayIso = getLocalDateString(now); // e.g. "2026-08-06"
+const todayIso = getLocalDateString(now);
 
 const yesterdayDate = new Date();
 yesterdayDate.setDate(now.getDate() - 1);
-const yesterdayIso = getLocalDateString(yesterdayDate); // e.g. "2026-08-05"
+const yesterdayIso = getLocalDateString(yesterdayDate);
+
+export const INITIAL_SUBSCRIPTIONS: SubscriptionData[] = [
+  {
+    id: 'sub-1',
+    listId: 'list-1',
+    name: 'iCloud+',
+    emoji: '☁️',
+    amount: 44900,
+    frequency: 'monthly',
+    billingDay: 3,
+    categoryId: 'cat-6',
+    tags: ['#icloud+', '#credito'],
+    lastPaidDate: '2026-08-03',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'sub-2',
+    listId: 'list-1',
+    name: 'WhatsApp plus',
+    emoji: '💬',
+    amount: 2999,
+    frequency: 'monthly',
+    billingDay: 3,
+    categoryId: 'cat-6',
+    tags: ['#suscripción', '#credito'],
+    lastPaidDate: '2026-08-03',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'sub-3',
+    listId: 'list-1',
+    name: 'Bodyfit Fitness Center',
+    emoji: '🏋️',
+    amount: 105000,
+    frequency: 'monthly',
+    billingDay: 7,
+    categoryId: 'cat-3',
+    tags: ['#debito', '#gym'],
+    lastPaidDate: todayIso,
+    createdAt: new Date().toISOString(),
+  },
+];
 
 export const INITIAL_TRANSACTIONS: TransactionData[] = [
   // TODAY EXPENSES (-$347,776)
@@ -79,7 +135,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Bodyfit Fitness Center',
     amount: 105000,
     type: 'expense',
-    categoryId: 'cat-3', // Gym
+    categoryId: 'cat-3',
     tags: ['#debito', '#gym'],
     date: todayIso,
     recurrence: 'monthly',
@@ -91,7 +147,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Mamá fallabella',
     amount: 182400,
     type: 'expense',
-    categoryId: 'cat-1', // Mamá
+    categoryId: 'cat-1',
     tags: ['#credito', '#mama'],
     date: todayIso,
     recurrence: 'once',
@@ -103,7 +159,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Mamá',
     amount: 6000,
     type: 'expense',
-    categoryId: 'cat-1', // Mamá
+    categoryId: 'cat-1',
     tags: ['#debito', '#mama'],
     date: todayIso,
     recurrence: 'once',
@@ -115,7 +171,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Uber',
     amount: 6226,
     type: 'expense',
-    categoryId: 'cat-5', // Uber
+    categoryId: 'cat-5',
     tags: ['#debito', '#mama'],
     date: todayIso,
     recurrence: 'once',
@@ -127,7 +183,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Qbano',
     amount: 48150,
     type: 'expense',
-    categoryId: 'cat-4', // Comida
+    categoryId: 'cat-4',
     tags: ['#credito', '#almuerzo'],
     date: todayIso,
     recurrence: 'once',
@@ -141,7 +197,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Dinero recibido de papá',
     amount: 200000,
     type: 'income',
-    categoryId: 'cat-2', // Papá
+    categoryId: 'cat-2',
     tags: ['#debito', '#papa'],
     date: todayIso,
     recurrence: 'once',
@@ -153,7 +209,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Dinero recibido de papá',
     amount: 100000,
     type: 'income',
-    categoryId: 'cat-2', // Papá
+    categoryId: 'cat-2',
     tags: ['#debito', '#papa'],
     date: todayIso,
     recurrence: 'once',
@@ -165,7 +221,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Ajuste',
     amount: 13797,
     type: 'income',
-    categoryId: 'cat-2', // Papá
+    categoryId: 'cat-2',
     tags: ['#papa'],
     date: todayIso,
     recurrence: 'once',
@@ -179,7 +235,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Arepas',
     amount: 65000,
     type: 'expense',
-    categoryId: 'cat-4', // Comida
+    categoryId: 'cat-4',
     tags: ['#debito'],
     date: yesterdayIso,
     recurrence: 'once',
@@ -193,7 +249,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Papá',
     amount: 70000,
     type: 'income',
-    categoryId: 'cat-2', // Papá
+    categoryId: 'cat-2',
     tags: ['#debito', '#papa'],
     date: yesterdayIso,
     recurrence: 'once',
@@ -205,7 +261,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Crédito',
     amount: 2700000,
     type: 'income',
-    categoryId: 'cat-15', // Credito
+    categoryId: 'cat-15',
     tags: ['#credito'],
     date: yesterdayIso,
     recurrence: 'once',
@@ -217,7 +273,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Ajuste',
     amount: 170164,
     type: 'income',
-    categoryId: 'cat-2', // Papá
+    categoryId: 'cat-2',
     tags: ['#debito', '#papa'],
     date: yesterdayIso,
     recurrence: 'once',
@@ -231,7 +287,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Mercar bochalema',
     amount: 32964,
     type: 'expense',
-    categoryId: 'cat-4', // Comida
+    categoryId: 'cat-4',
     tags: ['#debito'],
     date: '2026-08-04',
     recurrence: 'once',
@@ -245,7 +301,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'iCloud+',
     amount: 44900,
     type: 'expense',
-    categoryId: 'cat-6', // Suscripción
+    categoryId: 'cat-6',
     tags: ['#icloud+', '#credito'],
     date: '2026-08-03',
     recurrence: 'monthly',
@@ -257,7 +313,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Mamá',
     amount: 247158,
     type: 'expense',
-    categoryId: 'cat-1', // Mamá
+    categoryId: 'cat-1',
     tags: ['#credito', '#mama'],
     date: '2026-08-03',
     recurrence: 'once',
@@ -269,7 +325,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'WhatsApp plus',
     amount: 2999,
     type: 'expense',
-    categoryId: 'cat-6', // Suscripción
+    categoryId: 'cat-6',
     tags: ['#suscripción', '#credito'],
     date: '2026-08-03',
     recurrence: 'monthly',
@@ -281,7 +337,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Uber',
     amount: 3173,
     type: 'expense',
-    categoryId: 'cat-5', // Uber
+    categoryId: 'cat-5',
     tags: ['#debito', '#carrro'],
     date: '2026-08-03',
     recurrence: 'once',
@@ -295,7 +351,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Papá',
     amount: 147000,
     type: 'income',
-    categoryId: 'cat-2', // Papá
+    categoryId: 'cat-2',
     tags: ['#debito', '#papa'],
     date: '2026-08-03',
     recurrence: 'once',
@@ -309,7 +365,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Uber',
     amount: 22977,
     type: 'expense',
-    categoryId: 'cat-5', // Uber
+    categoryId: 'cat-5',
     tags: ['#carrro', '#credito'],
     date: '2026-08-02',
     recurrence: 'once',
@@ -321,7 +377,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Uber',
     amount: 27251,
     type: 'expense',
-    categoryId: 'cat-5', // Uber
+    categoryId: 'cat-5',
     tags: ['#carrro', '#credito'],
     date: '2026-08-02',
     recurrence: 'once',
@@ -333,7 +389,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Avance',
     amount: 200000,
     type: 'expense',
-    categoryId: 'cat-15', // Credito
+    categoryId: 'cat-15',
     tags: ['#credito'],
     date: '2026-08-02',
     recurrence: 'once',
@@ -345,7 +401,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Dollarcity',
     amount: 12500,
     type: 'expense',
-    categoryId: 'cat-13', // Personal
+    categoryId: 'cat-13',
     tags: ['#debito'],
     date: '2026-08-02',
     recurrence: 'once',
@@ -357,7 +413,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'KFC',
     amount: 36400,
     type: 'expense',
-    categoryId: 'cat-4', // Comida
+    categoryId: 'cat-4',
     tags: ['#debito', '#almuerzo'],
     date: '2026-08-02',
     recurrence: 'once',
@@ -369,7 +425,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Entradas fiesta',
     amount: 60000,
     type: 'expense',
-    categoryId: 'cat-14', // Salidas
+    categoryId: 'cat-14',
     tags: ['#debito'],
     date: '2026-08-02',
     recurrence: 'once',
@@ -383,7 +439,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Mamá rodilleras',
     amount: 71155,
     type: 'expense',
-    categoryId: 'cat-1', // Mamá
+    categoryId: 'cat-1',
     tags: ['#credito', '#mama'],
     date: '2026-08-01',
     recurrence: 'once',
@@ -395,7 +451,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Mamá pull and bear',
     amount: 240500,
     type: 'expense',
-    categoryId: 'cat-1', // Mamá
+    categoryId: 'cat-1',
     tags: ['#credito', '#mama'],
     date: '2026-08-01',
     recurrence: 'once',
@@ -407,7 +463,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Mamá Zara',
     amount: 370800,
     type: 'expense',
-    categoryId: 'cat-1', // Mamá
+    categoryId: 'cat-1',
     tags: ['#credito', '#mama'],
     date: '2026-08-01',
     recurrence: 'once',
@@ -419,7 +475,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Crédito',
     amount: 417283,
     type: 'expense',
-    categoryId: 'cat-15', // Credito
+    categoryId: 'cat-15',
     tags: ['#credito'],
     date: '2026-08-01',
     recurrence: 'once',
@@ -431,7 +487,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Mamá ropa',
     amount: 119900,
     type: 'expense',
-    categoryId: 'cat-1', // Mamá
+    categoryId: 'cat-1',
     tags: ['#credito', '#mama'],
     date: '2026-08-01',
     recurrence: 'once',
@@ -443,7 +499,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Uber',
     amount: 30261,
     type: 'expense',
-    categoryId: 'cat-5', // Uber
+    categoryId: 'cat-5',
     tags: ['#carrro', '#credito'],
     date: '2026-08-01',
     recurrence: 'once',
@@ -455,7 +511,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Mamá ropa',
     amount: 132480,
     type: 'expense',
-    categoryId: 'cat-1', // Mamá
+    categoryId: 'cat-1',
     tags: ['#credito', '#mama'],
     date: '2026-08-01',
     recurrence: 'once',
@@ -467,7 +523,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Uber',
     amount: 34487,
     type: 'expense',
-    categoryId: 'cat-5', // Uber
+    categoryId: 'cat-5',
     tags: ['#carrro', '#credito'],
     date: '2026-08-01',
     recurrence: 'once',
@@ -479,7 +535,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Uber',
     amount: 10599,
     type: 'expense',
-    categoryId: 'cat-5', // Uber
+    categoryId: 'cat-5',
     tags: ['#debito', '#carrro'],
     date: '2026-08-01',
     recurrence: 'once',
@@ -491,7 +547,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Uber',
     amount: 3660,
     type: 'expense',
-    categoryId: 'cat-5', // Uber
+    categoryId: 'cat-5',
     tags: ['#debito', '#carrro'],
     date: '2026-08-01',
     recurrence: 'once',
@@ -503,7 +559,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     description: 'Cóctel',
     amount: 25000,
     type: 'expense',
-    categoryId: 'cat-10', // Drinks
+    categoryId: 'cat-10',
     tags: ['#debito'],
     date: '2026-08-01',
     recurrence: 'once',

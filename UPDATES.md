@@ -4,61 +4,63 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v1.6.0] - 2026-08-07
+
+### 📺 Nueva Sección Completa de Suscripciones (Subscription Manager)
+- **Acceso desde Ajustes**:
+  - Nueva opción **"Suscripciones"** agregada dentro del panel de Ajustes (`SettingsSheet`) con ícono 📺 y descripción rápida.
+- **Tarjetas de Cálculo de Costos (Mensual vs Anual)**:
+  - Cálculo automático en tiempo real del gasto total mensual (ej. `$152,899 / mes`) y anual (ej. `$1,834,788 / año`) animado con conteo fluido `AnimatedNumber`.
+- **Acción "Pagar Suscripción" con Descuento Automático**:
+  - Cada tarjeta de suscripción incluye el botón **"Pagar"**.
+  - Al pulsar **Pagar**, la app genera de forma instantánea una nueva transacción registrada en la pantalla principal bajo la categoría `Suscripción 📺`, la fecha actual de Colombia y sus etiquetas correspondientes (ej. `#icloud+ #credito`).
+  - La tarjeta de suscripción cambia automáticamente a estado **`✓ Pagado`**.
+- **Gestor Completo de Suscripciones (Agregar / Eliminar)**:
+  - Formulario para crear nuevas suscripciones especificando nombre, emoji, monto, frecuencia (Mensual, Semanal, Bimensual, Anual), día de cobro del mes y etiquetas.
+  - Pre-cargadas las suscripciones reales del usuario (`iCloud+`, `WhatsApp plus`, `Bodyfit`).
+
+---
+
 ## 📌 [v1.5.2] - 2026-08-07
 
 ### 📱 Integración Fondo 100% Continuo con Dynamic Island & Status Bar
-- **Eliminación del Efecto "Cajón" y Bordes de Tono**:
-  - Se eliminó el fondo translúcido y la máscara oscura que creaba un marco o cajón de color diferente alrededor del modal de agregar transacción.
-  - El fondo de la pantalla de agregar transacción es ahora **100% `#0B0B0D` sólido continuo**, extendiéndose sin cortes desde debajo de la Dynamic Island y la barra de estado superior del iPhone hasta la parte inferior de la pantalla.
-  - Añadido despeje superior `pt-12` para garantizar que el botón de cierre `✕` quede perfectamente alineado debajo del área segura del iPhone.
+- **Eliminación del Efecto "Cajón" y Bordes de Tono**: Fondo negro sólido `#0B0B0D` continuo de borde a borde.
 
 ---
 
 ## 📌 [v1.5.1] - 2026-08-07
 
 ### 📐 Corrección de Márgenes y Desplazamiento Completo (Full-Bleed Sheet)
-- **Eliminación del Corte Brusco en Bordes**:
-  - Se corrigieron los márgenes internos que provocaban que las cápsulas de categorías y etiquetas (`#tags`) se cortaran bruscamente a 24px de los bordes.
-  - Implementación de carruseles de desplazamiento de borde a borde nativo (`-mx-5 px-5`).
 
 ---
 
 ## 📌 [v1.5.0] - 2026-08-07
 
 ### 🤖 Categorización Inteligente Automática (Smart Auto-Categorization)
-- **Detección Instantánea por Descripción**:
-  - Al escribir en el campo de descripción (por ejemplo `Uber`, `KFC`, `Bodyfit`, `Mamá Zara`, `iCloud`), la app reconoce la palabra clave y selecciona la categoría correspondiente (`🚘 Uber`, `🍲 Comida`, `🏋️ Gym`, `👩‍🍼 Mamá`, `📺 Suscripción`) **de forma 100% automática** e instantánea.
-- **Rediseño 1:1 MonAI (Fila `[ - | + ]` & Cifra Coloreada)**:
-  - Toggle `[ - | + ]` a la izquierda con resalte rojo/verde.
-  - Cifra coloreada de 32px en rojo `#E8505B` (gastos) o verde `#34C759` (ingresos).
 
 ---
 
 ## 📌 [v1.4.0] - 2026-08-07
 
 ### 🔢 Animación Fluida de Números (Count-Up / Count-Down iOS 60fps)
-- **Componente `AnimatedNumber`**: Animación de conteo suave (`easeOutCubic`) sobre `requestAnimationFrame`.
 
 ---
 
 ## 📌 [v1.3.0] - 2026-08-07
 
 ### 📊 Actualización Dinámica del Total por Categoría Seleccionada
-- Recálculo en tiempo real del Total Principal y Segmentos al tocar una categoría en el gráfico.
 
 ---
 
 ## 📌 [v1.2.1] - 2026-08-07
 
 ### 🕒 Corrección de Zona Horaria (Colombia UTC-5)
-- Fijación de fecha local en `America/Bogota`.
 
 ---
 
 ## 📌 [v1.2.0] - 2026-08-07
 
 ### 🎨 Mejoras Visuales & Estilo MonAI (Barras de Estadística)
-- Cápsulas horizontales estilizadas y barras delgadas.
 
 ---
 

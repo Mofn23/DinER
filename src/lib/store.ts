@@ -5,11 +5,14 @@ import {
   INITIAL_TAGS,
   INITIAL_TRANSACTIONS,
   INITIAL_BUDGETS,
+  INITIAL_SUBSCRIPTIONS,
   CategoryData,
   TransactionData,
   ListData,
   BudgetData,
+  SubscriptionData,
 } from './initialData';
+import { getLocalDateString } from './utils';
 
 export type ActiveSheet =
   | 'none'
@@ -21,6 +24,7 @@ export type ActiveSheet =
   | 'recurrence'
   | 'budgets'
   | 'lists'
+  | 'subscriptions'
   | 'voice';
 
 interface AppSettings {
@@ -38,12 +42,13 @@ interface AppStore {
   tags: string[];
   transactions: TransactionData[];
   budgets: BudgetData[];
+  subscriptions: SubscriptionData[];
   settings: AppSettings;
 
   activeType: 'expense' | 'income';
   selectedCategoryFilter: string | null;
   selectedPeriod: string;
-  selectedMonthDate: Date; // date representing active month
+  selectedMonthDate: Date;
   isMonthStripVisible: boolean;
 
   // Search state
@@ -82,6 +87,12 @@ interface AppStore {
   addTag: (tag: string) => void;
   deleteTag: (tag: string) => void;
 
+  // Subscription CRUD & Pay Action
+  addSubscription: (sub: Omit<SubscriptionData, 'id' | 'createdAt'>) => void;
+  updateSubscription: (id: string, sub: Partial<SubscriptionData>) => void;
+  deleteSubscription: (id: string) => void;
+  paySubscription: (id: string) => void;
+
   // Settings
   updateSettings: (settings: Partial<AppSettings>) => void;
 
@@ -99,6 +110,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   tags: INITIAL_TAGS,
   transactions: INITIAL_TRANSACTIONS,
   budgets: INITIAL_BUDGETS,
+  subscriptions: INITIAL_SUBSCRIPTIONS,
   settings: {
     showIncome: true,
     rollover: false,
@@ -185,6 +197,57 @@ export const useAppStore = create<AppStore>((set, get) => ({
   deleteTag: (tag) => {
     set((state) => ({
       tags: state.tags.filter((t) => t !== tag),
+    }));
+  },
+
+  addSubscription: (sub) => {
+    const newSub: SubscriptionData = {
+      ...sub,
+      id: 'sub-' + Date.now(),
+      createdAt: new Date().toISOString(),
+    };
+    set((state) => ({ subscriptions: [...state.subscriptions, newSub] }));
+  },
+
+  updateSubscription: (id, updatedFields) => {
+    set((state) => ({
+      subscriptions: state.subscriptions.map((s) => (s.id === id ? { ...s, ...updatedFields } : s)),
+    }));
+  },
+
+  deleteSubscription: (id) => {
+    set((state) => ({
+      subscriptions: state.subscriptions.filter((s) => s.id !== id),
+    }));
+  },
+
+  paySubscription: (id) => {
+    const state = get();
+    const sub = state.subscriptions.find((s) => s.id === id);
+    if (!sub) return;
+
+    const todayStr = getLocalDateString(new Date());
+
+    // 1. Create transaction on main page
+    const newTx: TransactionData = {
+      id: 'tx-' + Date.now(),
+      listId: sub.listId || state.currentListId,
+      description: sub.name,
+      amount: sub.amount,
+      type: 'expense',
+      categoryId: sub.categoryId || 'cat-6', // Suscripción
+      tags: sub.tags.length > 0 ? sub.tags : ['#suscripción'],
+      date: todayStr,
+      recurrence: sub.frequency === 'yearly' ? 'yearly' : 'monthly',
+      createdAt: new Date().toISOString(),
+    };
+
+    // 2. Update subscription's lastPaidDate
+    set((s) => ({
+      transactions: [newTx, ...s.transactions],
+      subscriptions: s.subscriptions.map((item) =>
+        item.id === id ? { ...item, lastPaidDate: todayStr } : item
+      ),
     }));
   },
 
