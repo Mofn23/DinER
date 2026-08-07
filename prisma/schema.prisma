@@ -1,0 +1,75 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model List {
+  id            String        @id @default(uuid())
+  name          String
+  currency      String        @default("COP")
+  defaultPeriod String        @default("Month")
+  shareToken    String?
+  createdAt     DateTime      @default(now())
+  categories    Category[]
+  tags          Tag[]
+  transactions  Transaction[]
+  budgets       Budget[]
+  settings      ListSettings?
+}
+
+model ListSettings {
+  id            String  @id @default(uuid())
+  listId        String  @unique
+  list          List    @relation(fields: [listId], references: [id], onDelete: Cascade)
+  showIncome    Boolean @default(true)
+  rollover      Boolean @default(false)
+  currency      String  @default("COP")
+  voiceLanguage String  @default("ES")
+}
+
+model Category {
+  id           String        @id @default(uuid())
+  listId       String
+  list         List          @relation(fields: [listId], references: [id], onDelete: Cascade)
+  name         String
+  emoji        String
+  tint         String        @default("#8A6E4B")
+  type         String        @default("expense") // "expense" | "income"
+  transactions Transaction[]
+  budgets      Budget[]
+}
+
+model Tag {
+  id     String @id @default(uuid())
+  listId String
+  list   List   @relation(fields: [listId], references: [id], onDelete: Cascade)
+  name   String
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  listId      String
+  list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  description String
+  amount      Int      // Integers, COP without decimals
+  type        String   @default("expense") // "expense" | "income"
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  tags        String   @default("[]") // JSON string of tag names e.g. ["#gym", "#debito"]
+  date        DateTime
+  recurrence  String   @default("once") // once, daily, weekly, biweekly, monthly, bimonthly, quarterly, yearly
+  createdAt   DateTime @default(now())
+}
+
+model Budget {
+  id            String   @id @default(uuid())
+  listId        String
+  list          List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  monthlyAmount Int
+}
