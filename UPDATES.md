@@ -4,12 +4,22 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v1.5.2] - 2026-08-07
+
+### 📱 Integración Fondo 100% Continuo con Dynamic Island & Status Bar
+- **Eliminación del Efecto "Cajón" y Bordes de Tono**:
+  - Se eliminó el fondo translúcido y la máscara oscura que creaba un marco o cajón de color diferente alrededor del modal de agregar transacción.
+  - El fondo de la pantalla de agregar transacción es ahora **100% `#0B0B0D` sólido continuo**, extendiéndose sin cortes desde debajo de la Dynamic Island y la barra de estado superior del iPhone hasta la parte inferior de la pantalla.
+  - Añadido despeje superior `pt-12` para garantizar que el botón de cierre `✕` quede perfectamente alineado debajo del área segura del iPhone.
+
+---
+
 ## 📌 [v1.5.1] - 2026-08-07
 
 ### 📐 Corrección de Márgenes y Desplazamiento Completo (Full-Bleed Sheet)
 - **Eliminación del Corte Brusco en Bordes**:
   - Se corrigieron los márgenes internos que provocaban que las cápsulas de categorías y etiquetas (`#tags`) se cortaran bruscamente a 24px de los bordes.
-  - Implementación de carruseles de desplazamiento de borde a borde nativo (`-mx-5 px-5`), permitiendo que el usuario deslice fluidamente las categorías y etiquetas hasta el borde de la pantalla sin ninguna restricción de caja ni amontonamiento.
+  - Implementación de carruseles de desplazamiento de borde a borde nativo (`-mx-5 px-5`).
 
 ---
 

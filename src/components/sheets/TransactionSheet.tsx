@@ -193,9 +193,9 @@ export const TransactionSheet: React.FC = () => {
   const isExpense = txType === 'expense';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex flex-col justify-end animate-fade-in">
-      {/* Full-width container with proper edge-to-edge scroll bleeds */}
-      <div className="w-full h-full max-w-[390px] mx-auto bg-[#0B0B0D] flex flex-col justify-between px-5 py-6 animate-slide-up relative overflow-y-auto no-scrollbar">
+    <div className="fixed inset-0 z-50 bg-[#0B0B0D] flex flex-col justify-between animate-fade-in overflow-y-auto no-scrollbar">
+      {/* Seamless 100% full viewport background matching iPhone status bar & sides */}
+      <div className="w-full h-full max-w-[390px] mx-auto flex flex-col justify-between px-5 pt-12 pb-6 relative min-h-screen">
         {/* Top Header Row with Close Button */}
         <div className="flex items-center justify-end pt-2 mb-3">
           <button
