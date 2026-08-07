@@ -1,9 +1,10 @@
 import { PrismaClient } from '@prisma/client';
+import { INITIAL_CATEGORIES, INITIAL_TRANSACTIONS, INITIAL_LISTS } from '../src/lib/initialData';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Clear old
+  // Clear old data
   await prisma.transaction.deleteMany();
   await prisma.budget.deleteMany();
   await prisma.category.deleteMany();
@@ -14,7 +15,8 @@ async function main() {
   // Create list
   const list = await prisma.list.create({
     data: {
-      name: 'Personal',
+      id: 'list-1',
+      name: 'RappiPay',
       currency: 'COP',
       defaultPeriod: 'Month',
       settings: {
@@ -29,95 +31,37 @@ async function main() {
   });
 
   // Seed categories
-  const catGym = await prisma.category.create({
-    data: { listId: list.id, name: 'Gym', emoji: '🏋️', tint: '#7A5C43', type: 'expense' },
-  });
-  const catMama = await prisma.category.create({
-    data: { listId: list.id, name: 'Mamá', emoji: '👩‍🍼', tint: '#8A7A55', type: 'expense' },
-  });
-  const catUber = await prisma.category.create({
-    data: { listId: list.id, name: 'Uber', emoji: '🚘', tint: '#A05252', type: 'expense' },
-  });
-  const catComida = await prisma.category.create({
-    data: { listId: list.id, name: 'Comida', emoji: '🍲', tint: '#8A6E4B', type: 'expense' },
-  });
-  const catPapa = await prisma.category.create({
-    data: { listId: list.id, name: 'Papá', emoji: '👴', tint: '#A8862B', type: 'expense' },
-  });
-  const catSuscripcion = await prisma.category.create({
-    data: { listId: list.id, name: 'Suscripción', emoji: '📺', tint: '#5B6A8A', type: 'expense' },
-  });
-
-  const now = new Date();
-  const todayIso = now.toISOString().split('T')[0];
+  for (const cat of INITIAL_CATEGORIES) {
+    await prisma.category.create({
+      data: {
+        id: cat.id,
+        listId: list.id,
+        name: cat.name,
+        emoji: cat.emoji,
+        tint: cat.tint,
+        type: cat.type,
+      },
+    });
+  }
 
   // Seed transactions
-  await prisma.transaction.createMany({
-    data: [
-      {
+  for (const tx of INITIAL_TRANSACTIONS) {
+    await prisma.transaction.create({
+      data: {
+        id: tx.id,
         listId: list.id,
-        description: 'Bodyfit Fitness Center',
-        amount: 105000,
-        type: 'expense',
-        categoryId: catGym.id,
-        tags: JSON.stringify(['#gym', '#debito']),
-        date: new Date(todayIso),
-        recurrence: 'monthly',
+        description: tx.description,
+        amount: tx.amount,
+        type: tx.type,
+        categoryId: tx.categoryId,
+        tags: JSON.stringify(tx.tags),
+        date: new Date(tx.date + 'T00:00:00'),
+        recurrence: tx.recurrence,
       },
-      {
-        listId: list.id,
-        description: 'Mamá fallabella',
-        amount: 182400,
-        type: 'expense',
-        categoryId: catMama.id,
-        tags: JSON.stringify(['#credito', '#mama']),
-        date: new Date(todayIso),
-        recurrence: 'once',
-      },
-      {
-        listId: list.id,
-        description: 'Uber',
-        amount: 6226,
-        type: 'expense',
-        categoryId: catUber.id,
-        tags: JSON.stringify(['#debito', '#mama']),
-        date: new Date(todayIso),
-        recurrence: 'once',
-      },
-      {
-        listId: list.id,
-        description: 'Qbano',
-        amount: 48150,
-        type: 'expense',
-        categoryId: catComida.id,
-        tags: JSON.stringify(['#credito', '#almuerzo']),
-        date: new Date(todayIso),
-        recurrence: 'once',
-      },
-      {
-        listId: list.id,
-        description: 'Dinero recibido de papá',
-        amount: 200000,
-        type: 'income',
-        categoryId: catPapa.id,
-        tags: JSON.stringify(['#papa']),
-        date: new Date(todayIso),
-        recurrence: 'once',
-      },
-      {
-        listId: list.id,
-        description: 'WhatsApp plus',
-        amount: 2999,
-        type: 'expense',
-        categoryId: catSuscripcion.id,
-        tags: JSON.stringify(['#suscripción']),
-        date: new Date(todayIso),
-        recurrence: 'monthly',
-      },
-    ],
-  });
+    });
+  }
 
-  console.log('Database seeded successfully!');
+  console.log('Database seeded with 35 real transactions successfully!');
 }
 
 main()
