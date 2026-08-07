@@ -193,21 +193,22 @@ export const TransactionSheet: React.FC = () => {
   const isExpense = txType === 'expense';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex flex-col justify-end animate-fade-in">
-      <div className="w-full h-full max-w-[390px] mx-auto bg-[#0B0B0D] flex flex-col justify-between p-6 animate-slide-up relative overflow-y-auto no-scrollbar">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex flex-col justify-end animate-fade-in">
+      {/* Full-width container with proper edge-to-edge scroll bleeds */}
+      <div className="w-full h-full max-w-[390px] mx-auto bg-[#0B0B0D] flex flex-col justify-between px-5 py-6 animate-slide-up relative overflow-y-auto no-scrollbar">
         {/* Top Header Row with Close Button */}
         <div className="flex items-center justify-end pt-2 mb-3">
           <button
             onClick={closeSheet}
             aria-label="Close"
-            className="w-10 h-10 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white active:scale-95 transition-transform"
+            className="w-10 h-10 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white active:scale-95 transition-transform shrink-0"
           >
             <IconClose className="w-5 h-5 text-white" />
           </button>
         </div>
 
-        {/* Date & Recurrence Pills (MonAI exact placement above Description) */}
-        <div className="flex items-center gap-2 mb-2">
+        {/* Date & Recurrence Pills (MonAI placement above Description) */}
+        <div className="flex items-center gap-2 mb-3">
           {/* Date Chip */}
           <div className="relative">
             <input
@@ -261,7 +262,7 @@ export const TransactionSheet: React.FC = () => {
         </div>
 
         {/* Description Input (MonAI 32px font-black) */}
-        <div className="mb-2">
+        <div className="mb-3">
           <input
             type="text"
             placeholder="Description"
@@ -297,7 +298,7 @@ export const TransactionSheet: React.FC = () => {
             </button>
           </div>
 
-          {/* Colored Currency & Amount Input (Red for Expense, Green for Income) */}
+          {/* Colored Currency & Amount Input */}
           <div className="flex items-center gap-2 flex-1">
             <span
               className={`text-[32px] font-black tracking-tight ${
@@ -319,7 +320,7 @@ export const TransactionSheet: React.FC = () => {
           </div>
         </div>
 
-        {/* MonAI Horizontal Scrollable Categories */}
+        {/* MonAI Full-Bleed Edge-to-Edge Categories Carousel */}
         <div className="flex flex-col gap-4 my-2">
           {isCreatingCategory ? (
             <div className="p-4 rounded-2xl bg-[#1C1C1E] border border-white/10 flex flex-col gap-3">
@@ -381,8 +382,9 @@ export const TransactionSheet: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto no-scrollbar py-1">
-              <div className="flex items-center gap-2.5 min-w-max">
+            /* Full-bleed edge-to-edge scroll container */
+            <div className="-mx-5 px-5 overflow-x-auto no-scrollbar py-1">
+              <div className="flex items-center gap-2.5 min-w-max pr-5">
                 {/* (+) Create Category Circle Button */}
                 <button
                   onClick={() => setIsCreatingCategory(true)}
@@ -413,26 +415,28 @@ export const TransactionSheet: React.FC = () => {
             </div>
           )}
 
-          {/* MonAI Tag Section & Chips */}
+          {/* MonAI Full-Bleed Edge-to-Edge Tag Section & Chips */}
           <div className="flex flex-col gap-2">
-            {/* Tag Chips Row */}
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-              {tags.map((t) => {
-                const isSelected = selectedTags.includes(t);
-                return (
-                  <button
-                    key={t}
-                    onClick={() => toggleTagSelection(t)}
-                    className={`h-8 px-3 rounded-full text-[13px] font-bold transition-all shrink-0 ${
-                      isSelected
-                        ? 'bg-[#2A2A2C] border border-white/20 text-white'
-                        : 'bg-[#1C1C1E] border border-white/5 text-[#8E8E93] hover:text-white'
-                    }`}
-                  >
-                    {t}
-                  </button>
-                );
-              })}
+            {/* Tag Chips Row (Edge-to-edge scroll) */}
+            <div className="-mx-5 px-5 overflow-x-auto no-scrollbar py-1">
+              <div className="flex items-center gap-2 min-w-max pr-5">
+                {tags.map((t) => {
+                  const isSelected = selectedTags.includes(t);
+                  return (
+                    <button
+                      key={t}
+                      onClick={() => toggleTagSelection(t)}
+                      className={`h-8 px-3 rounded-full text-[13px] font-bold transition-all shrink-0 ${
+                        isSelected
+                          ? 'bg-[#2A2A2C] border border-white/20 text-white'
+                          : 'bg-[#1C1C1E] border border-white/5 text-[#8E8E93] hover:text-white'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Expanded #Tag Input Panel */}
