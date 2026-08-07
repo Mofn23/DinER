@@ -4,6 +4,16 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v1.4.0] - 2026-08-07
+
+### 🔢 Animación Fluida de Números (Count-Up / Count-Down iOS 60fps)
+- **Componente `AnimatedNumber`**:
+  - Implementación de animación de conteo suave (`easeOutCubic`) sobre la API de renderizado nativo `requestAnimationFrame`.
+  - Al filtrar por una categoría, al buscar `#tag` o cambiar entre pestañas de Gastos/Ingresos, los números principales (**Monto Total**, **Segmentos de Gastos/Ingresos** y **Pills de Totales Diarios**) ya no cambian de golpe.
+  - Los dígitos se incrementan o decrementan en un conteo animado minimalista de 350ms, brindando la sensación táctil y elegante de las aplicaciones nativas iOS (estilo Apple Wallet o MonAI).
+
+---
+
 ## 📌 [v1.3.0] - 2026-08-07
 
 ### 📊 Actualización Dinámica del Total por Categoría Seleccionada

@@ -1,7 +1,7 @@
 import React from 'react';
 import { SegmentedControl } from '../common/BaseUI';
+import { AnimatedNumber } from '../common/AnimatedNumber';
 import { useAppStore } from '@/lib/store';
-import { formatAmount } from '@/lib/utils';
 
 interface TotalBlockProps {
   netTotal: number;
@@ -17,11 +17,6 @@ export const TotalBlock: React.FC<TotalBlockProps> = ({
   const { activeType, setActiveType, settings } = useAppStore();
   const isPositive = netTotal >= 0;
 
-  // Format large display total
-  const formattedNetNumber = formatAmount(netTotal)
-    .replace('-$', '')
-    .replace('$', '');
-
   return (
     <div className="flex flex-col items-center my-4 px-2">
       {/* "Total" Label */}
@@ -29,21 +24,24 @@ export const TotalBlock: React.FC<TotalBlockProps> = ({
         Total
       </span>
 
-      {/* Main Giant Total Row */}
+      {/* Main Giant Total Row with Animated Ticking Number */}
       <div className="flex items-center gap-3 justify-center mb-5">
         {/* Sign Badge */}
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-black text-lg ${
+          className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-black text-lg transition-colors duration-300 ${
             isPositive ? 'bg-[#34C759]' : 'bg-[#E8505B]'
           }`}
         >
           {isPositive ? '+' : '−'}
         </div>
 
-        {/* Giant Number */}
-        <span className="text-[64px] leading-none font-black text-[#F5F5F7] tracking-tight">
-          {formattedNetNumber}
-        </span>
+        {/* Giant Ticking Number */}
+        <AnimatedNumber
+          value={Math.abs(netTotal)}
+          duration={380}
+          formatter={(val) => val.toLocaleString('en-US')}
+          className="text-[64px] leading-none font-black text-[#F5F5F7] tracking-tight"
+        />
 
         {/* Currency Suffix */}
         <span className="text-[24px] font-bold text-[#8E8E93] self-end mb-2">

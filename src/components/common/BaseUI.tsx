@@ -1,6 +1,7 @@
 import React from 'react';
-import { IconRecurrence, IconMinus, IconPlus } from './Icons';
+import { IconRecurrence } from './Icons';
 import { formatAmount } from '@/lib/utils';
+import { AnimatedNumber } from './AnimatedNumber';
 
 export const CircleButton: React.FC<{
   children: React.ReactNode;
@@ -73,16 +74,24 @@ export const DayHeader: React.FC<{
   netAmount: number;
   currency?: string;
 }> = ({ dateLabel, netAmount, currency = 'COP' }) => {
-  const formattedNet = formatAmount(netAmount, currency);
+  const isNegative = netAmount < 0;
+  const absAmount = Math.abs(netAmount);
+
   return (
     <div className="flex items-center justify-between my-3 px-1">
       {/* Left Date Pill */}
       <div className="h-7 px-3.5 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-[#8E8E93] text-[14px] font-bold">
         {dateLabel}
       </div>
-      {/* Right Net Pill */}
-      <div className="h-7 px-3.5 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-[#8E8E93] text-[14px] font-extrabold">
-        {formattedNet}
+
+      {/* Right Net Pill with Animated Number Ticking */}
+      <div className="h-7 px-3.5 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-[#8E8E93] text-[14px] font-extrabold gap-0.5">
+        <span>{isNegative ? '-$' : '$'}</span>
+        <AnimatedNumber
+          value={absAmount}
+          duration={350}
+          formatter={(val) => val.toLocaleString('en-US')}
+        />
       </div>
     </div>
   );
@@ -108,7 +117,11 @@ export const SegmentedControl: React.FC<{
         <span className="w-4 h-4 rounded-full bg-[#3A3A3C] text-white text-xs flex items-center justify-center font-black">
           −
         </span>
-        <span>{formatAmount(expenseAmount).replace('-$', '').replace('$', '')}</span>
+        <AnimatedNumber
+          value={expenseAmount}
+          duration={350}
+          formatter={(val) => val.toLocaleString('en-US')}
+        />
       </button>
 
       {showIncome && (
@@ -123,7 +136,11 @@ export const SegmentedControl: React.FC<{
           <span className="w-4 h-4 rounded-full bg-[#34C759] text-white text-xs flex items-center justify-center font-black">
             +
           </span>
-          <span>{formatAmount(incomeAmount).replace('-$', '').replace('$', '')}</span>
+          <AnimatedNumber
+            value={incomeAmount}
+            duration={350}
+            formatter={(val) => val.toLocaleString('en-US')}
+          />
         </button>
       )}
     </div>
