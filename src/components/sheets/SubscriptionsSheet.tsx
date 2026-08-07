@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
 import { formatAmount, getLocalDateString } from '@/lib/utils';
+import {
+  requestNotificationPermission,
+  sendLocalNotification,
+} from '@/lib/notifications';
 import { AnimatedNumber } from '../common/AnimatedNumber';
 import { IconClose, IconPlus, IconCheck, IconTrash } from '../common/Icons';
 
@@ -9,13 +13,11 @@ export const SubscriptionsSheet: React.FC = () => {
     activeSheet,
     closeSheet,
     subscriptions,
-    categories,
     tags,
     currentListId,
     addSubscription,
     deleteSubscription,
     paySubscription,
-    addTag,
   } = useAppStore();
 
   const [isCreating, setIsCreating] = useState(false);
@@ -24,9 +26,16 @@ export const SubscriptionsSheet: React.FC = () => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState<'monthly' | 'weekly' | 'bimonthly' | 'yearly'>('monthly');
   const [billingDay, setBillingDay] = useState('3');
-  const [selectedCategoryId, setSelectedCategoryId] = useState('cat-6'); // Suscripción
+  const [selectedCategoryId] = useState('cat-6'); // Suscripción
   const [selectedTags, setSelectedTags] = useState<string[]>(['#suscripción', '#credito']);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [hasNotificationPermission, setHasNotificationPermission] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      setHasNotificationPermission(Notification.permission === 'granted');
+    }
+  }, [activeSheet]);
 
   if (activeSheet !== 'subscriptions') return null;
 
@@ -44,6 +53,32 @@ export const SubscriptionsSheet: React.FC = () => {
   );
 
   const annualTotal = monthlyTotal * 12;
+
+  const handleEnableNotifications = async () => {
+    const granted = await requestNotificationPermission();
+    setHasNotificationPermission(granted);
+    if (granted) {
+      setToastMessage('¡Notificaciones Push activadas!');
+    } else {
+      setToastMessage('Permiso de notificaciones denegado en el navegador');
+    }
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleTestNotification = async () => {
+    if (!hasNotificationPermission) {
+      const granted = await requestNotificationPermission();
+      setHasNotificationPermission(granted);
+      if (!granted) return;
+    }
+
+    sendLocalNotification('📺 DinER - Recordatorio de Suscripción', {
+      body: '¡Notificación de prueba enviada con éxito! Recordatorio de suscripción listo.',
+    });
+
+    setToastMessage('Notificación enviada a tu dispositivo');
+    setTimeout(() => setToastMessage(null), 2500);
+  };
 
   const handlePay = (subId: string, subName: string) => {
     paySubscription(subId);
@@ -107,7 +142,7 @@ export const SubscriptionsSheet: React.FC = () => {
         </div>
 
         {/* Top Summary Cards: Monthly vs Annual */}
-        <div className="grid grid-cols-2 gap-3 mb-5">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           {/* Monthly Card */}
           <div className="p-4 rounded-2xl bg-[#1C1C1E] border border-white/10 flex flex-col">
             <span className="text-[#8E8E93] font-extrabold text-xs mb-1">Costo Mensual</span>
@@ -127,6 +162,35 @@ export const SubscriptionsSheet: React.FC = () => {
             </div>
             <span className="text-[#8E8E93] text-[11px] font-bold mt-1">/ año</span>
           </div>
+        </div>
+
+        {/* Push Notification Bar */}
+        <div className="p-3.5 rounded-2xl bg-[#1C1C1E] border border-white/10 flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xl">🔔</span>
+            <div className="flex flex-col">
+              <span className="text-white font-extrabold text-xs">Notificaciones Push</span>
+              <span className="text-[#8E8E93] text-[11px] font-semibold">
+                {hasNotificationPermission ? 'Notificaciones activas' : 'Avisos de vencimiento'}
+              </span>
+            </div>
+          </div>
+
+          {hasNotificationPermission ? (
+            <button
+              onClick={handleTestNotification}
+              className="px-3 py-1.5 rounded-full bg-[#2A2A2C] border border-white/10 hover:border-white/20 text-white font-black text-xs active:scale-95 transition-transform"
+            >
+              Probar
+            </button>
+          ) : (
+            <button
+              onClick={handleEnableNotifications}
+              className="px-3.5 py-1.5 rounded-full bg-[#34C759] hover:bg-[#2eb752] text-white font-black text-xs active:scale-95 transition-transform shadow-sm"
+            >
+              Activar
+            </button>
+          )}
         </div>
 
         {/* Add Subscription Form or Toggle Button */}

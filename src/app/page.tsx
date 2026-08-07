@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
 import { filterTransactionsByPeriod, getCategoryTotals } from '@/lib/utils';
+import { checkAndNotifyUpcomingSubscriptions } from '@/lib/notifications';
 import { TopBar } from '@/components/home/TopBar';
 import { MonthStrip } from '@/components/home/MonthStrip';
 import { TotalBlock } from '@/components/home/TotalBlock';
@@ -26,6 +27,7 @@ export default function HomePage() {
     currentListId,
     transactions,
     categories,
+    subscriptions,
     activeType,
     selectedCategoryFilter,
     setSelectedCategoryFilter,
@@ -36,6 +38,17 @@ export default function HomePage() {
     isSearchActive,
     searchQuery,
   } = useAppStore();
+
+  // Register Service Worker & check subscription notifications on startup
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then((reg) => console.log('ServiceWorker registered successfully:', reg.scope))
+        .catch((err) => console.warn('ServiceWorker registration failed:', err));
+    }
+    checkAndNotifyUpcomingSubscriptions(subscriptions);
+  }, [subscriptions]);
 
   // 1. Filter transactions by current list
   const listTx = transactions.filter((t) => t.listId === currentListId);
@@ -125,7 +138,7 @@ export default function HomePage() {
         />
       </div>
 
-      {/* 6. Floating Bottom Controls */}
+      {/* 6. Floating Controls */}
       <FloatingControls />
 
       {/* 7. Sheet Modals & Overlays */}
