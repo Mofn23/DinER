@@ -49,34 +49,62 @@ export const BarChart: React.FC<BarChartProps> = ({
     );
   }
 
-  // Determine height proportions (min 72px, max 260px)
+  // Determine height proportions (min 52px for capsules, max 280px for high bars)
   const maxTotal = Math.max(...categoryTotals.map((c) => c.total), 1);
-  const MIN_HEIGHT = 72;
-  const MAX_HEIGHT = 220;
+  const MIN_CAPSULE_HEIGHT = 52;
+  const MAX_HEIGHT = 280;
 
   return (
     <div className="my-4 overflow-x-auto no-scrollbar py-2">
-      <div className="flex items-end gap-3 min-w-max px-1">
+      <div className="flex items-end gap-2.5 min-w-max px-1">
         {categoryTotals.map(({ category, total }) => {
           const heightRatio = total / maxTotal;
-          const barHeight = Math.max(MIN_HEIGHT, Math.round(heightRatio * MAX_HEIGHT));
+          const calculatedHeight = Math.round(heightRatio * MAX_HEIGHT);
           const isSelected = selectedCategoryFilter === category.id;
+
+          // MonAI aesthetic: Short bars render as delicate horizontal capsules (52px high),
+          // while taller bars stretch vertically up to 280px.
+          const isTall = calculatedHeight > 76;
+          const barHeight = isTall
+            ? calculatedHeight
+            : MIN_CAPSULE_HEIGHT;
 
           return (
             <button
               key={category.id}
               onClick={() => onSelectCategory(category.id)}
               style={{ height: `${barHeight}px` }}
-              className={`w-[108px] rounded-[24px] p-3 flex flex-col justify-end items-center transition-all duration-150 active:scale-95 shrink-0 ${
-                isSelected ? 'bg-[#242426] ring-1 ring-white/20' : 'bg-[#1A1A1C]'
+              className={`rounded-[22px] transition-all duration-150 active:scale-95 shrink-0 flex ${
+                isTall
+                  ? 'w-[86px] p-3 flex-col justify-end items-center'
+                  : 'w-[92px] h-[52px] items-center justify-center px-2.5'
+              } ${
+                isSelected
+                  ? 'bg-[#242426] ring-1 ring-white/20 shadow-sm'
+                  : 'bg-[#1C1C1E] hover:bg-[#242426]'
               }`}
             >
-              <div className="flex flex-col items-center justify-center gap-1">
-                <span className="text-[26px] leading-none select-none">{category.emoji}</span>
-                <span className="text-white font-extrabold text-[17px] tracking-tight">
-                  {formatCompact(total)}
-                </span>
-              </div>
+              {isTall ? (
+                /* Tall slender bar content */
+                <div className="flex flex-col items-center justify-center gap-1">
+                  <span className="text-[22px] leading-none select-none">
+                    {category.emoji}
+                  </span>
+                  <span className="text-white font-extrabold text-[14px] tracking-tight">
+                    {formatCompact(total)}
+                  </span>
+                </div>
+              ) : (
+                /* Short delicate capsule content (emoji + amount in horizontal row) */
+                <div className="flex items-center justify-center gap-1.5">
+                  <span className="text-[20px] leading-none select-none">
+                    {category.emoji}
+                  </span>
+                  <span className="text-white font-extrabold text-[14px] tracking-tight">
+                    {formatCompact(total)}
+                  </span>
+                </div>
+              )}
             </button>
           );
         })}
