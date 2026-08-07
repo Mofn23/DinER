@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useAppStore } from '@/lib/store';
+import { getLocalDateString } from '@/lib/utils';
 import { IconClose, IconMic } from '../common/Icons';
 
 export const VoiceOverlay: React.FC = () => {
-  const { activeSheet, closeSheet, openSheet, addTransaction, categories, currentListId } = useAppStore();
+  const { activeSheet, closeSheet, addTransaction, categories, currentListId } = useAppStore();
   const [transcript, setTranscript] = useState('');
   const [isListening, setIsListening] = useState(true);
 
@@ -14,7 +15,6 @@ export const VoiceOverlay: React.FC = () => {
     setIsListening(false);
 
     setTimeout(() => {
-      // Parse numerical amount and category from phrase e.g. "105000 gym bodyfit" or "cena 48 mil"
       let parsedAmount = 0;
       if (phrase.includes('48 mil')) parsedAmount = 48000;
       else if (phrase.includes('105000')) parsedAmount = 105000;
@@ -29,7 +29,7 @@ export const VoiceOverlay: React.FC = () => {
         type: 'expense',
         categoryId: matchedCat.id,
         tags: [`#${matchedCat.name.toLowerCase()}`],
-        date: new Date().toISOString().split('T')[0],
+        date: getLocalDateString(new Date()),
         recurrence: 'once',
       });
 

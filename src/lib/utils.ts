@@ -1,14 +1,17 @@
 import { TransactionData, CategoryData } from './initialData';
 
-export function formatAmount(amount: number, currency = 'COP'): string {
-  const formatted = new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: currency,
-    maximumFractionDigits: 0,
-    minimumFractionDigits: 0,
-  }).format(Math.abs(amount));
+export function getLocalDateString(dateInput: Date = new Date()): string {
+  // Returns YYYY-MM-DD in America/Bogota (Colombia, UTC-5) timezone
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Bogota',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  return formatter.format(dateInput);
+}
 
-  // standard COP output format e.g. "$ 105.000" or "$ 105,000" -> we convert to pixel-exact spec style e.g. "$105,000" or "-$347,776"
+export function formatAmount(amount: number, currency = 'COP'): string {
   const cleanNumber = Math.abs(amount).toLocaleString('en-US');
   if (amount < 0) {
     return `-$${cleanNumber}`;
@@ -30,27 +33,29 @@ export function formatCompact(amount: number): string {
 }
 
 export function formatDateHeader(dateStr: string): string {
-  const date = new Date(dateStr + 'T00:00:00');
-  const now = new Date();
-  
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  
-  const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const todayStr = getLocalDateString(new Date());
 
-  if (targetDate.getTime() === today.getTime()) {
+  const yesterdayDate = new Date();
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterdayStr = getLocalDateString(yesterdayDate);
+
+  if (dateStr === todayStr) {
     return 'Today';
   }
-  if (targetDate.getTime() === yesterday.getTime()) {
+  if (dateStr === yesterdayStr) {
     return 'Yesterday';
   }
-  
-  // Format as M/D/YY e.g. 8/4/26
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const year = date.getFullYear().toString().slice(-2);
-  return `${month}/${day}/${year}`;
+
+  // Format dateStr (YYYY-MM-DD) as M/D/YY e.g. 8/4/26
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    const year = parts[0].slice(-2);
+    const month = parseInt(parts[1], 10).toString();
+    const day = parseInt(parts[2], 10).toString();
+    return `${month}/${day}/${year}`;
+  }
+
+  return dateStr;
 }
 
 export function filterTransactionsByPeriod(
@@ -67,13 +72,14 @@ export function filterTransactionsByPeriod(
   const selectedMonth = selectedMonthDate.getMonth();
 
   return transactions.filter((tx) => {
-    const txDate = new Date(tx.date + 'T00:00:00');
-    const txYear = txDate.getFullYear();
-    const txMonth = txDate.getMonth();
+    const parts = tx.date.split('-');
+    if (parts.length !== 3) return true;
+
+    const txYear = parseInt(parts[0], 10);
+    const txMonth = parseInt(parts[1], 10) - 1;
 
     if (period === 'Month') {
       if (rollover) {
-        // Rollover ON: includes all transactions up to the end of selected month
         return (
           txYear < selectedYear ||
           (txYear === selectedYear && txMonth <= selectedMonth)
@@ -96,7 +102,7 @@ export function getCategoryTotals(
   type: 'expense' | 'income'
 ): { category: CategoryData; total: number }[] {
   const typeCats = categories.filter((c) => c.type === type);
-  
+
   const totalsMap = new Map<string, number>();
   typeCats.forEach((cat) => totalsMap.set(cat.id, 0));
 

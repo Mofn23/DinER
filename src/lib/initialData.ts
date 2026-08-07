@@ -1,3 +1,5 @@
+import { getLocalDateString } from './utils';
+
 export interface CategoryData {
   id: string;
   name: string;
@@ -14,7 +16,7 @@ export interface TransactionData {
   type: 'expense' | 'income';
   categoryId: string;
   tags: string[];
-  date: string; // ISO String YYYY-MM-DD
+  date: string; // ISO String YYYY-MM-DD in America/Bogota
   recurrence: 'once' | 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'bimonthly' | 'quarterly' | 'yearly';
   createdAt: string;
 }
@@ -40,7 +42,7 @@ export const INITIAL_LISTS: ListData[] = [
 
 export const INITIAL_CATEGORIES: CategoryData[] = [
   { id: 'cat-1', name: 'Mamá', emoji: '👩‍🍼', tint: '#8A7A55', type: 'expense' },
-  { id: 'cat-2', name: 'Papá', emoji: '👴', tint: '#A8862B', type: 'income' }, // Papá category changed to income as requested
+  { id: 'cat-2', name: 'Papá', emoji: '👴', tint: '#A8862B', type: 'income' },
   { id: 'cat-3', name: 'Gym', emoji: '🏋️', tint: '#7A5C43', type: 'expense' },
   { id: 'cat-4', name: 'Comida', emoji: '🍲', tint: '#8A6E4B', type: 'expense' },
   { id: 'cat-5', name: 'Uber', emoji: '🚘', tint: '#A05252', type: 'expense' },
@@ -61,12 +63,13 @@ export const INITIAL_TAGS: string[] = [
   '#icloud+', '#suscripción', '#carrro'
 ];
 
+// Bogota Local Dates
 const now = new Date();
-const todayIso = now.toISOString().split('T')[0];
+const todayIso = getLocalDateString(now); // e.g. "2026-08-06"
 
-const yesterday = new Date(now);
-yesterday.setDate(now.getDate() - 1);
-const yesterdayIso = yesterday.toISOString().split('T')[0];
+const yesterdayDate = new Date();
+yesterdayDate.setDate(now.getDate() - 1);
+const yesterdayIso = getLocalDateString(yesterdayDate); // e.g. "2026-08-05"
 
 export const INITIAL_TRANSACTIONS: TransactionData[] = [
   // TODAY EXPENSES (-$347,776)

@@ -4,6 +4,16 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v1.2.1] - 2026-08-07
+
+### 🕒 Corrección de Zona Horaria (Colombia UTC-5)
+- **Fijación de Zona Horaria Local (America/Bogota)**:
+  - Se corrigió el desfase de fecha producido por la conversión UTC en horas nocturnas (desfase de +5 horas que marcaba el 7 de agosto antes de medianoche).
+  - Implementada la función helper `getLocalDateString()` con formateo explícito en `America/Bogota` para garantizar que la fecha actual sea siempre la de Colombia (ej. `2026-08-06`).
+  - Las transacciones de hoy vuelven a mostrarse correctamente bajo el header **`Today`** y la fecha real de la zona horaria del usuario.
+
+---
+
 ## 📌 [v1.2.0] - 2026-08-07
 
 ### 🎨 Mejoras Visuales & Estilo MonAI (Barras de Estadística)

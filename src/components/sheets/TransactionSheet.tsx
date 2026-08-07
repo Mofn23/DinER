@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
+import { getLocalDateString } from '@/lib/utils';
 import {
   IconClose,
   IconChevronDown,
@@ -32,7 +33,7 @@ export const TransactionSheet: React.FC = () => {
   // Form State
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(getLocalDateString(new Date()));
   const [recurrence, setRecurrence] = useState<
     'once' | 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'bimonthly' | 'quarterly' | 'yearly'
   >('once');
@@ -63,7 +64,7 @@ export const TransactionSheet: React.FC = () => {
     } else {
       setDescription('');
       setAmount('');
-      setDate(new Date().toISOString().split('T')[0]);
+      setDate(getLocalDateString(new Date()));
       setRecurrence('once');
       setSelectedCategoryId(categories[0]?.id || '');
       setSelectedTags([]);
