@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { CircleButton } from '../common/BaseUI';
 import {
   IconChevronDown,
@@ -21,10 +21,21 @@ export const TopBar: React.FC = () => {
     toggleMonthStrip,
     openSheet,
     addList,
+    isSearchActive,
+    setSearchActive,
+    searchQuery,
+    setSearchQuery,
   } = useAppStore();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const currentList = lists.find((l) => l.id === currentListId) || lists[0];
+
+  useEffect(() => {
+    if (isSearchActive && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isSearchActive]);
 
   const handleCreateNewList = () => {
     setIsDropdownOpen(false);
@@ -34,6 +45,38 @@ export const TopBar: React.FC = () => {
     }
   };
 
+  // MonAI Search Mode Header
+  if (isSearchActive) {
+    return (
+      <div className="relative flex items-center justify-between py-3 px-1 border-b border-white/10 z-30 animate-fade-in">
+        {/* Giant Search Input Field */}
+        <div className="flex-1 mr-3">
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-transparent text-[32px] font-black text-[#F5F5F7] placeholder-[#3A3A3C] outline-none border-none tracking-tight"
+          />
+        </div>
+
+        {/* Circular Close Button ✕ */}
+        <button
+          onClick={() => {
+            setSearchQuery('');
+            setSearchActive(false);
+          }}
+          aria-label="Close Search"
+          className="w-10 h-10 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white active:scale-95 transition-transform shrink-0"
+        >
+          <IconClose className="w-5 h-5 text-white" />
+        </button>
+      </div>
+    );
+  }
+
+  // Normal TopBar Mode
   return (
     <div className="relative flex items-center justify-between py-4 px-1 z-30">
       {/* Left List Selector Pill */}

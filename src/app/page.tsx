@@ -18,7 +18,6 @@ import { TagsSheet } from '@/components/sheets/TagsSheet';
 import { RecurrenceSheet } from '@/components/sheets/RecurrenceSheet';
 import { BudgetsSheet } from '@/components/sheets/BudgetsSheet';
 import { ListsSheet } from '@/components/sheets/ListsSheet';
-import { SearchOverlay } from '@/components/sheets/SearchOverlay';
 import { VoiceOverlay } from '@/components/sheets/VoiceOverlay';
 
 export default function HomePage() {
@@ -33,6 +32,8 @@ export default function HomePage() {
     selectedMonthDate,
     settings,
     openSheet,
+    isSearchActive,
+    searchQuery,
   } = useAppStore();
 
   // 1. Filter transactions by current list
@@ -46,28 +47,40 @@ export default function HomePage() {
     settings.rollover
   );
 
-  // 3. Calculate Expense and Income totals for active period
-  const totalExpense = periodTx
+  // 3. Live search filter (matches description, tag, category name, amount)
+  const searchFilteredTx = periodTx.filter((t) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    const category = categories.find((c) => c.id === t.categoryId);
+    const categoryMatch = category?.name.toLowerCase().includes(q);
+    const descMatch = t.description.toLowerCase().includes(q);
+    const tagMatch = (t.tags || []).some((tag) => tag.toLowerCase().includes(q));
+    const amountMatch = t.amount.toString().includes(q);
+    return categoryMatch || descMatch || tagMatch || amountMatch;
+  });
+
+  // 4. Calculate Expense and Income totals for active dataset
+  const totalExpense = searchFilteredTx
     .filter((t) => t.type === 'expense')
     .reduce((acc, curr) => acc + curr.amount, 0);
 
-  const totalIncome = periodTx
+  const totalIncome = searchFilteredTx
     .filter((t) => t.type === 'income')
     .reduce((acc, curr) => acc + curr.amount, 0);
 
   const netTotal = totalIncome - totalExpense;
 
-  // 4. Calculate Category Totals for Bar Chart based on active type (expense or income)
-  const categoryTotals = getCategoryTotals(periodTx, categories, activeType);
+  // 5. Category Totals for Bar Chart based on active type
+  const categoryTotals = getCategoryTotals(searchFilteredTx, categories, activeType);
 
-  // 5. Filter transaction list by active type and category filter if applied
-  const filteredListTx = periodTx.filter((t) => {
-    // If showIncome is false, hide income transactions
+  // 6. Filter transaction list for display
+  const filteredListTx = searchFilteredTx.filter((t) => {
     if (!settings.showIncome && t.type === 'income') return false;
-
     if (selectedCategoryFilter) {
       return t.categoryId === selectedCategoryFilter;
     }
+    // If search active with query, display all matching search results regardless of active type tab
+    if (searchQuery.trim()) return true;
     return t.type === activeType;
   });
 
@@ -75,20 +88,20 @@ export default function HomePage() {
     <main className="w-full h-full min-h-screen bg-[#0B0B0D] text-[#F5F5F7] flex flex-col justify-between overflow-x-hidden relative">
       {/* Scrollable Main Content Container */}
       <div className="flex-1 overflow-y-auto no-scrollbar px-5 pb-32">
-        {/* 1. Top Bar */}
+        {/* 1. Top Bar / Search Header */}
         <TopBar />
 
         {/* 2. Month Strip (visible when calendar is toggled) */}
-        <MonthStrip />
+        {!isSearchActive && <MonthStrip />}
 
-        {/* 3. Total Block */}
+        {/* 3. Total Block (Dynamically updates live for search query!) */}
         <TotalBlock
           netTotal={netTotal}
           totalExpense={totalExpense}
           totalIncome={totalIncome}
         />
 
-        {/* 4. Category Bar Chart */}
+        {/* 4. Category Bar Chart (Dynamically updates live for search query!) */}
         <BarChart
           categoryTotals={categoryTotals}
           selectedCategoryFilter={selectedCategoryFilter}
@@ -114,7 +127,6 @@ export default function HomePage() {
       <RecurrenceSheet />
       <BudgetsSheet />
       <ListsSheet />
-      <SearchOverlay />
       <VoiceOverlay />
     </main>
   );

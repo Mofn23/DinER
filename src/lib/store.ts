@@ -21,7 +21,6 @@ export type ActiveSheet =
   | 'recurrence'
   | 'budgets'
   | 'lists'
-  | 'search'
   | 'voice';
 
 interface AppSettings {
@@ -47,6 +46,10 @@ interface AppStore {
   selectedMonthDate: Date; // date representing active month
   isMonthStripVisible: boolean;
 
+  // Search state
+  isSearchActive: boolean;
+  searchQuery: string;
+
   activeSheet: ActiveSheet;
   editingTransactionId: string | null;
 
@@ -57,6 +60,11 @@ interface AppStore {
   setSelectedPeriod: (period: string) => void;
   setSelectedMonthDate: (date: Date) => void;
   toggleMonthStrip: () => void;
+
+  // Search actions
+  setSearchActive: (active: boolean) => void;
+  setSearchQuery: (query: string) => void;
+
   openSheet: (sheet: ActiveSheet, editingTxId?: string | null) => void;
   closeSheet: () => void;
 
@@ -104,6 +112,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
   selectedMonthDate: new Date(),
   isMonthStripVisible: false,
 
+  isSearchActive: false,
+  searchQuery: '',
+
   activeSheet: 'none',
   editingTransactionId: null,
 
@@ -113,7 +124,10 @@ export const useAppStore = create<AppStore>((set, get) => ({
   setSelectedPeriod: (period) => set({ selectedPeriod: period }),
   setSelectedMonthDate: (date) => set({ selectedMonthDate: date }),
   toggleMonthStrip: () => set((state) => ({ isMonthStripVisible: !state.isMonthStripVisible })),
-  
+
+  setSearchActive: (active) => set({ isSearchActive: active, searchQuery: active ? get().searchQuery : '' }),
+  setSearchQuery: (query) => set({ searchQuery: query }),
+
   openSheet: (sheet, editingTxId = null) =>
     set({ activeSheet: sheet, editingTransactionId: editingTxId }),
   closeSheet: () => set({ activeSheet: 'none', editingTransactionId: null }),

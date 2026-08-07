@@ -4,7 +4,7 @@ import { IconPlus, IconChat, IconSearch, IconMic } from '../common/Icons';
 import { useAppStore } from '@/lib/store';
 
 export const FloatingControls: React.FC = () => {
-  const { openSheet } = useAppStore();
+  const { openSheet, isSearchActive, setSearchActive } = useAppStore();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const handleChatClick = () => {
@@ -45,11 +45,13 @@ export const FloatingControls: React.FC = () => {
             </button>
             <div className="w-[1px] h-6 bg-white/10" />
             <button
-              onClick={() => openSheet('search')}
-              aria-label="Open Search"
-              className="p-1 text-white hover:text-white/80 active:scale-95 transition-transform"
+              onClick={() => setSearchActive(!isSearchActive)}
+              aria-label="Toggle Search"
+              className={`p-1 active:scale-95 transition-transform ${
+                isSearchActive ? 'text-[#34C759]' : 'text-white hover:text-white/80'
+              }`}
             >
-              <IconSearch className="w-6 h-6 text-white" />
+              <IconSearch className="w-6 h-6" />
             </button>
           </div>
         </div>
