@@ -4,6 +4,15 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v1.3.0] - 2026-08-07
+
+### 📊 Actualización Dinámica del Total por Categoría Seleccionada
+- **Total e Indicadores por Categoría**:
+  - Al hacer clic sobre cualquier categoría en el gráfico de barras (ej. `Mamá 👩‍🍼`), no solo se filtra el desglose de la lista de transacciones, sino que el **Bloque de Total Principal** (`Total`) y los **Segmentos** se actualizan en vivo para mostrar el dinero exacto gastado o recibido en esa categoría específica.
+  - Al limpiar la selección con el chip `⊗`, el monto principal regresa suavemente al total acumulado general del período (`+$841,738 COP`).
+
+---
+
 ## 📌 [v1.2.1] - 2026-08-07
 
 ### 🕒 Corrección de Zona Horaria (Colombia UTC-5)

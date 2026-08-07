@@ -59,28 +59,36 @@ export default function HomePage() {
     return categoryMatch || descMatch || tagMatch || amountMatch;
   });
 
-  // 4. Calculate Expense and Income totals for active dataset
-  const totalExpense = searchFilteredTx
+  // 4. Category Totals for Bar Chart (calculated from searchFilteredTx before category selection)
+  const categoryTotals = getCategoryTotals(searchFilteredTx, categories, activeType);
+
+  // 5. Active dataset: if a category filter is selected, filter by that category
+  const activeDataset = selectedCategoryFilter
+    ? searchFilteredTx.filter((t) => t.categoryId === selectedCategoryFilter)
+    : searchFilteredTx;
+
+  // 6. Calculate Expense and Income totals for active dataset (reflects category filter)
+  const totalExpense = activeDataset
     .filter((t) => t.type === 'expense')
     .reduce((acc, curr) => acc + curr.amount, 0);
 
-  const totalIncome = searchFilteredTx
+  const totalIncome = activeDataset
     .filter((t) => t.type === 'income')
     .reduce((acc, curr) => acc + curr.amount, 0);
 
-  const netTotal = totalIncome - totalExpense;
+  // When a specific category is selected, display its specific net/total amount in TotalBlock
+  const selectedCategoryObj = selectedCategoryFilter
+    ? categories.find((c) => c.id === selectedCategoryFilter)
+    : null;
 
-  // 5. Category Totals for Bar Chart based on active type
-  const categoryTotals = getCategoryTotals(searchFilteredTx, categories, activeType);
+  const netTotal = selectedCategoryObj
+    ? (selectedCategoryObj.type === 'income' ? totalIncome : -totalExpense)
+    : totalIncome - totalExpense;
 
-  // 6. Filter transaction list for display
-  const filteredListTx = searchFilteredTx.filter((t) => {
+  // 7. Filter transaction list for display
+  const filteredListTx = activeDataset.filter((t) => {
     if (!settings.showIncome && t.type === 'income') return false;
-    if (selectedCategoryFilter) {
-      return t.categoryId === selectedCategoryFilter;
-    }
-    // If search active with query, display all matching search results regardless of active type tab
-    if (searchQuery.trim()) return true;
+    if (selectedCategoryFilter || searchQuery.trim()) return true;
     return t.type === activeType;
   });
 
@@ -94,14 +102,14 @@ export default function HomePage() {
         {/* 2. Month Strip (visible when calendar is toggled) */}
         {!isSearchActive && <MonthStrip />}
 
-        {/* 3. Total Block (Dynamically updates live for search query!) */}
+        {/* 3. Total Block (Dynamically reflects category filter total!) */}
         <TotalBlock
           netTotal={netTotal}
           totalExpense={totalExpense}
           totalIncome={totalIncome}
         />
 
-        {/* 4. Category Bar Chart (Dynamically updates live for search query!) */}
+        {/* 4. Category Bar Chart */}
         <BarChart
           categoryTotals={categoryTotals}
           selectedCategoryFilter={selectedCategoryFilter}
