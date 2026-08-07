@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
 import { filterTransactionsByPeriod, getCategoryTotals } from '@/lib/utils';
 import { checkAndNotifyUpcomingSubscriptions } from '@/lib/notifications';
+import { updateWidgetCache } from '@/lib/widgetSync';
 import { TopBar } from '@/components/home/TopBar';
 import { MonthStrip } from '@/components/home/MonthStrip';
 import { TotalBlock } from '@/components/home/TotalBlock';
@@ -20,6 +21,7 @@ import { RecurrenceSheet } from '@/components/sheets/RecurrenceSheet';
 import { BudgetsSheet } from '@/components/sheets/BudgetsSheet';
 import { ListsSheet } from '@/components/sheets/ListsSheet';
 import { SubscriptionsSheet } from '@/components/sheets/SubscriptionsSheet';
+import { WidgetPreviewSheet } from '@/components/sheets/WidgetPreviewSheet';
 import { VoiceOverlay } from '@/components/sheets/VoiceOverlay';
 
 export default function HomePage() {
@@ -39,7 +41,7 @@ export default function HomePage() {
     searchQuery,
   } = useAppStore();
 
-  // Register Service Worker & check subscription notifications on startup
+  // Register Service Worker, sync Widget cache & check notifications on startup
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker
@@ -89,6 +91,11 @@ export default function HomePage() {
   const totalIncome = activeDataset
     .filter((t) => t.type === 'income')
     .reduce((acc, curr) => acc + curr.amount, 0);
+
+  // Sync widget cache whenever total amounts change
+  useEffect(() => {
+    updateWidgetCache(totalIncome - totalExpense, totalExpense, settings.currency);
+  }, [totalIncome, totalExpense, settings.currency]);
 
   // When a specific category is selected, display its specific net/total amount in TotalBlock
   const selectedCategoryObj = selectedCategoryFilter
@@ -150,6 +157,7 @@ export default function HomePage() {
       <BudgetsSheet />
       <ListsSheet />
       <SubscriptionsSheet />
+      <WidgetPreviewSheet />
       <VoiceOverlay />
     </main>
   );

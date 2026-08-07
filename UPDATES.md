@@ -4,15 +4,24 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v1.8.0] - 2026-08-07
+
+### 📱 Integración Widget Minimalista iOS (WidgetKit & Capacitor)
+- **Diseño Ultra-Minimalista**:
+  - Muestra exclusivamente tu **Saldo Restante** (`+ $841,738 COP`) con píldora verde de incremento y el **Gasto del Mes** (`- $2,559,223 COP`) en tipografía roja `#E8505B`.
+- **Código Nativo Swift / SwiftUI WidgetKit (`DinERWidget.swift`)**:
+  - Código Swift SwiftUI nativo en `ios/App/DinERWidget/DinERWidget.swift` con fondo oscuro `#0B0B0D` e integración con App Groups de iOS (`group.com.diner.app`).
+  - Acción deep-link `diner://add` al tocar el Widget para abrir la app directamente en la pantalla de agregar transacción.
+- **Vista Previa e Instalación en Ajustes (`WidgetPreviewSheet.tsx`)**:
+  - Nueva opción **"📱 Widget de iOS"** en el panel de Ajustes para previsualizar el Widget en vivo, sincronizar datos con un clic y consultar la guía paso a paso de instalación en iPhone.
+
+---
+
 ## 📌 [v1.7.0] - 2026-08-07
 
 ### 🔔 Notificaciones Push para Suscripciones & PWA Service Worker
-- **Service Worker Nativo PWA (`public/sw.js`)**:
-  - Registro de Service Worker que gestiona notificaciones Push en iOS (PWA instalada en pantalla de inicio) y escritorios.
-- **Sistema Inteligente de Notificaciones (`notifications.ts`)**:
-  - Evaluación automática al iniciar la app: si una suscripción vence hoy o mañana, la app genera de forma autónoma una notificación nativa en tu dispositivo (*"📺 Suscripción Hoy: iCloud+ por -$44,900. Toca para pagar en DinER"*).
-- **Banner y Botón de Prueba en Suscripciones**:
-  - Banner en el panel de suscripciones con botón **"Activar"** y botón **"Probar"** para enviar una notificación de prueba instantánea a la pantalla de tu iPhone.
+- **Service Worker Nativo PWA (`public/sw.js`)**: Registro de Service Worker para notificaciones Push.
+- **Sistema Inteligente de Notificaciones (`notifications.ts`)**: Evaluación diaria de vencimiento de suscripciones.
 
 ---
 
@@ -20,8 +29,8 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ### 📺 Nueva Sección Completa de Suscripciones (Subscription Manager)
 - **Acceso desde Ajustes**: Nueva opción **"Suscripciones"** agregada dentro del panel de Ajustes (`SettingsSheet`).
-- **Tarjetas de Cálculo de Costos (Mensual vs Anual)**: Cálculo automático en tiempo real del gasto total mensual y anual animado con `AnimatedNumber`.
-- **Acción "Pagar Suscripción"**: Botón **Pagar** que genera automáticamente una transacción en la página principal.
+- **Tarjetas de Cálculo de Costos (Mensual vs Anual)**: Cálculo en tiempo real.
+- **Acción "Pagar Suscripción"**: Botón **Pagar** que genera transacciones automáticas.
 
 ---
 
