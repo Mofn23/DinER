@@ -4,13 +4,35 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v1.5.0] - 2026-08-07
+
+### 🤖 Categorización Inteligente Automática (Smart Auto-Categorization)
+- **Detección Instantánea por Descripción**:
+  - Al escribir en el campo de descripción (por ejemplo `Uber`, `KFC`, `Bodyfit`, `Mamá Zara`, `iCloud`), la app reconoce la palabra clave y selecciona la categoría correspondiente (`🚘 Uber`, `🍲 Comida`, `🏋️ Gym`, `👩‍🍼 Mamá`, `📺 Suscripción`) **de forma 100% automática** e instantánea.
+  - Soporte de diccionario inteligente y coincidencia aproximada para agilizar el registro de gastos.
+
+### 🎨 Rediseño 1:1 de la Interfaz "Agregar Transacción" (Estilo MonAI)
+- **Header & Posición de Chips**:
+  - Botón de cierre circular `✕` colocado a la derecha.
+  - Chips de fecha y recurrencia (`Today v`, `Once v`) ubicados justo sobre el campo de descripción.
+- **Fila de Monto MonAI `[ - | + ]` & Cifra Coloreada**:
+  - Selector en cápsula `[ - | + ]` a la izquierda: el segmento `-` se destaca en rojo `#E8505B` para gastos y `+` en verde `#34C759` para ingresos.
+  - La cifra del monto (`COP 123`) se tiñe dinámicamente de rojo en gastos o verde en ingresos en tipografía gigante de 32px.
+- **Barra de Categorías y Tags**:
+  - Botón circular `(+)` a la izquierda de la barra de categorías.
+  - Carrusel horizontal de tags (`#yo`, `#carrro`, `#nu`, `#papa`, `#mama`) sobre la barra de entrada.
+- **Botones de Acción Inferiores**:
+  - Botón cuadrado `#` a la izquierda para desplegar el panel de tags.
+  - Botón principal `✓ Save` estilizado a la derecha.
+
+---
+
 ## 📌 [v1.4.0] - 2026-08-07
 
 ### 🔢 Animación Fluida de Números (Count-Up / Count-Down iOS 60fps)
 - **Componente `AnimatedNumber`**:
   - Implementación de animación de conteo suave (`easeOutCubic`) sobre la API de renderizado nativo `requestAnimationFrame`.
-  - Al filtrar por una categoría, al buscar `#tag` o cambiar entre pestañas de Gastos/Ingresos, los números principales (**Monto Total**, **Segmentos de Gastos/Ingresos** y **Pills de Totales Diarios**) ya no cambian de golpe.
-  - Los dígitos se incrementan o decrementan en un conteo animado minimalista de 350ms, brindando la sensación táctil y elegante de las aplicaciones nativas iOS (estilo Apple Wallet o MonAI).
+  - Al filtrar por una categoría, al buscar `#tag` o cambiar entre pestañas de Gastos/Ingresos, los números principales (**Monto Total**, **Segmentos de Gastos/Ingresos** y **Pills de Totales Diarios**) se incrementan o decrementan en un conteo animado minimalista de 350ms.
 
 ---
 
@@ -18,8 +40,7 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ### 📊 Actualización Dinámica del Total por Categoría Seleccionada
 - **Total e Indicadores por Categoría**:
-  - Al hacer clic sobre cualquier categoría en el gráfico de barras (ej. `Mamá 👩‍🍼`), no solo se filtra el desglose de la lista de transacciones, sino que el **Bloque de Total Principal** (`Total`) y los **Segmentos** se actualizan en vivo para mostrar el dinero exacto gastado o recibido en esa categoría específica.
-  - Al limpiar la selección con el chip `⊗`, el monto principal regresa suavemente al total acumulado general del período (`+$841,738 COP`).
+  - Al hacer clic sobre cualquier categoría en el gráfico de barras (ej. `Mamá 👩‍🍼`), el **Bloque de Total Principal** (`Total`) y los **Segmentos** se actualizan en vivo para mostrar el dinero exacto gastado o recibido en esa categoría específica.
 
 ---
 
@@ -28,42 +49,24 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 ### 🕒 Corrección de Zona Horaria (Colombia UTC-5)
 - **Fijación de Zona Horaria Local (America/Bogota)**:
   - Se corrigió el desfase de fecha producido por la conversión UTC en horas nocturnas (desfase de +5 horas que marcaba el 7 de agosto antes de medianoche).
-  - Implementada la función helper `getLocalDateString()` con formateo explícito en `America/Bogota` para garantizar que la fecha actual sea siempre la de Colombia (ej. `2026-08-06`).
-  - Las transacciones de hoy vuelven a mostrarse correctamente bajo el header **`Today`** y la fecha real de la zona horaria del usuario.
 
 ---
 
 ## 📌 [v1.2.0] - 2026-08-07
 
 ### 🎨 Mejoras Visuales & Estilo MonAI (Barras de Estadística)
-- **Barras Estilo Cápsula MonAI**: Se rediseñó el gráfico de barras por categoría para igualar exactamente el acabado delicado de MonAI:
-  - Ancho de barra ajustado a un estilo más fino (`w-[86px]` para barras altas y `w-[92px]` para cápsulas cortas).
-  - Las categorías con montos menores ahora se muestran como cápsulas horizontales estilizadas de 52px de altura con el emoji y la cifra compacta (ej. `🍲 183K`, `🚘 139K`, `🏋️ 105K`) alineados horizontalmente.
-  - Las categorías principales con montos mayores se extienden verticalmente hasta 280px con remates redondeados de 22px (`rounded-[22px]`).
-  - Tipografía refinada a `14px` ExtraBold para dar la sensación delicada y ligera del diseño original de referencia.
-
-### 📝 Registro Centralizado
-- Creación de `UPDATES.md` para mantener el registro oficial de cambios del proyecto.
+- **Barras Estilo Cápsula MonAI**: Se rediseñó el gráfico de barras por categoría para igualar exactamente el acabado delicado de MonAI.
 
 ---
 
 ## 📌 [v1.1.0] - 2026-08-06
 
 ### 🔍 Búsqueda Fluida 1:1 MonAI (Inline Live Search)
-- **Eliminación del Overlay Brusco**: Se removió la hoja superpuesta de búsqueda a pantalla completa.
-- **Header de Búsqueda Integrado**: Al pulsar el ícono de la lupa 🔍 en los controles flotantes inferiores, la barra superior cambia fluidamente al Header de Búsqueda de MonAI (título gigante `Search...` o `#query` con botón circular `✕` de 40px en `#1C1C1E`).
-- **Cálculo y Filtro Dinámico en Vivo**:
-  - Mientras el usuario escribe (ejemplo: `#mama`), toda la pantalla principal (**Bloque Total**, **Segmentos de Gastos/Ingresos**, **Gráfico de Barras** y **Lista por Días**) permanece visible y recalcula su dinero en tiempo real.
-  - El header por día en la lista calcula automáticamente la suma neta diaria correspondiente (ej. `8/7/26` con `-$194,626`).
+- **Header de Búsqueda Integrado**: Filtro y cálculo dinámico en tiempo real sobre la pantalla principal.
 
 ---
 
 ## 📌 [v1.0.0] - 2026-08-06
 
 ### 🚀 Lanzamiento Inicial & Carga de Datos Reales
-- **Construcción Completa DinER**: App PWA mobile-first con marco iOS (`390×844`), modo oscuro estricto (`#0B0B0D`), tipografía `Nunito`, emojis de categoría, íconos SVGs lineales y animaciones fluidas.
-- **Datos Reales Procesados (35 Transacciones)**:
-  - Ingreso de todas las transacciones de las capturas del usuario.
-  - Categoría **Papá** configurada como **Ingreso** (`type: 'income'`).
-  - Balance total ajustado al 100%: **Total Neto `+$841,738 COP`** (Gastos: `$2,559,223` / Ingresos: `$3,400,961`).
-- **Control de Versiones y Despliegue**: Subida inicial al repositorio GitHub `Mofn23/DinER` y despliegue automático en Vercel para uso en iPhone.
+- **Construcción Completa DinER**: App PWA mobile-first con marco iOS (`390×844`).

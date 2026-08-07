@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
 import { getLocalDateString } from '@/lib/utils';
+import { matchCategoryFromDescription } from '@/lib/autoCategory';
 import {
   IconClose,
   IconChevronDown,
@@ -18,6 +19,7 @@ export const TransactionSheet: React.FC = () => {
     categories,
     tags,
     currentListId,
+    settings,
     addTransaction,
     updateTransaction,
     deleteTransaction,
@@ -37,8 +39,10 @@ export const TransactionSheet: React.FC = () => {
   const [recurrence, setRecurrence] = useState<
     'once' | 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'bimonthly' | 'quarterly' | 'yearly'
   >('once');
+  const [txType, setTxType] = useState<'expense' | 'income'>('expense');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [hasManuallySelectedCategory, setHasManuallySelectedCategory] = useState(false);
 
   // Inline Category Creator
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
@@ -59,26 +63,53 @@ export const TransactionSheet: React.FC = () => {
       setAmount(editingTx.amount.toString());
       setDate(editingTx.date);
       setRecurrence(editingTx.recurrence as any);
+      setTxType(editingTx.type);
       setSelectedCategoryId(editingTx.categoryId);
       setSelectedTags(editingTx.tags || []);
+      setHasManuallySelectedCategory(true);
     } else {
       setDescription('');
       setAmount('');
       setDate(getLocalDateString(new Date()));
       setRecurrence('once');
+      setTxType('expense');
       setSelectedCategoryId(categories[0]?.id || '');
       setSelectedTags([]);
+      setHasManuallySelectedCategory(false);
     }
   }, [editingTx, activeSheet, categories]);
 
   if (activeSheet !== 'add_tx' && activeSheet !== 'edit_tx') return null;
+
+  // Smart Auto-Categorization on description change
+  const handleDescriptionChange = (val: string) => {
+    setDescription(val);
+    if (!hasManuallySelectedCategory) {
+      const autoMatchedId = matchCategoryFromDescription(val, categories);
+      if (autoMatchedId) {
+        setSelectedCategoryId(autoMatchedId);
+        const catObj = categories.find((c) => c.id === autoMatchedId);
+        if (catObj) {
+          setTxType(catObj.type);
+        }
+      }
+    }
+  };
+
+  const handleCategorySelect = (catId: string) => {
+    setSelectedCategoryId(catId);
+    setHasManuallySelectedCategory(true);
+    const catObj = categories.find((c) => c.id === catId);
+    if (catObj) {
+      setTxType(catObj.type);
+    }
+  };
 
   const handleSave = () => {
     const numericAmount = parseInt(amount.replace(/[^0-9]/g, ''), 10);
     if (!numericAmount || !selectedCategoryId) return;
 
     const selectedCat = categories.find((c) => c.id === selectedCategoryId);
-    const txType = selectedCat?.type || 'expense';
 
     if (isEditing && editingTransactionId) {
       updateTransaction(editingTransactionId, {
@@ -121,6 +152,8 @@ export const TransactionSheet: React.FC = () => {
       type: newCatType,
     });
     setSelectedCategoryId(created.id);
+    setTxType(created.type);
+    setHasManuallySelectedCategory(true);
     setNewCatName('');
     setIsCreatingCategory(false);
   };
@@ -157,98 +190,137 @@ export const TransactionSheet: React.FC = () => {
   ];
 
   const isSaveDisabled = !amount || parseInt(amount, 10) <= 0 || !selectedCategoryId;
+  const isExpense = txType === 'expense';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-end animate-fade-in">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex flex-col justify-end animate-fade-in">
       <div className="w-full h-full max-w-[390px] mx-auto bg-[#0B0B0D] flex flex-col justify-between p-6 animate-slide-up relative overflow-y-auto no-scrollbar">
-        {/* Header Close Button */}
-        <div className="flex items-center justify-between pt-2 mb-4">
-          {/* Fila de chips: Date & Recurrence */}
-          <div className="flex items-center gap-2">
-            {/* Date Chip */}
-            <div className="relative">
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
-              />
-              <div className="h-9 px-3.5 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center gap-1.5 text-white font-extrabold text-[14px]">
-                <span>Today</span>
-                <IconChevronDown className="w-3.5 h-3.5 text-[#8E8E93]" />
-              </div>
-            </div>
-
-            {/* Recurrence Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setIsRecurrenceOpen(!isRecurrenceOpen)}
-                className="h-9 px-3.5 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center gap-1.5 text-white font-extrabold text-[14px]"
-              >
-                <span className="capitalize">{recurrence}</span>
-                <IconChevronDown className="w-3.5 h-3.5 text-[#8E8E93]" />
-              </button>
-
-              {isRecurrenceOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setIsRecurrenceOpen(false)}
-                  />
-                  <div className="absolute left-0 top-11 w-44 bg-[#1C1C1E] border border-white/10 rounded-2xl p-1 shadow-elevation z-50 animate-scale-up">
-                    {recurrenceOptions.map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => {
-                          setRecurrence(opt.value as any);
-                          setIsRecurrenceOpen(false);
-                        }}
-                        className="w-full h-10 px-3 rounded-xl flex items-center justify-between text-left font-bold text-[14px] text-white hover:bg-[#2A2A2C]"
-                      >
-                        <span>{opt.label}</span>
-                        {recurrence === opt.value && (
-                          <IconCheck className="w-4 h-4 text-[#34C759]" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Close Circular Button */}
+        {/* Top Header Row with Close Button */}
+        <div className="flex items-center justify-end pt-2 mb-3">
           <button
             onClick={closeSheet}
+            aria-label="Close"
             className="w-10 h-10 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white active:scale-95 transition-transform"
           >
             <IconClose className="w-5 h-5 text-white" />
           </button>
         </div>
 
-        {/* Inputs block: Description & Amount */}
-        <div className="flex flex-col gap-2 my-auto">
+        {/* Date & Recurrence Pills (MonAI exact placement above Description) */}
+        <div className="flex items-center gap-2 mb-2">
+          {/* Date Chip */}
+          <div className="relative">
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
+            />
+            <div className="h-[34px] px-3.5 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center gap-1.5 text-white font-extrabold text-[14px]">
+              <span>Today</span>
+              <IconChevronDown className="w-3.5 h-3.5 text-[#8E8E93]" />
+            </div>
+          </div>
+
+          {/* Recurrence Chip */}
+          <div className="relative">
+            <button
+              onClick={() => setIsRecurrenceOpen(!isRecurrenceOpen)}
+              className="h-[34px] px-3.5 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center gap-1.5 text-white font-extrabold text-[14px]"
+            >
+              <span className="capitalize">{recurrence}</span>
+              <IconChevronDown className="w-3.5 h-3.5 text-[#8E8E93]" />
+            </button>
+
+            {isRecurrenceOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsRecurrenceOpen(false)}
+                />
+                <div className="absolute left-0 top-11 w-44 bg-[#1C1C1E] border border-white/10 rounded-2xl p-1 shadow-elevation z-50 animate-scale-up">
+                  {recurrenceOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => {
+                        setRecurrence(opt.value as any);
+                        setIsRecurrenceOpen(false);
+                      }}
+                      className="w-full h-10 px-3 rounded-xl flex items-center justify-between text-left font-bold text-[14px] text-white hover:bg-[#2A2A2C]"
+                    >
+                      <span>{opt.label}</span>
+                      {recurrence === opt.value && (
+                        <IconCheck className="w-4 h-4 text-[#34C759]" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Description Input (MonAI 32px font-black) */}
+        <div className="mb-2">
           <input
             type="text"
             placeholder="Description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full bg-transparent text-[38px] font-black text-[#F5F5F7] placeholder-[#3A3A3C] outline-none border-none leading-tight"
-          />
-
-          <input
-            type="number"
-            inputMode="numeric"
-            placeholder="Amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full bg-transparent text-[40px] font-black text-[#F5F5F7] placeholder-[#3A3A3C] outline-none border-none leading-tight"
+            onChange={(e) => handleDescriptionChange(e.target.value)}
+            className="w-full bg-transparent text-[32px] font-black text-[#F5F5F7] placeholder-[#3A3A3C] outline-none border-none leading-tight tracking-tight"
           />
         </div>
 
-        {/* Category Horizontal Selector + Tag Mode */}
-        <div className="flex flex-col gap-4 my-4">
-          {/* Inline Category Creator Form */}
+        {/* MonAI Amount Row: [ - | + ] Toggle Pill + Colored Currency Amount */}
+        <div className="flex items-center gap-3 mb-6">
+          {/* [ - | + ] Toggle Pill */}
+          <div className="h-[36px] bg-[#1C1C1E] border border-white/10 rounded-full p-1 flex items-center gap-1 shrink-0">
+            <button
+              onClick={() => setTxType('expense')}
+              className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-sm transition-all ${
+                isExpense
+                  ? 'bg-[#E8505B] text-white shadow-sm'
+                  : 'text-[#8E8E93] hover:text-white'
+              }`}
+            >
+              −
+            </button>
+            <button
+              onClick={() => setTxType('income')}
+              className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-sm transition-all ${
+                !isExpense
+                  ? 'bg-[#34C759] text-white shadow-sm'
+                  : 'text-[#8E8E93] hover:text-white'
+              }`}
+            >
+              +
+            </button>
+          </div>
+
+          {/* Colored Currency & Amount Input (Red for Expense, Green for Income) */}
+          <div className="flex items-center gap-2 flex-1">
+            <span
+              className={`text-[32px] font-black tracking-tight ${
+                isExpense ? 'text-[#E8505B]' : 'text-[#34C759]'
+              }`}
+            >
+              {settings.currency}
+            </span>
+            <input
+              type="number"
+              inputMode="numeric"
+              placeholder="0"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className={`w-full bg-transparent text-[32px] font-black outline-none border-none tracking-tight ${
+                isExpense ? 'text-[#E8505B] placeholder-[#E8505B]/40' : 'text-[#34C759] placeholder-[#34C759]/40'
+              }`}
+            />
+          </div>
+        </div>
+
+        {/* MonAI Horizontal Scrollable Categories */}
+        <div className="flex flex-col gap-4 my-2">
           {isCreatingCategory ? (
             <div className="p-4 rounded-2xl bg-[#1C1C1E] border border-white/10 flex flex-col gap-3">
               <div className="flex items-center gap-2">
@@ -309,29 +381,30 @@ export const TransactionSheet: React.FC = () => {
               </div>
             </div>
           ) : (
-            /* Horizontal Scrollable Categories */
-            <div className="overflow-x-auto no-scrollbar">
-              <div className="flex items-center gap-2 min-w-max">
+            <div className="overflow-x-auto no-scrollbar py-1">
+              <div className="flex items-center gap-2.5 min-w-max">
+                {/* (+) Create Category Circle Button */}
                 <button
                   onClick={() => setIsCreatingCategory(true)}
-                  className="w-12 h-12 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white shrink-0 active:scale-95"
+                  className="w-[44px] h-[44px] rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white shrink-0 active:scale-95 transition-transform"
                 >
                   <IconPlus className="w-5 h-5 text-white" />
                 </button>
 
+                {/* Category Pills */}
                 {categories.map((cat) => {
                   const isSelected = selectedCategoryId === cat.id;
                   return (
                     <button
                       key={cat.id}
-                      onClick={() => setSelectedCategoryId(cat.id)}
-                      className={`h-12 px-4 rounded-[24px] border flex items-center gap-2 font-extrabold text-[15px] transition-all shrink-0 ${
+                      onClick={() => handleCategorySelect(cat.id)}
+                      className={`h-[44px] px-4 rounded-full border flex items-center gap-2 font-extrabold text-[15px] transition-all shrink-0 active:scale-95 ${
                         isSelected
-                          ? 'bg-[#2A2A2C] border-white/20 text-white'
-                          : 'bg-[#1C1C1E] border-white/5 text-[#8E8E93]'
+                          ? 'bg-[#1C1C1E] border-white/30 text-white shadow-sm'
+                          : 'bg-[#1C1C1E] border-white/5 text-[#8E8E93] hover:text-white'
                       }`}
                     >
-                      <span className="text-xl">{cat.emoji}</span>
+                      <span className="text-lg">{cat.emoji}</span>
                       <span>{cat.name}</span>
                     </button>
                   );
@@ -340,56 +413,57 @@ export const TransactionSheet: React.FC = () => {
             </div>
           )}
 
-          {/* Tag Mode Section */}
-          {isTagModeActive && (
-            <div className="p-3 rounded-2xl bg-[#1C1C1E] border border-white/10 flex flex-col gap-3 animate-fade-in">
-              <div className="flex items-center gap-2">
+          {/* MonAI Tag Section & Chips */}
+          <div className="flex flex-col gap-2">
+            {/* Tag Chips Row */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+              {tags.map((t) => {
+                const isSelected = selectedTags.includes(t);
+                return (
+                  <button
+                    key={t}
+                    onClick={() => toggleTagSelection(t)}
+                    className={`h-8 px-3 rounded-full text-[13px] font-bold transition-all shrink-0 ${
+                      isSelected
+                        ? 'bg-[#2A2A2C] border border-white/20 text-white'
+                        : 'bg-[#1C1C1E] border border-white/5 text-[#8E8E93] hover:text-white'
+                    }`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Expanded #Tag Input Panel */}
+            {isTagModeActive && (
+              <div className="p-3 rounded-2xl bg-[#1C1C1E] border border-white/10 flex items-center gap-2 animate-fade-in">
                 <input
                   type="text"
                   placeholder="#Tag"
                   value={newTagInput}
                   onChange={(e) => setNewTagInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddTagSubmit()}
-                  className="flex-1 h-10 px-3 rounded-xl bg-[#2A2A2C] text-white font-bold text-sm outline-none"
+                  className="flex-1 h-10 px-3 rounded-xl bg-[#242426] text-white font-bold text-sm outline-none placeholder-[#8E8E93]"
                 />
                 <button
                   onClick={handleAddTagSubmit}
-                  className="w-10 h-10 rounded-xl bg-[#2A2A2C] flex items-center justify-center text-white"
+                  className="w-10 h-10 rounded-xl bg-[#242426] flex items-center justify-center text-white"
                 >
                   <IconCheck className="w-5 h-5 text-white" />
                 </button>
               </div>
-
-              {/* Tag pills */}
-              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto no-scrollbar">
-                {tags.map((t) => {
-                  const isSelected = selectedTags.includes(t);
-                  return (
-                    <button
-                      key={t}
-                      onClick={() => toggleTagSelection(t)}
-                      className={`px-3 py-1 rounded-full text-[13px] font-bold transition-colors ${
-                        isSelected
-                          ? 'bg-[#34C759] text-white'
-                          : 'bg-[#1E1E20] text-[#8E8E93]'
-                      }`}
-                    >
-                      {t}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        {/* Bottom Actions Bar */}
-        <div className="flex flex-col gap-3 pt-2 border-t border-white/10">
+        {/* MonAI Bottom Actions Row: [#] Square Button + [✓ Save] Button */}
+        <div className="flex flex-col gap-3 pt-2 mt-auto">
           <div className="flex items-center gap-3">
-            {/* Tag Toggle Button */}
+            {/* [#] Tag Square Button */}
             <button
               onClick={() => setIsTagModeActive(!isTagModeActive)}
-              className={`w-14 h-[56px] rounded-2xl flex items-center justify-center font-black text-xl border transition-colors ${
+              className={`w-[56px] h-[56px] rounded-2xl flex items-center justify-center font-black text-xl border transition-colors ${
                 isTagModeActive
                   ? 'bg-[#34C759] text-white border-transparent'
                   : 'bg-[#1C1C1E] text-white border-white/10'
@@ -398,7 +472,7 @@ export const TransactionSheet: React.FC = () => {
               #
             </button>
 
-            {/* Save Button */}
+            {/* [✓ Save] Button */}
             <button
               onClick={handleSave}
               disabled={isSaveDisabled}
@@ -417,9 +491,9 @@ export const TransactionSheet: React.FC = () => {
           {isEditing && (
             <button
               onClick={handleDelete}
-              className="w-full py-3 text-center text-[#E8505B] font-extrabold text-[16px] flex items-center justify-center gap-2 hover:opacity-80 transition-opacity"
+              className="w-full py-2.5 text-center text-[#E8505B] font-extrabold text-[15px] flex items-center justify-center gap-2 hover:opacity-80 transition-opacity"
             >
-              <IconTrash className="w-5 h-5 text-[#E8505B]" />
+              <IconTrash className="w-4 h-4 text-[#E8505B]" />
               <span>Delete Transaction</span>
             </button>
           )}
