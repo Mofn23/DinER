@@ -142,7 +142,7 @@ export const useAppStore = create<AppStore>()(
       subscriptions: getSavedSubscriptionsFromLocalStorage() || INITIAL_SUBSCRIPTIONS,
       settings: {
         showIncome: true,
-        rollover: false,
+        rollover: true, // Default to TRUE so balance rolls over seamlessly every month!
         currency: 'COP',
         voiceLanguage: 'ES',
       },

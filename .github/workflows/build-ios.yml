@@ -58,13 +58,15 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.2.5
-          name: DinER Native iOS App v3.2.5 (SideStore IPA)
+          tag_name: v3.2.6
+          name: DinER Native iOS App v3.2.6 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.2.5 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.2.6 (SideStore / AltStore Compatible)
             
-            ### 🎨 Restored Clean Top Live Search Mode:
-            - **Restored Top Live Search Input**: Reverted bottom floating search pill and restored clean top search input bar (`Search...` 32px font) with circular close button and auto-focus.
+            ### 🎨 Subtle Top Buttons, Gear Alignment & Rollover Default:
+            - **Subtle Top Buttons**: Reduced size of top header list selector and circle buttons to 42px for subtle MonAI proportions.
+            - **Centered Settings Gear Icon**: Fixed alignment of settings gear wheel button so it sits 100% vertically and horizontally centered with zero offset.
+            - **Default Rollover Balance Enabled**: `rollover` option is set to `true` by default so available net balance continuously carries over into new months without resetting to zero.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.

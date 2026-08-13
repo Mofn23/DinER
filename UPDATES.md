@@ -4,11 +4,22 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.2.6] - 2026-08-12
+
+### 🎨 Botones Superiores Sutiles, Centrado de Tuerca & Rollover Balance por Defecto
+- **Botones Superiores Reducidos & Sútiles**:
+  - Reducido el tamaño de los botones circulares superiores a 42px y el selector de listas a un perfil sutil y delicado idéntico a MonAI.
+- **Alineación Perfecta de la Rueda de Ajustes ⚙️**:
+  - Corregido el desfase de la rueda de configuración; ahora queda 100% centrada vertical y horizontalmente en su círculo.
+- **Rollover Balance Activado por Defecto**:
+  - Ajustada la opción `rollover: true` por defecto en la aplicación para que el saldo neto acumulado se traslade mes a mes sin reiniciarse a cero.
+
+---
+
 ## 📌 [v3.2.5] - 2026-08-12
 
 ### 🎨 Restauración del Cuadro Superior de Búsqueda
-- **Restaurada la Búsqueda Superior Limpia (`TopBar.tsx`)**:
-  - Removido el dock flotante inferior de búsqueda y restaurada la barra superior limpia con input gigante de 32px y botón circular de cierre ✕, tal como estaba anteriormente.
+- **Restaurada la Búsqueda Superior Limpia (`TopBar.tsx`)**.
 
 ---
 
