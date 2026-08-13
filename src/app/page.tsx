@@ -41,7 +41,7 @@ export default function HomePage() {
   } = useAppStore();
 
   const [currentView, setCurrentView] = useState<'finance' | 'subscriptions'>('finance');
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollOffset, setScrollOffset] = useState(0);
 
   // Register Service Worker & check subscription notifications on startup
   useEffect(() => {
@@ -55,12 +55,7 @@ export default function HomePage() {
   }, [subscriptions]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const scrollTop = e.currentTarget.scrollTop;
-    if (scrollTop > 70 && !isScrolled) {
-      setIsScrolled(true);
-    } else if (scrollTop <= 70 && isScrolled) {
-      setIsScrolled(false);
-    }
+    setScrollOffset(e.currentTarget.scrollTop);
   };
 
   // 1. Filter transactions by current list
@@ -167,12 +162,12 @@ export default function HomePage() {
               totalIncome={totalIncome}
             />
 
-            {/* Category Bar Chart (Shrinks smoothly on scroll) */}
+            {/* Category Bar Chart (Shrinks 1:1 responsively with finger scroll) */}
             <BarChart
               categoryTotals={categoryTotals}
               selectedCategoryFilter={selectedCategoryFilter}
               onSelectCategory={setSelectedCategoryFilter}
-              isCollapsed={isScrolled}
+              scrollOffset={scrollOffset}
             />
 
             {/* Grouped Transaction List */}

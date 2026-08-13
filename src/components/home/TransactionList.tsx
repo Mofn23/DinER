@@ -40,7 +40,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   const sortedDates = Array.from(grouped.keys()).sort((a, b) => (a < b ? 1 : -1));
 
   return (
-    <div className="flex flex-col gap-5 pb-28 animate-cross-dissolve">
+    <div className="flex flex-col gap-4 pb-28 animate-cross-dissolve">
       {sortedDates.map((dateStr) => {
         const dayTxs = grouped.get(dateStr) || [];
         const dateLabel = formatDateHeader(dateStr);
@@ -51,12 +51,12 @@ export const TransactionList: React.FC<TransactionListProps> = ({
         }, 0);
 
         return (
-          <div key={dateStr} className="flex flex-col gap-2">
+          <div key={dateStr} className="flex flex-col gap-1.5">
             {/* Day Header Pill */}
             <DayHeader dateLabel={dateLabel} netAmount={dayNet} />
 
-            {/* MonAI Pill Transaction Cards */}
-            <div className="flex flex-col gap-2.5">
+            {/* MonAI Clean Transaction Rows (Floating directly on #131313 background, NO pill container) */}
+            <div className="flex flex-col gap-2">
               {dayTxs.map((tx) => {
                 const category = categories.find((c) => c.id === tx.categoryId) || {
                   name: 'General',
@@ -69,7 +69,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                   <button
                     key={tx.id}
                     onClick={() => onSelectTransaction(tx.id)}
-                    className="w-full flex items-center justify-between p-3.5 rounded-[22px] bg-[#1C1C1E] border border-white/10 hover:border-white/20 active:scale-[0.98] transition-all duration-200 text-left shadow-sm"
+                    className="w-full flex items-center justify-between py-1.5 px-1 bg-transparent border-none active:opacity-70 transition-opacity text-left"
                   >
                     {/* Left Category Emoji Avatar */}
                     <CategoryAvatar
@@ -92,7 +92,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                           {tx.tags.map((tag) => (
                             <span
                               key={tag}
-                              className="px-2 py-0.5 rounded-full bg-[#2A2A2C] text-[#8E8E93] text-[11px] font-extrabold tracking-tight shrink-0"
+                              className="px-2 py-0.5 rounded-full bg-[#1C1C1E] text-[#8E8E93] text-[11px] font-extrabold tracking-tight shrink-0"
                             >
                               {tag}
                             </span>

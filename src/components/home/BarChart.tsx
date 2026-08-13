@@ -12,14 +12,14 @@ interface BarChartProps {
   categoryTotals: CategoryTotal[];
   selectedCategoryFilter: string | null;
   onSelectCategory: (catId: string | null) => void;
-  isCollapsed?: boolean;
+  scrollOffset?: number;
 }
 
 export const BarChart: React.FC<BarChartProps> = ({
   categoryTotals,
   selectedCategoryFilter,
   onSelectCategory,
-  isCollapsed = false,
+  scrollOffset = 0,
 }) => {
   // If a category filter is active, show the floating filter chip and hide the chart bar track
   if (selectedCategoryFilter) {
@@ -51,6 +51,13 @@ export const BarChart: React.FC<BarChartProps> = ({
     );
   }
 
+  // Calculate 1:1 responsive scroll collapse ratio (0 at top, 1 when scrolled 130px)
+  const collapseRatio = Math.min(Math.max(scrollOffset / 130, 0), 1);
+  const opacity = 1 - collapseRatio * 0.95;
+  const maxHeightPx = Math.max((1 - collapseRatio) * 300, 0);
+  const translateYPx = collapseRatio * -25;
+  const scaleY = Math.max(1 - collapseRatio * 0.6, 0.4);
+
   // Determine height proportions (min 52px for capsules, max 280px for high bars)
   const maxTotal = Math.max(...categoryTotals.map((c) => c.total), 1);
   const MIN_CAPSULE_HEIGHT = 52;
@@ -58,9 +65,14 @@ export const BarChart: React.FC<BarChartProps> = ({
 
   return (
     <div
-      className={`my-4 overflow-x-auto no-scrollbar py-2 transition-all duration-300 ease-out animate-cross-dissolve ${
-        isCollapsed ? 'max-h-0 opacity-0 py-0 my-0 overflow-hidden scale-y-0' : 'max-h-[320px] opacity-100'
-      }`}
+      style={{
+        opacity,
+        maxHeight: `${maxHeightPx}px`,
+        transform: `translateY(${translateYPx}px) scaleY(${scaleY})`,
+        transformOrigin: 'top center',
+        marginBottom: collapseRatio > 0.8 ? '0px' : '16px',
+      }}
+      className="overflow-x-auto no-scrollbar py-2 will-change-transform origin-top"
     >
       <div className="flex items-end gap-2.5 min-w-max px-1">
         {categoryTotals.map(({ category, total }) => {
@@ -76,7 +88,7 @@ export const BarChart: React.FC<BarChartProps> = ({
               key={category.id}
               onClick={() => onSelectCategory(category.id)}
               style={{ height: `${barHeight}px` }}
-              className={`rounded-[22px] transition-all duration-300 ease-out active:scale-95 shrink-0 flex ${
+              className={`rounded-[22px] transition-all duration-150 active:scale-95 shrink-0 flex ${
                 isTall
                   ? 'w-[86px] p-3 flex-col justify-end items-center'
                   : 'w-[92px] h-[52px] items-center justify-center px-2.5'

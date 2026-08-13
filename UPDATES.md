@@ -4,21 +4,23 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.2.1] - 2026-08-12
+
+### 🎨 Corrección MonAI 1:1 & Animación Responsive 1:1 de Scroll
+- **Eliminación de Píldoras en Transacciones (Transacciones Flotantes MonAI 1:1)**:
+  - Removidos los contenedores o píldoras de las filas de transacciones (`TransactionList.tsx`). Ahora flotan directamente sobre el fondo `#131313`, igual a MonAI.
+- **Animación de Colapso de Gráfica de Barras 1:1 con el Scroll (100% Touch Responsive)**:
+  - La gráfica de barras se encoge, escala y desvanece suavemente en tiempo real a medida que tu dedo desplaza la pantalla hacia abajo, respondiendo de forma 1:1 a cada píxel de scroll.
+
+---
+
 ## 📌 [v3.2.0] - 2026-08-12
 
 ### 🎨 Rediseño Nivel MonAI 1:1 & Animaciones Fluidas
-- **Color de Fondo Exacto de MonAI (`#131313`)**:
-  - Cambiado el tono de fondo global de `#0B0B0D` a **`#131313`** para una inmersión idéntica a MonAI.
-- **Transacciones en Píldoras Redondeadas (Pill Cards)**:
-  - Cada transacción ahora está encapsulada dentro de su propia tarjeta redondeada (`bg-[#1C1C1E] border border-white/10 rounded-[22px] p-3.5`).
-- **Tipografía Delicada & Kerning MonAI**:
-  - Ajustados los pesos de fuente y espaciados para lograr la tipografía fina y delicada de MonAI.
-- **Formato Gigante de Saldo Restante 1:1**:
-  - Clonada la presentación a escala de los números gigantes con insignia circular verde/roja y sufijo COP.
-- **Animación de Barras Encogibles al Deslizar (Scroll Shrink)**:
-  - Las barras del gráfico de categorías se encogen y colapsan suavemente hacia arriba al hacer scroll hacia abajo para explorar transacciones.
-- **Transiciones con Animación de Desvanecimiento (Cross-Dissolve)**:
-  - Añadida animación fluida de desvanecimiento al cambiar entre Gastos 💳 y Suscripciones 📺, y al alternar entre Gastos e Ingresos.
+- **Color de Fondo Exacto de MonAI (`#131313`)**: Cambiado el tono global a `#131313`.
+- **Tipografía Delicada & Kerning MonAI**.
+- **Formato Gigante de Saldo Restante 1:1**.
+- **Transiciones con Animación de Desvanecimiento (Cross-Dissolve)**.
 
 ---
 
