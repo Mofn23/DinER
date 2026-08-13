@@ -4,15 +4,24 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.2.7] - 2026-08-12
+
+### 🎨 Tarjeta Estilo MonAI 1:1 en Transacciones & Eliminación de Animación de Gráficas
+- **Eliminación Total de la Animación de Colapso de Gráficas**:
+  - Removidos los efectos de escala, opacidad y movimiento al hacer scroll. La gráfica de barras ahora es completamente estática y limpia.
+- **Rediseño de la Tarjeta Modal de Agregar Transacción (`TransactionSheet`)**:
+  - La interfaz ahora se despliega como una tarjeta flotante desde la parte inferior con esquinas superiores redondeadas (`rounded-t-[36px]`), dejando únicamente la franja superior correspondiente a la barra de estado de iOS.
+- **Píldoras Sutiles y Pequeñas de Fecha & Frecuencia**:
+  - Las opciones `Today v` y `Once v` fueron reducidas a un tamaño delicado y compacto siguiendo 1:1 el diseño de MonAI.
+
+---
+
 ## 📌 [v3.2.6] - 2026-08-12
 
 ### 🎨 Botones Superiores Sutiles, Centrado de Tuerca & Rollover Balance por Defecto
-- **Botones Superiores Reducidos & Sútiles**:
-  - Reducido el tamaño de los botones circulares superiores a 42px y el selector de listas a un perfil sutil y delicado idéntico a MonAI.
-- **Alineación Perfecta de la Rueda de Ajustes ⚙️**:
-  - Corregido el desfase de la rueda de configuración; ahora queda 100% centrada vertical y horizontalmente en su círculo.
-- **Rollover Balance Activado por Defecto**:
-  - Ajustada la opción `rollover: true` por defecto en la aplicación para que el saldo neto acumulado se traslade mes a mes sin reiniciarse a cero.
+- **Botones Superiores Reducidos & Sútiles**.
+- **Alineación Perfecta de la Rueda de Ajustes ⚙️**.
+- **Rollover Balance Activado por Defecto**.
 
 ---
 

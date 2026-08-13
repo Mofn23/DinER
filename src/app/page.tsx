@@ -41,7 +41,6 @@ export default function HomePage() {
   } = useAppStore();
 
   const [currentView, setCurrentView] = useState<'finance' | 'subscriptions'>('finance');
-  const [scrollOffset, setScrollOffset] = useState(0);
 
   // Register Service Worker & check subscription notifications on startup
   useEffect(() => {
@@ -53,10 +52,6 @@ export default function HomePage() {
     }
     checkAndNotifyUpcomingSubscriptions(subscriptions);
   }, [subscriptions]);
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    setScrollOffset(e.currentTarget.scrollTop);
-  };
 
   // 1. Filter transactions by current list
   const listTx = transactions.filter((t) => t.listId === currentListId);
@@ -117,10 +112,7 @@ export default function HomePage() {
   return (
     <main className="w-full h-full min-h-screen bg-[#131313] text-[#F5F5F7] flex flex-col justify-between overflow-x-hidden relative">
       {/* Scrollable Main Content Container */}
-      <div
-        onScroll={handleScroll}
-        className="flex-1 overflow-y-auto no-scrollbar px-5 pb-32 transition-colors duration-300"
-      >
+      <div className="flex-1 overflow-y-auto no-scrollbar px-5 pb-32 transition-colors duration-300">
         {/* Top Header & Search */}
         <TopBar />
 
@@ -162,12 +154,11 @@ export default function HomePage() {
               totalIncome={totalIncome}
             />
 
-            {/* Category Bar Chart (Hides when search is active & shrinks from top down) */}
+            {/* Category Bar Chart */}
             <BarChart
               categoryTotals={categoryTotals}
               selectedCategoryFilter={selectedCategoryFilter}
               onSelectCategory={setSelectedCategoryFilter}
-              scrollOffset={scrollOffset}
               isSearchActive={isSearchActive}
             />
 

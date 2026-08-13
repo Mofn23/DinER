@@ -58,15 +58,15 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.2.6
-          name: DinER Native iOS App v3.2.6 (SideStore IPA)
+          tag_name: v3.2.7
+          name: DinER Native iOS App v3.2.7 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.2.6 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.2.7 (SideStore / AltStore Compatible)
             
-            ### 🎨 Subtle Top Buttons, Gear Alignment & Rollover Default:
-            - **Subtle Top Buttons**: Reduced size of top header list selector and circle buttons to 42px for subtle MonAI proportions.
-            - **Centered Settings Gear Icon**: Fixed alignment of settings gear wheel button so it sits 100% vertically and horizontally centered with zero offset.
-            - **Default Rollover Balance Enabled**: `rollover` option is set to `true` by default so available net balance continuously carries over into new months without resetting to zero.
+            ### 🎨 MonAI Card Sheet & Static Bar Chart Redesign:
+            - **Removed Bar Chart Scroll Animation**: Bar chart renders as a clean, static, fixed component with zero collapse or jitter.
+            - **MonAI Bottom Card Sheet Redesign**: Redesigned `TransactionSheet` into a full-bleed MonAI bottom card with rounded top corners (`rounded-t-[36px]`), leaving space for top status bar.
+            - **Delicate Date & Recurrence Chips**: Scaled down `Today v` and `Once v` pills into small, refined MonAI chips.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.

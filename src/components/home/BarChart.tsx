@@ -12,7 +12,6 @@ interface BarChartProps {
   categoryTotals: CategoryTotal[];
   selectedCategoryFilter: string | null;
   onSelectCategory: (catId: string | null) => void;
-  scrollOffset?: number;
   isSearchActive?: boolean;
 }
 
@@ -20,7 +19,6 @@ export const BarChart: React.FC<BarChartProps> = ({
   categoryTotals,
   selectedCategoryFilter,
   onSelectCategory,
-  scrollOffset = 0,
   isSearchActive = false,
 }) => {
   // If search is active, hide bar chart smoothly
@@ -56,30 +54,13 @@ export const BarChart: React.FC<BarChartProps> = ({
     );
   }
 
-  // Smooth gradual scroll collapse ratio (spread over 280px for a cinematic feel)
-  const collapseRatio = Math.min(Math.max(scrollOffset / 280, 0), 1);
-  const opacity = Math.max(1 - collapseRatio * 0.92, 0);
-  const maxHeightPx = Math.max((1 - collapseRatio) * 300, 0);
-  const translateYPx = collapseRatio * 20; // pull downwards towards base
-  const scaleY = Math.max(1 - collapseRatio * 0.5, 0.5);
-
   // Determine height proportions (min 52px for capsules, max 280px for high bars)
   const maxTotal = Math.max(...categoryTotals.map((c) => c.total), 1);
   const MIN_CAPSULE_HEIGHT = 52;
   const MAX_HEIGHT = 280;
 
   return (
-    <div
-      style={{
-        opacity,
-        maxHeight: `${maxHeightPx}px`,
-        transform: `translateY(${translateYPx}px) scaleY(${scaleY})`,
-        transformOrigin: 'bottom center', // Shrinks from top downwards into bottom baseline
-        marginBottom: collapseRatio > 0.85 ? '0px' : '16px',
-        transition: 'all 400ms cubic-bezier(0.16, 1, 0.3, 1)',
-      }}
-      className="overflow-x-auto no-scrollbar py-2 will-change-transform origin-bottom animate-cross-dissolve"
-    >
+    <div className="overflow-x-auto no-scrollbar py-2 mb-4 animate-cross-dissolve">
       <div className="flex items-end gap-2.5 min-w-max px-1">
         {categoryTotals.map(({ category, total }) => {
           const heightRatio = total / maxTotal;
@@ -94,7 +75,7 @@ export const BarChart: React.FC<BarChartProps> = ({
               key={category.id}
               onClick={() => onSelectCategory(category.id)}
               style={{ height: `${barHeight}px` }}
-              className={`rounded-[22px] transition-all duration-300 ease-out active:scale-95 shrink-0 flex ${
+              className={`rounded-[22px] transition-all duration-150 active:scale-95 shrink-0 flex ${
                 isTall
                   ? 'w-[86px] p-3 flex-col justify-end items-center'
                   : 'w-[92px] h-[52px] items-center justify-center px-2.5'
