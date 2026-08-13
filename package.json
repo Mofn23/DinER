@@ -1,6 +1,6 @@
 {
   "name": "diner",
-  "version": "3.3.4",
+  "version": "3.4.0",
   "description": "DinER Mobile Expense Tracker with Gemini AI",
   "type": "module",
   "scripts": {
@@ -16,6 +16,7 @@
   "dependencies": {
     "@capacitor/core": "^6.2.0",
     "@capacitor/ios": "^6.2.0",
+    "@capacitor/local-notifications": "^6.1.1",
     "@prisma/client": "^5.22.0",
     "clsx": "^2.1.1",
     "next": "^15.5.23",

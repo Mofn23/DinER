@@ -4,16 +4,25 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.4.0] - 2026-08-12
+
+### 🔔 Notificaciones Nativas Push de Suscripciones (3 Días, 1 Día e Igual Día)
+- **Alertas Programadas Nativas iOS (UNUserNotificationCenter)**:
+  - Integrado `@capacitor/local-notifications` para emitir notificaciones emergentes nativas con sonido en el iPhone cuando una suscripción está por vencer:
+    1. **3 Días antes**: `"🗓️ Próximo Pago en 3 Días: [Nombre]"`
+    2. **1 Día antes**: `"📺 Próximo Pago Mañana: [Nombre]"`
+    3. **El mismo día**: `"🚨 ¡Hoy Vence Tu Suscripción!: [Nombre]"`
+- **Botón de Permisos en Ajustes**:
+  - Opción en Ajustes ⚙️ para activar los permisos de notificaciones emergentes en iOS de un solo toque.
+
+---
+
 ## 📌 [v3.3.4] - 2026-08-12
 
 ### 🎙️ Resumen Inteligente del Nombre por Voz, Píldora Flotante de IA & Categorización Exacta
-- **Resumen Corto de Nombre (ej: "KFC")**:
-  - Gemini IA y los limpiadores locales extraen un nombre representativo corto (ej. *"KFC"*, *"Uber"*, *"Almuerzo"*) en lugar de colocar la transcripción hablada completa como título.
-- **Categorización Exacta & Emojis**:
-  - Lugares hablados como *"KFC"* o *"McDonald's"* son categorizados automáticamente en `Comida 🍲` con sus correspondientes etiquetas (`#credito`).
-- **Píldora Flotante Superior de Procesamiento IA & Tarjeta Preview**:
-  - Al presionar procesar voz, se despliega una píldora flotante animada `✨ Gemini 2.0 Flash categorizando y creando resumen...`.
-  - Muestra una tarjeta de vista previa (`🍲 KFC • $30.000 COP • #credito`) antes de guardar y cerrar suavemente la pantalla.
+- **Resumen Corto de Nombre (ej: "KFC")**.
+- **Categorización Exacta & Emojis**.
+- **Píldora Flotante Superior de Procesamiento IA & Tarjeta Preview**.
 
 ---
 

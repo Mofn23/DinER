@@ -72,9 +72,11 @@ export const SubscriptionsSheet: React.FC = () => {
       if (!granted) return;
     }
 
-    sendLocalNotification('📺 DinER - Recordatorio de Suscripción', {
-      body: '¡Notificación de prueba enviada con éxito! Recordatorio de suscripción listo.',
-    });
+    sendLocalNotification(
+      999,
+      '📺 DinER - Recordatorio de Suscripción',
+      '¡Notificación de prueba enviada con éxito! Recordatorio de suscripción listo.'
+    );
 
     setToastMessage('Notificación enviada a tu dispositivo');
     setTimeout(() => setToastMessage(null), 2500);

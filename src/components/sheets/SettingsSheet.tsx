@@ -1,11 +1,21 @@
 import React from 'react';
 import { useAppStore } from '@/lib/store';
+import { requestNotificationPermission } from '@/lib/notifications';
 import { IconClose, IconChevronDown } from '../common/Icons';
 
 export const SettingsSheet: React.FC = () => {
   const { activeSheet, closeSheet, settings, updateSettings, openSheet } = useAppStore();
 
   if (activeSheet !== 'settings') return null;
+
+  const handleEnableNotifications = async () => {
+    const granted = await requestNotificationPermission();
+    if (granted) {
+      alert('¡Notificaciones nativas activadas con éxito para tus suscripciones!');
+    } else {
+      alert('Por favor activa los permisos de notificaciones en los Ajustes de tu iPhone.');
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-[#131313] flex flex-col justify-between animate-fade-in overflow-y-auto no-scrollbar">
@@ -48,6 +58,21 @@ export const SettingsSheet: React.FC = () => {
               <div className="flex flex-col text-left">
                 <span className="text-white font-extrabold">Suscripciones</span>
                 <span className="text-[#8E8E93] text-xs font-semibold">Gestionar y pagar suscripciones</span>
+              </div>
+            </div>
+            <IconChevronDown className="w-5 h-5 text-[#8E8E93] -rotate-90" />
+          </button>
+
+          {/* Native Push Notifications Button */}
+          <button
+            onClick={handleEnableNotifications}
+            className="w-full h-14 px-4 rounded-2xl bg-[#1C1C1E] border border-white/10 flex items-center justify-between text-white font-bold text-base active:scale-95 transition-transform hover:border-white/20"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🔔</span>
+              <div className="flex flex-col text-left">
+                <span className="text-white font-extrabold">Notificaciones Nativas</span>
+                <span className="text-[#8E8E93] text-xs font-semibold">Alertas (3 días, 1 día y hoy)</span>
               </div>
             </div>
             <IconChevronDown className="w-5 h-5 text-[#8E8E93] -rotate-90" />
@@ -128,7 +153,7 @@ export const SettingsSheet: React.FC = () => {
 
         {/* Footer info */}
         <div className="text-center text-[#8E8E93] text-xs font-bold pt-6">
-          DinER Native iOS v3.3.4
+          DinER Native iOS v3.4.0
         </div>
       </div>
     </div>

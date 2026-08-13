@@ -58,15 +58,14 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.3.4
-          name: DinER Native iOS App v3.3.4 (SideStore IPA)
+          tag_name: v3.4.0
+          name: DinER Native iOS App v3.4.0 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.3.4 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.4.0 (SideStore / AltStore Compatible)
             
-            ### 🎙️ Floating AI Processing Pill, Title Summarization & Smart Categorization:
-            - **Short Title Summarization**: Gemini AI & local cleaners extract a short clean name (e.g. *"KFC"*, *"Uber"*, *"Almuerzo"*) instead of setting the entire spoken transcript as the title.
-            - **100% Precise Category & Tag Parsing**: Spoken places like *"KFC"* automatically map to `Comida 🍲` and tag `#credito`.
-            - **Floating Top AI Processing Pill Banner**: Shows an animated floating processing banner `✨ Gemini 2.0 Flash categorizando y creando resumen...` and displays a preview card (`🍲 KFC • $30.000 COP • #credito`) before smoothly saving and closing.
+            ### 🔔 Native iOS Subscription Push Notifications:
+            - **3 Days, 1 Day & Same-Day Renewal Alerts**: Integrated `@capacitor/local-notifications` to schedule UNUserNotificationCenter native push notifications with sound, alerts, and badges for subscription renewals (3 days before, 1 day before, and same day).
+            - **Settings Notification Button**: Trigger and grant native iOS notification permissions in Settings ⚙️.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.
