@@ -4,13 +4,23 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.2.4] - 2026-08-12
+
+### 🎨 Dock de Búsqueda MonAI Nivel 1:1 & Colapso de Gráficas de Arriba a Abajo
+- **Dock de Búsqueda Flotante Sobre el Teclado (MonAI Match 1:1)**:
+  - Al pulsar la lupa 🔍, la barra de búsqueda se acopla como una píldora flotante justo encima del teclado de iOS con el carrusel horizontal de etiquetas (`#debito`, `#credito`, `#mama`, `#papa`, `#yo`, etc.), replicando exactamente la captura de MonAI.
+- **Colapso de Gráficas de Arriba Hacia Abajo**:
+  - Ajustado el punto de origen del colapso (`transformOrigin: bottom center`) para que las barras más altas se vayan encogiendo desde arriba hacia abajo hasta desaparecer con el scroll.
+- **Refinamiento de Grosor de Fuente del Saldo Total**:
+  - Ajustada la letra de los números principales de `font-black` a `font-extrabold` para lograr el grosor refinado y fino de MonAI.
+
+---
+
 ## 📌 [v3.2.3] - 2026-08-12
 
 ### 🎨 Animación Ultra-Fluida & Guardián de Suscripciones
-- **Animación Cinemática Gradual para la Gráfica de Barras**:
-  - Ajustada la curva de colapso a 280px de distancia de scroll con curva de aceleración suave `cubic-bezier(0.16, 1, 0.3, 1)`, logrando un movimiento ultra-fluido, lento y sumamente elegante al hacer scroll.
-- **Protección Permanente de Suscripciones Locales**:
-  - Eliminadas las suscripciones por defecto del código fuente. Se implementó una función de recuperación inteligente en `store.ts` que conserva intactas tus suscripciones guardadas en el almacenamiento de tu iPhone al actualizar versiones.
+- **Animación Cinemática Gradual para la Gráfica de Barras**.
+- **Protección Permanente de Suscripciones Locales**.
 
 ---
 

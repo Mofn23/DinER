@@ -24,7 +24,7 @@ export const TotalBlock: React.FC<TotalBlockProps> = ({
         Total
       </span>
 
-      {/* Giant MonAI Balance Display (Cloned 1:1 scale & font size) */}
+      {/* Giant MonAI Balance Display (Refined font weight matching MonAI 1:1) */}
       <div className="flex items-center gap-2 justify-center mb-4">
         {/* Sign Badge */}
         <div
@@ -35,12 +35,12 @@ export const TotalBlock: React.FC<TotalBlockProps> = ({
           {isPositive ? '+' : '−'}
         </div>
 
-        {/* Giant Ticking Balance Number */}
+        {/* Giant Ticking Balance Number (font-extrabold for clean, non-heavy MonAI boldness) */}
         <AnimatedNumber
           value={Math.abs(netTotal)}
           duration={380}
           formatter={(val) => val.toLocaleString('en-US')}
-          className="text-[54px] sm:text-[60px] leading-none font-black text-[#F5F5F7] tracking-tight"
+          className="text-[54px] sm:text-[60px] leading-none font-extrabold text-[#F5F5F7] tracking-tight"
         />
 
         {/* Currency Suffix */}

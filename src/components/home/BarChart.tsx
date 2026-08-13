@@ -13,6 +13,7 @@ interface BarChartProps {
   selectedCategoryFilter: string | null;
   onSelectCategory: (catId: string | null) => void;
   scrollOffset?: number;
+  isSearchActive?: boolean;
 }
 
 export const BarChart: React.FC<BarChartProps> = ({
@@ -20,7 +21,11 @@ export const BarChart: React.FC<BarChartProps> = ({
   selectedCategoryFilter,
   onSelectCategory,
   scrollOffset = 0,
+  isSearchActive = false,
 }) => {
+  // If search is active, hide bar chart smoothly
+  if (isSearchActive) return null;
+
   // If a category filter is active, show the floating filter chip and hide the chart bar track
   if (selectedCategoryFilter) {
     const activeCategory = categoryTotals.find(
@@ -51,12 +56,12 @@ export const BarChart: React.FC<BarChartProps> = ({
     );
   }
 
-  // Smooth, ultra-fluid gradual scroll collapse ratio (spread over 280px for a cinematic feel)
+  // Smooth gradual scroll collapse ratio (spread over 280px for a cinematic feel)
   const collapseRatio = Math.min(Math.max(scrollOffset / 280, 0), 1);
   const opacity = Math.max(1 - collapseRatio * 0.92, 0);
   const maxHeightPx = Math.max((1 - collapseRatio) * 300, 0);
-  const translateYPx = collapseRatio * -28;
-  const scaleY = Math.max(1 - collapseRatio * 0.45, 0.55);
+  const translateYPx = collapseRatio * 20; // pull downwards towards base
+  const scaleY = Math.max(1 - collapseRatio * 0.5, 0.5);
 
   // Determine height proportions (min 52px for capsules, max 280px for high bars)
   const maxTotal = Math.max(...categoryTotals.map((c) => c.total), 1);
@@ -69,11 +74,11 @@ export const BarChart: React.FC<BarChartProps> = ({
         opacity,
         maxHeight: `${maxHeightPx}px`,
         transform: `translateY(${translateYPx}px) scaleY(${scaleY})`,
-        transformOrigin: 'top center',
+        transformOrigin: 'bottom center', // Shrinks from top downwards into bottom baseline
         marginBottom: collapseRatio > 0.85 ? '0px' : '16px',
         transition: 'all 400ms cubic-bezier(0.16, 1, 0.3, 1)',
       }}
-      className="overflow-x-auto no-scrollbar py-2 will-change-transform origin-top"
+      className="overflow-x-auto no-scrollbar py-2 will-change-transform origin-bottom animate-cross-dissolve"
     >
       <div className="flex items-end gap-2.5 min-w-max px-1">
         {categoryTotals.map(({ category, total }) => {

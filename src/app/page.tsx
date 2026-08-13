@@ -162,12 +162,13 @@ export default function HomePage() {
               totalIncome={totalIncome}
             />
 
-            {/* Category Bar Chart (Shrinks 1:1 responsively with finger scroll) */}
+            {/* Category Bar Chart (Hides when search is active & shrinks from top down) */}
             <BarChart
               categoryTotals={categoryTotals}
               selectedCategoryFilter={selectedCategoryFilter}
               onSelectCategory={setSelectedCategoryFilter}
               scrollOffset={scrollOffset}
+              isSearchActive={isSearchActive}
             />
 
             {/* Grouped Transaction List */}
