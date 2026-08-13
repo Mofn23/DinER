@@ -4,33 +4,43 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.1.0] - 2026-08-12
+
+### 📈 Sincronización Total de Transacciones MonAI & Mejoras de UX
+- **Carga Completa de Transacciones Reales (MonAI Match 1:1)**:
+  - Extraídas e integradas todas las transacciones del 6 al 11 de Agosto desde las capturas de pantalla (`ft1` a `ft6`).
+  - Coincidencia **100% exacta con los balances de MonAI**:
+    - **Saldo Disponible Neto**: `+$688,759 COP`
+    - **Gastos Totales**: `$2,892,890 COP`
+    - **Ingresos Totales**: `$3,581,649 COP`
+- **Teclado Automático (`autoFocus`)**:
+  - Al abrir la hoja de agregar transacción, el cursor se posiciona automáticamente en el campo de descripción para desplegar el teclado de iOS al instante.
+- **Formato con Separadores de Miles (ej. `$30.000`)**:
+  - El campo de monto ahora formatea los valores numéricos con separador de miles en tiempo real mientras escribes (ej. `30.000`).
+- **Corrección de Lógica Dinámica de Fechas**:
+  - Ajustada la clasificación de fechas según la zona horaria oficial de Colombia (`America/Bogota`).
+  - Las transacciones muestran dinámicamente **`Today`** el día actual, cambian a **`Yesterday`** al día siguiente y pasan a fecha formateada **`M/D/YY`** (ej. `8/10/26`) automáticamente con el paso de los días.
+
+---
+
 ## 📌 [v3.0.2] - 2026-08-12
 
 ### ✏️ Edición Completa de Suscripciones (Edit Subscription Feature)
-- **Botón de Edición por Tarjeta (Ícono de Lápiz ✏️)**:
-  - Agregado el ícono de lápiz en cada tarjeta de suscripción dentro del Hub de Suscripciones (`SubscriptionsHubView.tsx`).
-- **Formulario de Edición Completo**:
-  - Permite modificar nombre, emoji, monto en COP, día de cobro del mes (1-31), frecuencia (mensual, semanal, bimensual, anual), proveedor, enlaces de cancelación, instrucciones y notas.
-- **Notificación Toast de Confirmación**:
-  - Al guardar los cambios, emite una notificación toast confirmando la actualización instantánea de la suscripción.
+- **Botón de Edición por Tarjeta (Ícono de Lápiz ✏️)**: Agregada la edición completa de suscripciones.
 
 ---
 
 ## 📌 [v3.0.1] - 2026-08-12
 
 ### 📱 Ícono Estilo MonAI 1:1 & Borde Seguro para Dynamic Island
-- **Ícono Nivel MonAI (`AppIcon`)**:
-  - Creado e integrado el ícono oficial en 1024x1024 con la letra **"D"** en 3D rojo neón sobre fondo negro `#0B0B0D` y línea punteada diagonal.
-- **Margen de Borde Seguro de iOS (`Dynamic Island & Status Bar Padding`)**:
-  - Implementado `pt-[max(env(safe-area-inset-top,50px),50px)]` en la barra superior (`TopBar.tsx`) y paneles modulares.
+- **Ícono Nivel MonAI (`AppIcon`)**: Creado e integrado el ícono oficial 3D neón.
+- **Margen de Borde Seguro de iOS (`Dynamic Island & Status Bar Padding`)**: Implementado padding superior seguro.
 
 ---
 
 ## 📌 [v3.0.0] - 2026-08-12
 
 ### 🚀 Fusión Completa DinER + Subscription Manager (Optimización de Cupo SideStore)
-- **Fusión Total de Ambas Aplicaciones**:
-  - Se unificaron las funcionalidades de **Subscription Manager** dentro del núcleo de **DinER**, liberando 1 cupo completo en SideStore.
 
 ---
 

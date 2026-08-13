@@ -58,16 +58,16 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.0.2
-          name: DinER Native iOS App v3.0.2 (SideStore IPA)
+          tag_name: v3.1.0
+          name: DinER Native iOS App v3.1.0 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.0.2 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.1.0 (SideStore / AltStore Compatible)
             
-            ### ✏️ New Feature Highlights:
-            - **Edición Completa de Suscripciones (Edit Subscription Drawer)**: Botón de lápiz ✏️ en cada tarjeta de suscripción para personalizar nombre, emoji, monto COP, día de cobro, frecuencia, proveedor, enlaces y pasos de cancelación.
-            - **MonAI 1:1 Stylized App Icon**: Includes the custom neon coral 3D icon matching MonAI aesthetic.
-            - **iOS Dynamic Island & Status Bar Padding**: Added safe area top inset padding so status bar clock and battery indicators never overlap app lists or settings buttons.
-            - **100% Offline & Local Storage Persistence**: All transactions and merged subscriptions saved locally inside your iPhone.
+            ### 📈 Major Transaction Sync & UX Highlights:
+            - **Exact MonAI Balance Match**: Loaded all transactions from August 6 to August 11, perfectly matching MonAI's exact net available balance (`+$688,759 COP`), expenses (`$2,892,890 COP`) and incomes (`$3,581,649 COP`).
+            - **Auto-Focus Description Field**: Description input in Add Transaction sheet opens the iOS keyboard automatically on open.
+            - **Thousand Separator Amount Formatting**: Amounts format dynamically with thousand separators (e.g. `30.000 COP`).
+            - **Dynamic Date Relative Labels**: Fixed date labeling logic so transactions dynamically transition from `Today` -> `Yesterday` -> `M/D/YY` (e.g. `8/10/26`) as days pass.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '@/lib/store';
 import { getLocalDateString } from '@/lib/utils';
 import { matchCategoryFromDescription } from '@/lib/autoCategory';
@@ -57,10 +57,13 @@ export const TransactionSheet: React.FC = () => {
   // Dropdown states
   const [isRecurrenceOpen, setIsRecurrenceOpen] = useState(false);
 
+  // Refs for auto-focus
+  const descriptionInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (editingTx) {
       setDescription(editingTx.description);
-      setAmount(editingTx.amount.toString());
+      setAmount(editingTx.amount.toLocaleString('es-CO'));
       setDate(editingTx.date);
       setRecurrence(editingTx.recurrence as any);
       setTxType(editingTx.type);
@@ -77,9 +80,27 @@ export const TransactionSheet: React.FC = () => {
       setSelectedTags([]);
       setHasManuallySelectedCategory(false);
     }
+
+    if (activeSheet === 'add_tx' || activeSheet === 'edit_tx') {
+      const timer = setTimeout(() => {
+        descriptionInputRef.current?.focus();
+      }, 150);
+      return () => clearTimeout(timer);
+    }
   }, [editingTx, activeSheet, categories]);
 
   if (activeSheet !== 'add_tx' && activeSheet !== 'edit_tx') return null;
+
+  // Amount input handler with thousand separator (e.g. 30.000 COP)
+  const handleAmountChange = (val: string) => {
+    const rawDigits = val.replace(/[^0-9]/g, '');
+    if (!rawDigits) {
+      setAmount('');
+      return;
+    }
+    const formatted = parseInt(rawDigits, 10).toLocaleString('es-CO');
+    setAmount(formatted);
+  };
 
   // Smart Auto-Categorization on description change
   const handleDescriptionChange = (val: string) => {
@@ -189,7 +210,8 @@ export const TransactionSheet: React.FC = () => {
     { label: 'Yearly', value: 'yearly' },
   ];
 
-  const isSaveDisabled = !amount || parseInt(amount, 10) <= 0 || !selectedCategoryId;
+  const rawNumericAmount = parseInt(amount.replace(/[^0-9]/g, ''), 10);
+  const isSaveDisabled = !rawNumericAmount || rawNumericAmount <= 0 || !selectedCategoryId;
   const isExpense = txType === 'expense';
 
   return (
@@ -261,9 +283,10 @@ export const TransactionSheet: React.FC = () => {
           </div>
         </div>
 
-        {/* Description Input (MonAI 32px font-black) */}
+        {/* Description Input (MonAI 32px font-black with autoFocus) */}
         <div className="mb-3">
           <input
+            ref={descriptionInputRef}
             type="text"
             placeholder="Description"
             value={description}
@@ -272,7 +295,7 @@ export const TransactionSheet: React.FC = () => {
           />
         </div>
 
-        {/* MonAI Amount Row: [ - | + ] Toggle Pill + Colored Currency Amount */}
+        {/* MonAI Amount Row: [ - | + ] Toggle Pill + Formatted Amount Input */}
         <div className="flex items-center gap-3 mb-6">
           {/* [ - | + ] Toggle Pill */}
           <div className="h-[36px] bg-[#1C1C1E] border border-white/10 rounded-full p-1 flex items-center gap-1 shrink-0">
@@ -298,7 +321,7 @@ export const TransactionSheet: React.FC = () => {
             </button>
           </div>
 
-          {/* Colored Currency & Amount Input */}
+          {/* Colored Currency & Thousand-Separated Amount Input */}
           <div className="flex items-center gap-2 flex-1">
             <span
               className={`text-[32px] font-black tracking-tight ${
@@ -308,11 +331,11 @@ export const TransactionSheet: React.FC = () => {
               {settings.currency}
             </span>
             <input
-              type="number"
+              type="text"
               inputMode="numeric"
               placeholder="0"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => handleAmountChange(e.target.value)}
               className={`w-full bg-transparent text-[32px] font-black outline-none border-none tracking-tight ${
                 isExpense ? 'text-[#E8505B] placeholder-[#E8505B]/40' : 'text-[#34C759] placeholder-[#34C759]/40'
               }`}
