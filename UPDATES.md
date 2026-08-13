@@ -4,13 +4,21 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.2.3] - 2026-08-12
+
+### 🎨 Animación Ultra-Fluida & Guardián de Suscripciones
+- **Animación Cinemática Gradual para la Gráfica de Barras**:
+  - Ajustada la curva de colapso a 280px de distancia de scroll con curva de aceleración suave `cubic-bezier(0.16, 1, 0.3, 1)`, logrando un movimiento ultra-fluido, lento y sumamente elegante al hacer scroll.
+- **Protección Permanente de Suscripciones Locales**:
+  - Eliminadas las suscripciones por defecto del código fuente. Se implementó una función de recuperación inteligente en `store.ts` que conserva intactas tus suscripciones guardadas en el almacenamiento de tu iPhone al actualizar versiones.
+
+---
+
 ## 📌 [v3.2.2] - 2026-08-12
 
 ### 🎨 Proporciones de Píldoras Nivel MonAI 1:1
-- **Reducción de Píldora de Control Segmentado (Gastos vs Ingresos)**:
-  - Reducido el ancho máximo y padding de la píldora de alternar entre gastos e ingresos (`SegmentedControl`) para que se ubique de forma compacta y refinada justo debajo del saldo total.
-- **Ajuste de Píldora de Monto de Transacción (`AmountPill`)**:
-  - Ajustado el padding y tamaño de fuente de las píldoras de monto para que enmarquen ceñidamente solo el valor numérico, eliminando el exceso de espacio.
+- **Reducción de Píldora de Control Segmentado (Gastos vs Ingresos)**.
+- **Ajuste de Píldora de Monto de Transacción (`AmountPill`)**.
 
 ---
 

@@ -104,6 +104,32 @@ interface AppStore {
   addList: (name: string) => void;
 }
 
+// Function to recover any saved subscriptions from existing localStorage keys
+function getSavedSubscriptionsFromLocalStorage(): SubscriptionData[] | null {
+  if (typeof window === 'undefined') return null;
+  const storageKeys = [
+    'diner_app_storage_v5',
+    'diner_app_storage_v4',
+    'diner_app_storage_v3',
+    'diner_app_storage_v2',
+    'diner_app_storage',
+  ];
+  for (const key of storageKeys) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.state?.subscriptions && Array.isArray(parsed.state.subscriptions) && parsed.state.subscriptions.length > 0) {
+          return parsed.state.subscriptions;
+        }
+      }
+    } catch {
+      // continue check
+    }
+  }
+  return null;
+}
+
 export const useAppStore = create<AppStore>()(
   persist(
     (set, get) => ({
@@ -113,7 +139,7 @@ export const useAppStore = create<AppStore>()(
       tags: INITIAL_TAGS,
       transactions: INITIAL_TRANSACTIONS,
       budgets: INITIAL_BUDGETS,
-      subscriptions: INITIAL_SUBSCRIPTIONS,
+      subscriptions: getSavedSubscriptionsFromLocalStorage() || INITIAL_SUBSCRIPTIONS,
       settings: {
         showIncome: true,
         rollover: false,
@@ -293,7 +319,7 @@ export const useAppStore = create<AppStore>()(
       },
     }),
     {
-      name: 'diner_app_storage_v5', // Local Storage key updated to v5 to force re-hydration with ALL new MonAI transactions!
+      name: 'diner_app_storage_v5',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         currentListId: state.currentListId,

@@ -113,7 +113,7 @@ export const SettingsSheet: React.FC = () => {
 
         {/* Footer info */}
         <div className="text-center text-[#8E8E93] text-xs font-bold pt-6">
-          DinER Native iOS v3.2.2
+          DinER Native iOS v3.2.3
         </div>
       </div>
     </div>

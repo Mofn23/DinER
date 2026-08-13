@@ -51,12 +51,12 @@ export const BarChart: React.FC<BarChartProps> = ({
     );
   }
 
-  // Calculate 1:1 responsive scroll collapse ratio (0 at top, 1 when scrolled 130px)
-  const collapseRatio = Math.min(Math.max(scrollOffset / 130, 0), 1);
-  const opacity = 1 - collapseRatio * 0.95;
+  // Smooth, ultra-fluid gradual scroll collapse ratio (spread over 280px for a cinematic feel)
+  const collapseRatio = Math.min(Math.max(scrollOffset / 280, 0), 1);
+  const opacity = Math.max(1 - collapseRatio * 0.92, 0);
   const maxHeightPx = Math.max((1 - collapseRatio) * 300, 0);
-  const translateYPx = collapseRatio * -25;
-  const scaleY = Math.max(1 - collapseRatio * 0.6, 0.4);
+  const translateYPx = collapseRatio * -28;
+  const scaleY = Math.max(1 - collapseRatio * 0.45, 0.55);
 
   // Determine height proportions (min 52px for capsules, max 280px for high bars)
   const maxTotal = Math.max(...categoryTotals.map((c) => c.total), 1);
@@ -70,7 +70,8 @@ export const BarChart: React.FC<BarChartProps> = ({
         maxHeight: `${maxHeightPx}px`,
         transform: `translateY(${translateYPx}px) scaleY(${scaleY})`,
         transformOrigin: 'top center',
-        marginBottom: collapseRatio > 0.8 ? '0px' : '16px',
+        marginBottom: collapseRatio > 0.85 ? '0px' : '16px',
+        transition: 'all 400ms cubic-bezier(0.16, 1, 0.3, 1)',
       }}
       className="overflow-x-auto no-scrollbar py-2 will-change-transform origin-top"
     >
@@ -88,7 +89,7 @@ export const BarChart: React.FC<BarChartProps> = ({
               key={category.id}
               onClick={() => onSelectCategory(category.id)}
               style={{ height: `${barHeight}px` }}
-              className={`rounded-[22px] transition-all duration-150 active:scale-95 shrink-0 flex ${
+              className={`rounded-[22px] transition-all duration-300 ease-out active:scale-95 shrink-0 flex ${
                 isTall
                   ? 'w-[86px] p-3 flex-col justify-end items-center'
                   : 'w-[92px] h-[52px] items-center justify-center px-2.5'
