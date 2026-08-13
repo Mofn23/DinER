@@ -4,15 +4,20 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.2.5] - 2026-08-12
+
+### 🎨 Restauración del Cuadro Superior de Búsqueda
+- **Restaurada la Búsqueda Superior Limpia (`TopBar.tsx`)**:
+  - Removido el dock flotante inferior de búsqueda y restaurada la barra superior limpia con input gigante de 32px y botón circular de cierre ✕, tal como estaba anteriormente.
+
+---
+
 ## 📌 [v3.2.4] - 2026-08-12
 
 ### 🎨 Dock de Búsqueda MonAI Nivel 1:1 & Colapso de Gráficas de Arriba a Abajo
-- **Dock de Búsqueda Flotante Sobre el Teclado (MonAI Match 1:1)**:
-  - Al pulsar la lupa 🔍, la barra de búsqueda se acopla como una píldora flotante justo encima del teclado de iOS con el carrusel horizontal de etiquetas (`#debito`, `#credito`, `#mama`, `#papa`, `#yo`, etc.), replicando exactamente la captura de MonAI.
-- **Colapso de Gráficas de Arriba Hacia Abajo**:
-  - Ajustado el punto de origen del colapso (`transformOrigin: bottom center`) para que las barras más altas se vayan encogiendo desde arriba hacia abajo hasta desaparecer con el scroll.
-- **Refinamiento de Grosor de Fuente del Saldo Total**:
-  - Ajustada la letra de los números principales de `font-black` a `font-extrabold` para lograr el grosor refinado y fino de MonAI.
+- **Dock de Búsqueda Flotante Sobre el Teclado (MonAI Match 1:1)**.
+- **Colapso de Gráficas de Arriba Hacia Abajo**.
+- **Refinamiento de Grosor de Fuente del Saldo Total**.
 
 ---
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { CircleButton } from '../common/BaseUI';
 import {
   IconChevronDown,
@@ -23,11 +23,22 @@ export const TopBar: React.FC = () => {
     addList,
     isSearchActive,
     setSearchActive,
+    searchQuery,
     setSearchQuery,
   } = useAppStore();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const currentList = lists.find((l) => l.id === currentListId) || lists[0];
+
+  useEffect(() => {
+    if (isSearchActive && inputRef.current) {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isSearchActive]);
 
   const handleCreateNewList = () => {
     setIsDropdownOpen(false);
@@ -37,13 +48,21 @@ export const TopBar: React.FC = () => {
     }
   };
 
-  // MonAI Search Mode Header (Displays Search... title and close button matching MonAI screenshot 1:1)
+  // Top Live Search Mode Header (Safe area padded for Dynamic Island)
   if (isSearchActive) {
     return (
       <div className="relative flex items-center justify-between pt-[max(env(safe-area-inset-top,50px),50px)] pb-3 px-1 border-b border-white/10 z-30 animate-fade-in">
-        <span className="text-[32px] font-black text-[#3A3A3C] tracking-tight">
-          Search...
-        </span>
+        {/* Giant Top Search Input Field */}
+        <div className="flex-1 mr-3">
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-transparent text-[32px] font-black text-[#F5F5F7] placeholder-[#3A3A3C] outline-none border-none tracking-tight"
+          />
+        </div>
 
         {/* Circular Close Button ✕ */}
         <button

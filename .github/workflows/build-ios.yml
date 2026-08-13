@@ -58,15 +58,13 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.2.4
-          name: DinER Native iOS App v3.2.4 (SideStore IPA)
+          tag_name: v3.2.5
+          name: DinER Native iOS App v3.2.5 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.2.4 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.2.5 (SideStore / AltStore Compatible)
             
-            ### 🎨 MonAI Search Docking & Top-Down Collapse Redesign:
-            - **MonAI Bottom Search Docking Bar**: Floating search bar docks above the iOS keyboard with horizontal Tag Chips Carousel (`#debito`, `#credito`, `#mama`, `#papa`, `#yo`, etc.) matching MonAI screenshot 1:1.
-            - **Top-Down Bar Chart Collapse**: Changed chart collapse origin to `bottom center` so tall bars shrink downwards from their top into their base baseline.
-            - **Refined Balance Boldness**: Adjusted font boldness of the giant balance display in `TotalBlock.tsx` from `font-black` to clean `font-extrabold`.
+            ### 🎨 Restored Clean Top Live Search Mode:
+            - **Restored Top Live Search Input**: Reverted bottom floating search pill and restored clean top search input bar (`Search...` 32px font) with circular close button and auto-focus.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.
