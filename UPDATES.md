@@ -4,16 +4,26 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v4.0.0] - 2026-08-12
+
+### ⚡ Botón de Acción con Prompt de Texto IA, Automatizaciones Apple Pay & Widgets Nativos iOS
+- **Botón de Acción de iPhone con Barra de Prompt de Texto (`diner://prompt?text=...`)**:
+  - Al presionar el Botón de Acción de tu iPhone, se abre una barra de texto nativa (Prompt).
+  - Escribes un comando libre (ej. *"Me gasté 20000 en Dominos pizza #debito"*). Gemini 2.0 Flash categoriza (`Comida 🍲`), asigna la etiqueta (`#debito`), el monto (`$20.000 COP`) y guarda la transacción automáticamente.
+- **Automatización de Compras con Apple Pay**:
+  - Integración mediante esquema `diner://prompt?text=...` para que la app Atajos de iOS cree transacciones en DinER automáticamente cada vez que pagues con Apple Pay en tu iPhone.
+- **Widgets Nativos de iOS (WidgetKit SwiftUI)**:
+  - Creados Widgets nativos para la Pantalla de Inicio (Pequeño y Mediano) y Pantalla de Bloqueo (Circular/Inline) mostrando tu Saldo Restante en tiempo real.
+- **Tutorial Interactivo en Ajustes (`Ajustes ➔ Atajos & Botón de Acción`)**:
+  - Guía visual paso a paso para configurar el atajo del Botón de Acción y la automatización de Apple Pay en 1 minuto en tu iPhone.
+
+---
+
 ## 📌 [v3.4.0] - 2026-08-12
 
 ### 🔔 Notificaciones Nativas Push de Suscripciones (3 Días, 1 Día e Igual Día)
-- **Alertas Programadas Nativas iOS (UNUserNotificationCenter)**:
-  - Integrado `@capacitor/local-notifications` para emitir notificaciones emergentes nativas con sonido en el iPhone cuando una suscripción está por vencer:
-    1. **3 Días antes**: `"🗓️ Próximo Pago en 3 Días: [Nombre]"`
-    2. **1 Día antes**: `"📺 Próximo Pago Mañana: [Nombre]"`
-    3. **El mismo día**: `"🚨 ¡Hoy Vence Tu Suscripción!: [Nombre]"`
-- **Botón de Permisos en Ajustes**:
-  - Opción en Ajustes ⚙️ para activar los permisos de notificaciones emergentes en iOS de un solo toque.
+- **Alertas Programadas Nativas iOS (UNUserNotificationCenter)**.
+- **Botón de Permisos en Ajustes**.
 
 ---
 

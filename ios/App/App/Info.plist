@@ -26,6 +26,17 @@
 	<string>DinER requiere acceso al micrófono para registrar transacciones por comandos de voz con IA.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>DinER requiere acceso al reconocimiento de voz para convertir tus comandos hablados en transacciones.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.mofn.diner</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>diner</string>
+			</array>
+		</dict>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

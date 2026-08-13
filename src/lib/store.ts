@@ -27,7 +27,8 @@ export type ActiveSheet =
   | 'lists'
   | 'subscriptions'
   | 'ai_memory'
-  | 'voice';
+  | 'voice'
+  | 'shortcuts_tutorial';
 
 interface AppSettings {
   showIncome: boolean;

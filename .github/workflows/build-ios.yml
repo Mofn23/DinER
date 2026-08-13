@@ -58,14 +58,16 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.4.0
-          name: DinER Native iOS App v3.4.0 (SideStore IPA)
+          tag_name: v4.0.0
+          name: DinER Native iOS App v4.0.0 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.4.0 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v4.0.0 (SideStore / AltStore Compatible)
             
-            ### 🔔 Native iOS Subscription Push Notifications:
-            - **3 Days, 1 Day & Same-Day Renewal Alerts**: Integrated `@capacitor/local-notifications` to schedule UNUserNotificationCenter native push notifications with sound, alerts, and badges for subscription renewals (3 days before, 1 day before, and same day).
-            - **Settings Notification Button**: Trigger and grant native iOS notification permissions in Settings ⚙️.
+            ### ⚡ iPhone Action Button Text Prompt, Apple Pay Automations & Native iOS Widgets:
+            - **iPhone Action Button Text Prompt (`diner://prompt?text=...`)**: Pressing the iPhone Action Button opens a native iOS prompt bar. Type free text (e.g. *"Me gasté 20000 en Dominos pizza #debito"*) and Gemini 2.0 Flash AI categorizes, sets title, amount, category `Comida 🍲`, and tags automatically!
+            - **Apple Pay Automatic Transaction Creation**: iOS Shortcuts automation automatically forwards Apple Pay purchases to `diner://prompt?text=...` to record transactions in real-time.
+            - **Native iOS Widgets (WidgetKit SwiftUI)**: Added Home Screen (Small/Medium) and Lock Screen (Circular/Inline) widgets displaying your live remaining balance.
+            - **Shortcuts & Action Button Tutorial Panel**: New step-by-step guide in Settings ⚙️ for easy 1-minute setup on your iPhone.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.

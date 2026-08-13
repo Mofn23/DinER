@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { App } from '@capacitor/app';
 import { useAppStore } from '@/lib/store';
 import { filterTransactionsByPeriod, getCategoryTotals } from '@/lib/utils';
-import { checkAndNotifyUpcomingSubscriptions } from '@/lib/notifications';
+import { checkAndNotifyUpcomingSubscriptions, sendLocalNotification } from '@/lib/notifications';
+import { matchCategoryFromDescription } from '@/lib/autoCategory';
 import { TopBar } from '@/components/home/TopBar';
 import { MonthStrip } from '@/components/home/MonthStrip';
 import { TotalBlock } from '@/components/home/TotalBlock';
@@ -22,6 +24,7 @@ import { BudgetsSheet } from '@/components/sheets/BudgetsSheet';
 import { ListsSheet } from '@/components/sheets/ListsSheet';
 import { SubscriptionsSheet } from '@/components/sheets/SubscriptionsSheet';
 import { AiMemorySheet } from '@/components/sheets/AiMemorySheet';
+import { ShortcutsTutorialSheet } from '@/components/sheets/ShortcutsTutorialSheet';
 import { VoiceOverlay } from '@/components/sheets/VoiceOverlay';
 
 export default function HomePage() {
@@ -30,6 +33,7 @@ export default function HomePage() {
     transactions,
     categories,
     subscriptions,
+    aiMemory,
     activeType,
     selectedCategoryFilter,
     setSelectedCategoryFilter,
@@ -37,13 +41,14 @@ export default function HomePage() {
     selectedMonthDate,
     settings,
     openSheet,
+    addTransaction,
     isSearchActive,
     searchQuery,
   } = useAppStore();
 
   const [currentView, setCurrentView] = useState<'finance' | 'subscriptions'>('finance');
 
-  // Register Service Worker & check subscription notifications on startup
+  // Register Service Worker, check subscription notifications & listen to deep link URLs
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker
@@ -52,7 +57,135 @@ export default function HomePage() {
         .catch((err) => console.warn('ServiceWorker registration failed:', err));
     }
     checkAndNotifyUpcomingSubscriptions(subscriptions);
-  }, [subscriptions]);
+
+    // Deep Link URL Listener for iOS Shortcuts, Action Button, and Apple Pay
+    const listener = App.addListener('appUrlOpen', async (data) => {
+      console.log('App opened with URL:', data.url);
+      try {
+        const urlObj = new URL(data.url);
+        const host = urlObj.host || urlObj.pathname.replace(/^\/\//, '');
+
+        if (host === 'voice') {
+          openSheet('voice');
+        } else if (host === 'add') {
+          openSheet('add_tx');
+        } else if (host === 'prompt' || host === 'pay') {
+          const rawText = urlObj.searchParams.get('text') || urlObj.searchParams.get('amount') || '';
+          if (rawText.trim()) {
+            await handleProcessTextPrompt(rawText.trim());
+          }
+        }
+      } catch (err) {
+        console.warn('Error handling deep link URL:', err);
+      }
+    });
+
+    return () => {
+      listener.then((h) => h.remove());
+    };
+  }, [subscriptions, categories, currentListId, aiMemory]);
+
+  // Deep Link text prompt parser powered by Gemini 2.0 Flash
+  const handleProcessTextPrompt = async (promptText: string) => {
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
+
+    let parsedDescription = promptText;
+    let parsedAmount = 0;
+    let parsedType: 'expense' | 'income' = promptText.toLowerCase().includes('ingreso') ? 'income' : 'expense';
+    let parsedCategoryId = categories[0]?.id || 'cat-1';
+    let parsedTags: string[] = [];
+
+    // Fallback amount match e.g. "20000", "20 mil"
+    const digitMatch = promptText.match(/\b\d+[\d\.]*\b/);
+    if (digitMatch) {
+      parsedAmount = parseInt(digitMatch[0].replace(/\./g, ''), 10);
+    }
+
+    // Match hashtags in prompt e.g. #debito
+    const hashtags = promptText.match(/#\w+/g);
+    if (hashtags) {
+      parsedTags = hashtags.map((h) => h.toLowerCase());
+    }
+
+    // Initial local category matching
+    const matchedLocalId = matchCategoryFromDescription(promptText, categories);
+    if (matchedLocalId) parsedCategoryId = matchedLocalId;
+
+    try {
+      if (apiKey) {
+        const categoriesPrompt = categories
+          ? categories.map((c: any) => `ID: "${c.id}", Name: "${c.name}", Type: "${c.type}"`).join('\n')
+          : '';
+
+        const geminiPrompt = `
+You are an AI financial transaction parser for DinER mobile app.
+Extract structured transaction details from this text prompt: "${promptText}"
+
+Available Categories:
+${categoriesPrompt}
+
+Return ONLY raw JSON with keys:
+{
+  "description": "Clean concise short title string (e.g., Dominos Pizza)",
+  "amount": integer amount (e.g., 20000),
+  "type": "expense" or "income",
+  "categoryId": "matched category ID string or null",
+  "tags": ["#tag1", "#tag2"]
+}
+`;
+
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+        const res = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: geminiPrompt }] }],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              temperature: 0.1,
+            },
+          }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          let rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+
+          if (rawText) {
+            const parsed = JSON.parse(rawText);
+            if (parsed.description) parsedDescription = parsed.description;
+            if (parsed.amount && typeof parsed.amount === 'number') parsedAmount = parsed.amount;
+            if (parsed.type) parsedType = parsed.type;
+            if (parsed.categoryId) parsedCategoryId = parsed.categoryId;
+            if (Array.isArray(parsed.tags)) parsedTags = parsed.tags;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Prompt AI parsing error:', err);
+    }
+
+    if (parsedAmount > 0) {
+      addTransaction({
+        listId: currentListId,
+        description: parsedDescription,
+        amount: parsedAmount,
+        type: parsedType,
+        categoryId: parsedCategoryId,
+        tags: parsedTags,
+        date: new Date().toISOString().split('T')[0],
+        recurrence: 'once',
+      });
+
+      sendLocalNotification(
+        Date.now() % 100000,
+        `✅ Transacción Registrada: ${parsedDescription}`,
+        `Monto: $${parsedAmount.toLocaleString('es-CO')} COP • Categoría: ${categories.find(c=>c.id===parsedCategoryId)?.name || ''}`
+      );
+    }
+  };
 
   // 1. Filter transactions by current list
   const listTx = transactions.filter((t) => t.listId === currentListId);
@@ -190,6 +323,7 @@ export default function HomePage() {
       <ListsSheet />
       <SubscriptionsSheet />
       <AiMemorySheet />
+      <ShortcutsTutorialSheet />
       <VoiceOverlay />
     </main>
   );
