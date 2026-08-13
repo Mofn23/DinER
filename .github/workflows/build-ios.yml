@@ -58,14 +58,15 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.0.1
-          name: DinER Native iOS App v3.0.1 (SideStore IPA)
+          tag_name: v3.0.2
+          name: DinER Native iOS App v3.0.2 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.0.1 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.0.2 (SideStore / AltStore Compatible)
             
-            ### 🎨 Hotfix Highlights:
+            ### ✏️ New Feature Highlights:
+            - **Edición Completa de Suscripciones (Edit Subscription Drawer)**: Botón de lápiz ✏️ en cada tarjeta de suscripción para personalizar nombre, emoji, monto COP, día de cobro, frecuencia, proveedor, enlaces y pasos de cancelación.
             - **MonAI 1:1 Stylized App Icon**: Includes the custom neon coral 3D icon matching MonAI aesthetic.
-            - **iOS Dynamic Island & Status Bar Padding**: Added safe area top inset padding (`pt-[max(env(safe-area-inset-top,50px),50px)]`) so status bar clock and battery indicators never overlap app lists or settings buttons.
+            - **iOS Dynamic Island & Status Bar Padding**: Added safe area top inset padding so status bar clock and battery indicators never overlap app lists or settings buttons.
             - **100% Offline & Local Storage Persistence**: All transactions and merged subscriptions saved locally inside your iPhone.
             
             ### 🚀 SideStore Installation Instructions:

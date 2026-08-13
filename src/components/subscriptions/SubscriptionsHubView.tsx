@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { formatAmount, getLocalDateString } from '@/lib/utils';
 import { calculateFinancialSummary } from '@/lib/financialsEngine';
+import { SubscriptionData } from '@/lib/initialData';
 import { AnimatedNumber } from '../common/AnimatedNumber';
 import { TimelineTab } from './TimelineTab';
 import { InsightsTab } from './InsightsTab';
 import { CancellationTab } from './CancellationTab';
-import { IconPlus, IconCheck, IconTrash } from '../common/Icons';
+import { IconPlus, IconCheck, IconTrash, IconPencil } from '../common/Icons';
 
 type SubTab = 'all' | 'timeline' | 'insights' | 'cancellation';
 
@@ -16,18 +17,24 @@ export const SubscriptionsHubView: React.FC = () => {
     tags,
     currentListId,
     addSubscription,
+    updateSubscription,
     deleteSubscription,
     paySubscription,
   } = useAppStore();
 
   const [activeTab, setActiveTab] = useState<SubTab>('all');
   const [isCreating, setIsCreating] = useState(false);
+  const [editingSubId, setEditingSubId] = useState<string | null>(null);
+
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('📺');
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState<'monthly' | 'weekly' | 'bimonthly' | 'yearly'>('monthly');
   const [billingDay, setBillingDay] = useState('3');
   const [provider, setProvider] = useState('');
+  const [cancelUrl, setCancelUrl] = useState('');
+  const [cancelSteps, setCancelSteps] = useState('');
+  const [notes, setNotes] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>(['#suscripción']);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -41,28 +48,73 @@ export const SubscriptionsHubView: React.FC = () => {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  const handleCreateSubmit = () => {
+  const handleStartEdit = (sub: SubscriptionData) => {
+    setEditingSubId(sub.id);
+    setName(sub.name);
+    setEmoji(sub.emoji || '📺');
+    setAmount(sub.amount.toString());
+    setFrequency(sub.frequency || 'monthly');
+    setBillingDay((sub.billingDay || 1).toString());
+    setProvider(sub.provider || '');
+    setCancelUrl(sub.cancelUrl || '');
+    setCancelSteps(sub.cancelSteps || '');
+    setNotes(sub.notes || '');
+    setSelectedTags(sub.tags || ['#suscripción']);
+    setIsCreating(true);
+  };
+
+  const handleResetForm = () => {
+    setIsCreating(false);
+    setEditingSubId(null);
+    setName('');
+    setEmoji('📺');
+    setAmount('');
+    setBillingDay('3');
+    setProvider('');
+    setCancelUrl('');
+    setCancelSteps('');
+    setNotes('');
+    setSelectedTags(['#suscripción']);
+  };
+
+  const handleFormSubmit = () => {
     const numAmount = parseInt(amount.replace(/[^0-9]/g, ''), 10);
     if (!name.trim() || !numAmount) return;
 
-    addSubscription({
-      listId: currentListId,
-      name: name.trim(),
-      emoji: emoji || '📺',
-      amount: numAmount,
-      frequency,
-      billingDay: parseInt(billingDay, 10) || 1,
-      categoryId: 'cat-6',
-      tags: selectedTags,
-      provider: provider.trim() || 'Servicio',
-      status: 'ACTIVE',
-    });
+    if (editingSubId) {
+      updateSubscription(editingSubId, {
+        name: name.trim(),
+        emoji: emoji || '📺',
+        amount: numAmount,
+        frequency,
+        billingDay: parseInt(billingDay, 10) || 1,
+        provider: provider.trim() || 'Servicio',
+        cancelUrl: cancelUrl.trim(),
+        cancelSteps: cancelSteps.trim(),
+        notes: notes.trim(),
+        tags: selectedTags,
+      });
+      setToastMessage(`Suscripción "${name.trim()}" actualizada`);
+    } else {
+      addSubscription({
+        listId: currentListId,
+        name: name.trim(),
+        emoji: emoji || '📺',
+        amount: numAmount,
+        frequency,
+        billingDay: parseInt(billingDay, 10) || 1,
+        categoryId: 'cat-6',
+        tags: selectedTags,
+        provider: provider.trim() || 'Servicio',
+        cancelUrl: cancelUrl.trim(),
+        cancelSteps: cancelSteps.trim(),
+        notes: notes.trim(),
+        status: 'ACTIVE',
+      });
+      setToastMessage('Suscripción agregada con éxito');
+    }
 
-    setName('');
-    setAmount('');
-    setProvider('');
-    setIsCreating(false);
-    setToastMessage('Suscripción agregada con éxito');
+    handleResetForm();
     setTimeout(() => setToastMessage(null), 2500);
   };
 
@@ -130,10 +182,12 @@ export const SubscriptionsHubView: React.FC = () => {
       {/* Tab 1: All Subscriptions */}
       {activeTab === 'all' && (
         <div className="flex flex-col gap-4">
-          {/* Add Subscription Form or Toggle Button */}
+          {/* Add/Edit Subscription Form or Toggle Button */}
           {isCreating ? (
             <div className="p-4 rounded-2xl bg-[#1C1C1E] border border-white/10 flex flex-col gap-3 animate-slide-up">
-              <h3 className="text-white font-extrabold text-sm mb-1">Nueva Suscripción</h3>
+              <h3 className="text-white font-extrabold text-sm mb-1">
+                {editingSubId ? 'Editar Suscripción ✏️' : 'Nueva Suscripción 📺'}
+              </h3>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -161,10 +215,10 @@ export const SubscriptionsHubView: React.FC = () => {
                 />
                 <input
                   type="number"
-                  placeholder="Día (1-31)"
+                  placeholder="Día de cobro (1-31)"
                   value={billingDay}
                   onChange={(e) => setBillingDay(e.target.value)}
-                  className="w-24 h-11 px-3 rounded-xl bg-[#2A2A2C] text-white font-bold text-sm text-center outline-none"
+                  className="w-32 h-11 px-3 rounded-xl bg-[#2A2A2C] text-white font-bold text-sm text-center outline-none"
                 />
               </div>
 
@@ -188,6 +242,23 @@ export const SubscriptionsHubView: React.FC = () => {
                 </select>
               </div>
 
+              {/* Extra cancellation & notes fields */}
+              <input
+                type="text"
+                placeholder="Enlace de cancelación (opcional)"
+                value={cancelUrl}
+                onChange={(e) => setCancelUrl(e.target.value)}
+                className="w-full h-10 px-3 rounded-xl bg-[#2A2A2C] text-white font-semibold text-xs outline-none"
+              />
+
+              <textarea
+                placeholder="Pasos o notas de cancelación (opcional)"
+                value={cancelSteps}
+                onChange={(e) => setCancelSteps(e.target.value)}
+                rows={2}
+                className="w-full p-3 rounded-xl bg-[#2A2A2C] text-white font-semibold text-xs outline-none resize-none"
+              />
+
               {/* Tag Selection */}
               <div className="flex flex-wrap gap-1.5 py-1">
                 {tags.map((t) => (
@@ -207,22 +278,25 @@ export const SubscriptionsHubView: React.FC = () => {
 
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
-                  onClick={() => setIsCreating(false)}
+                  onClick={handleResetForm}
                   className="px-4 py-2 rounded-xl bg-[#2A2A2C] text-white font-bold text-xs"
                 >
                   Cancelar
                 </button>
                 <button
-                  onClick={handleCreateSubmit}
+                  onClick={handleFormSubmit}
                   className="px-4 py-2 rounded-xl bg-[#34C759] text-white font-extrabold text-xs"
                 >
-                  Guardar
+                  {editingSubId ? 'Guardar Cambios' : 'Guardar'}
                 </button>
               </div>
             </div>
           ) : (
             <button
-              onClick={() => setIsCreating(true)}
+              onClick={() => {
+                handleResetForm();
+                setIsCreating(true);
+              }}
               className="w-full h-12 rounded-2xl bg-[#1C1C1E] border border-white/10 hover:border-white/20 flex items-center justify-center gap-2 text-white font-extrabold text-sm active:scale-95 transition-transform"
             >
               <IconPlus className="w-4 h-4 text-white" />
@@ -288,9 +362,19 @@ export const SubscriptionsHubView: React.FC = () => {
                         )}
 
                         <button
+                          onClick={() => handleStartEdit(sub)}
+                          className="p-1.5 text-[#8E8E93] hover:text-white transition-colors"
+                          aria-label="Edit Subscription"
+                          title="Editar"
+                        >
+                          <IconPencil className="w-4 h-4 text-white" />
+                        </button>
+
+                        <button
                           onClick={() => deleteSubscription(sub.id)}
                           className="p-1.5 text-[#8E8E93] hover:text-[#E8505B] transition-colors"
-                          aria-label="Delete"
+                          aria-label="Delete Subscription"
+                          title="Eliminar"
                         >
                           <IconTrash className="w-4 h-4" />
                         </button>
