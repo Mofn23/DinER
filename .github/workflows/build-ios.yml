@@ -58,16 +58,14 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.3.0
-          name: DinER Native iOS App v3.3.0 (Gemini 2.0 Flash AI & Voice IPA)
+          tag_name: v3.3.1
+          name: DinER Native iOS App v3.3.1 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.3.0 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.3.1 (SideStore / AltStore Compatible)
             
-            ### 🤖 Gemini 2.0 Flash AI & Voice Features:
-            - **Instant Gemini AI Auto-Categorization & Emoji Engine**: Automatically infers category (`Amorcito 💙`, `Comida 🍲`, etc.) and contextual emojis as you type transaction descriptions.
-            - **AI Memory & Learning Registry (Ajustes ➔ Aprendizaje IA)**: Remembers your custom rules (e.g. `Mi niña = Amorcito`). Overriding a category automatically teaches Gemini your custom rules for future instant recognition.
-            - **Voice Transaction Processing System**: Speak naturally into the red mic FAB (e.g., *"Gasto de 30 mil en almuerzo con tarjeta"*), and Gemini AI extracts amount, description, category, and tags to populate the transaction form automatically.
-            - **Zero User Configuration**: Server-side Gemini API key integration requires no key setup from the user inside the app.
+            ### 🎨 Instant AI Auto-Categorization & Native iOS Mic Permission Fixes:
+            - **Instant Auto-Categorization & Left Loading Spinner Wheel**: Category pre-selection triggers instantly upon typing description (0ms local + 120ms Gemini AI) with a subtle loading spinner wheel to the left of the Description field before touching the amount field.
+            - **Native iOS Microphone Permission Prompts**: Added `NSMicrophoneUsageDescription` and `NSSpeechRecognitionUsageDescription` to `Info.plist` and explicit `getUserMedia` call so iOS prompts permission modal cleanly for voice input.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.

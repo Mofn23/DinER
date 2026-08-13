@@ -4,18 +4,25 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.3.1] - 2026-08-12
+
+### ⚡ Auto-Categorización Instantánea con Ruedita de Carga & Permisos Nativo de Micrófono iOS
+- **Categorización Instantánea antes de Ingresar el Precio**:
+  - Se configuró la inferencia local (0ms) e IA (120ms) para pre-seleccionar la categoría automáticamente al escribir el nombre de la transacción (ej. Uber), **antes de que el usuario pase al campo del monto**.
+  - Se agregó una diminuta **ruedita de carga giratoria** a la izquierda del campo `Description` para indicar visualmente que la entrada se está procesando.
+- **Permisos Nativos de Micrófono para iOS (`Info.plist`)**:
+  - Añadidas las claves `NSMicrophoneUsageDescription` y `NSSpeechRecognitionUsageDescription` en el archivo nativo de iOS.
+  - Agregada la solicitud explícita de permiso mediante `navigator.mediaDevices.getUserMedia` para que iOS despliegue la alerta flotante de permiso de micrófono al abrir el comando por voz.
+
+---
+
 ## 📌 [v3.3.0] - 2026-08-12
 
 ### 🤖 Integración Total de Inteligencia Artificial (Gemini 2.0 Flash) & Registro por Voz
-- **Auto-Categorización e Inferencia de Emojis con Gemini 2.0 Flash**:
-  - Al ingresar una descripción (ej: *"Almuerzo con mi niña 25000"*), la IA categoriza automáticamente el gasto o ingreso y selecciona el emoji contextual adecuado.
-- **Aprendizaje y Memoria IA (`Ajustes ➔ Aprendizaje IA`)**:
-  - Si categorizas manualmente *"Mi niña"* como **Amorcito**, la IA guarda la regla en su memoria. Las siguientes veces que escribas la frase, asignará **Amorcito** instantáneamente.
-  - Nueva sección en Ajustes para visualizar, añadir y gestionar las reglas aprendidas por la IA.
-- **Registro por Voz Nativo con Procesamiento IA**:
-  - Al tocar el botón de micrófono 🎙️, puedes hablar libremente (ej: *"Gasto de 45 mil pesos en hamburguesa de McDonald's con crédito"*). La IA analiza la transcripción, extrae el valor (`$45.000`), la descripción, categoría e imprime la transacción lista para guardar.
-- **Cero Configuración de API Key en la App**:
-  - Backend integrado de Gemini para que el usuario disfrute la IA directamente sin configurar nada.
+- **Auto-Categorización e Inferencia de Emojis con Gemini 2.0 Flash**.
+- **Aprendizaje y Memoria IA (`Ajustes ➔ Aprendizaje IA`)**.
+- **Registro por Voz Nativo con Procesamiento IA**.
+- **Cero Configuración de API Key en la App**.
 
 ---
 

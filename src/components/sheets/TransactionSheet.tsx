@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '@/lib/store';
 import { getLocalDateString } from '@/lib/utils';
+import { matchCategoryFromDescription } from '@/lib/autoCategory';
 import {
   IconClose,
   IconChevronDown,
@@ -107,7 +108,7 @@ export const TransactionSheet: React.FC = () => {
     setAmount(formatted);
   };
 
-  // Smart Hybrid Gemini 2.0 Flash AI Auto-Categorization
+  // Immediate Instant + Gemini AI Auto-Categorization on description typing
   const handleDescriptionChange = (val: string) => {
     setDescription(val);
 
@@ -117,6 +118,15 @@ export const TransactionSheet: React.FC = () => {
 
     if (!val.trim() || hasManuallySelectedCategory) return;
 
+    // 1. Instant local matching (0ms) so category updates BEFORE touching amount!
+    const localMatchedId = matchCategoryFromDescription(val, categories);
+    if (localMatchedId && !hasManuallySelectedCategory) {
+      setSelectedCategoryId(localMatchedId);
+      const catObj = categories.find((c) => c.id === localMatchedId);
+      if (catObj) setTxType(catObj.type);
+    }
+
+    // 2. Debounced Gemini 2.0 Flash AI parsing with spinner indicator (120ms)
     debounceTimerRef.current = setTimeout(async () => {
       setIsAiSuggesting(true);
       try {
@@ -143,7 +153,7 @@ export const TransactionSheet: React.FC = () => {
       } finally {
         setIsAiSuggesting(false);
       }
-    }, 280);
+    }, 120);
   };
 
   const handleCategorySelect = (catId: string) => {
@@ -261,7 +271,8 @@ export const TransactionSheet: React.FC = () => {
               <span>{aiSourceTag}</span>
             </div>
           ) : isAiSuggesting ? (
-            <div className="px-2.5 py-1 rounded-full bg-[#2A2A2C] text-[#8E8E93] font-bold text-[11px] animate-pulse">
+            <div className="px-2.5 py-1 rounded-full bg-[#2A2A2C] text-[#8E8E93] font-bold text-[11px] flex items-center gap-1.5 animate-pulse">
+              <div className="w-3 h-3 border-2 border-white/20 border-t-[#34C759] rounded-full animate-spin" />
               <span>✨ Gemini Analizando...</span>
             </div>
           ) : <div />}
@@ -331,8 +342,11 @@ export const TransactionSheet: React.FC = () => {
             </div>
           </div>
 
-          {/* Description Input (MonAI 32px font-black with autoFocus) */}
-          <div>
+          {/* Description Input Row with Left Loading Spinner Wheel */}
+          <div className="relative flex items-center gap-2">
+            {isAiSuggesting && (
+              <div className="w-4 h-4 border-2 border-white/20 border-t-[#34C759] rounded-full animate-spin shrink-0" />
+            )}
             <input
               ref={descriptionInputRef}
               type="text"

@@ -3,7 +3,7 @@ import { useAppStore } from '@/lib/store';
 import { IconClose, IconMic, IconCheck } from '../common/Icons';
 
 export const VoiceOverlay: React.FC = () => {
-  const { activeSheet, closeSheet, openSheet, addTransaction, currentListId, categories } = useAppStore();
+  const { activeSheet, closeSheet, addTransaction, currentListId, categories } = useAppStore();
 
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -11,14 +11,29 @@ export const VoiceOverlay: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const recognitionRef = useRef<any>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     if (activeSheet === 'voice') {
-      startSpeechRecognition();
+      requestMicPermissionAndStart();
     } else {
       stopSpeechRecognition();
     }
   }, [activeSheet]);
+
+  const requestMicPermissionAndStart = async () => {
+    try {
+      // 1. Explicitly trigger iOS native microphone permission prompt!
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaStreamRef.current = stream;
+      }
+      startSpeechRecognition();
+    } catch (err: any) {
+      console.warn('Microphone permission denied:', err);
+      setStatusMessage('Debes permitir acceso al micrófono en los ajustes de tu iPhone para usar esta función.');
+    }
+  };
 
   const startSpeechRecognition = () => {
     if (typeof window === 'undefined') return;
@@ -27,7 +42,7 @@ export const VoiceOverlay: React.FC = () => {
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      setStatusMessage('Tu navegador no soporta reconocimiento de voz nativo. Escribe tu comando.');
+      setStatusMessage('Tu dispositivo no soporta el motor de reconocimiento por voz directo. Escribe tu comando.');
       return;
     }
 
@@ -53,7 +68,11 @@ export const VoiceOverlay: React.FC = () => {
       recognition.onerror = (event: any) => {
         console.warn('Speech recognition error:', event.error);
         setIsListening(false);
-        setStatusMessage('No se pudo escuchar con claridad. Toca el micrófono para intentar de nuevo.');
+        if (event.error === 'not-allowed') {
+          setStatusMessage('Permiso de micrófono denegado. Por favor permítelo en Ajustes de iOS.');
+        } else {
+          setStatusMessage('No se pudo escuchar con claridad. Toca el micrófono para intentar de nuevo.');
+        }
       };
 
       recognition.onend = () => {
@@ -73,6 +92,12 @@ export const VoiceOverlay: React.FC = () => {
         recognitionRef.current.stop();
       } catch {}
       recognitionRef.current = null;
+    }
+    if (mediaStreamRef.current) {
+      try {
+        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      } catch {}
+      mediaStreamRef.current = null;
     }
     setIsListening(false);
   };
@@ -145,7 +170,7 @@ export const VoiceOverlay: React.FC = () => {
       <div className="flex flex-col items-center justify-center gap-6 my-auto text-center px-4">
         {/* Pulsing Red Mic Button */}
         <button
-          onClick={isListening ? stopSpeechRecognition : startSpeechRecognition}
+          onClick={isListening ? stopSpeechRecognition : requestMicPermissionAndStart}
           className={`w-32 h-32 rounded-full flex items-center justify-center text-white shadow-2xl transition-all duration-300 ${
             isListening
               ? 'bg-[#E8505B] animate-pulse scale-110 ring-8 ring-[#E8505B]/30'
