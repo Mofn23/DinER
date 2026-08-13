@@ -4,15 +4,23 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.3.2] - 2026-08-12
+
+### ⚡ Disparo de IA al Cambiar al Campo de Monto & Solución de Voz 100% Nativo iOS
+- **Categorización por IA Ejecutada al Tocar el Monto o Salir de Descripción**:
+  - Se eliminó la ejecución de la IA carácter por carácter al escribir para evitar consumo excesivo del modelo y parpadeos visuales (`stuttering`).
+  - Ahora la IA procesa la inferencia **únicamente cuando terminas de escribir el nombre y tocas el campo del monto** (o sales del campo de descripción).
+  - La **ruedita / píldora de carga `✨ Gemini Analizando...`** fue posicionada limpiamente al lado derecho de las píldoras de fecha (`Today v`) y frecuencia (`Once v`).
+- **Solución al Error de Conexión en Comandos de Voz**:
+  - Se configuró la ejecución directa de la API de Gemini 2.0 Flash desde el cliente en la app nativa iOS, solucionando el error de conexión por la ruta relativa en Capacitor.
+
+---
+
 ## 📌 [v3.3.1] - 2026-08-12
 
 ### ⚡ Auto-Categorización Instantánea con Ruedita de Carga & Permisos Nativo de Micrófono iOS
-- **Categorización Instantánea antes de Ingresar el Precio**:
-  - Se configuró la inferencia local (0ms) e IA (120ms) para pre-seleccionar la categoría automáticamente al escribir el nombre de la transacción (ej. Uber), **antes de que el usuario pase al campo del monto**.
-  - Se agregó una diminuta **ruedita de carga giratoria** a la izquierda del campo `Description` para indicar visualmente que la entrada se está procesando.
-- **Permisos Nativos de Micrófono para iOS (`Info.plist`)**:
-  - Añadidas las claves `NSMicrophoneUsageDescription` y `NSSpeechRecognitionUsageDescription` en el archivo nativo de iOS.
-  - Agregada la solicitud explícita de permiso mediante `navigator.mediaDevices.getUserMedia` para que iOS despliegue la alerta flotante de permiso de micrófono al abrir el comando por voz.
+- **Categorización Instantánea antes de Ingresar el Precio**.
+- **Permisos Nativos de Micrófono para iOS (`Info.plist`)**.
 
 ---
 

@@ -23,7 +23,6 @@ export const VoiceOverlay: React.FC = () => {
 
   const requestMicPermissionAndStart = async () => {
     try {
-      // 1. Explicitly trigger iOS native microphone permission prompt!
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaStreamRef.current = stream;
@@ -42,7 +41,7 @@ export const VoiceOverlay: React.FC = () => {
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      setStatusMessage('Tu dispositivo no soporta el motor de reconocimiento por voz directo. Escribe tu comando.');
+      setStatusMessage('Tu dispositivo no soporta reconocimiento de voz nativo. Escribe tu comando.');
       return;
     }
 
@@ -69,7 +68,7 @@ export const VoiceOverlay: React.FC = () => {
         console.warn('Speech recognition error:', event.error);
         setIsListening(false);
         if (event.error === 'not-allowed') {
-          setStatusMessage('Permiso de micrófono denegado. Por favor permítelo en Ajustes de iOS.');
+          setStatusMessage('Permiso de micrófono denegado en Ajustes de iOS.');
         } else {
           setStatusMessage('No se pudo escuchar con claridad. Toca el micrófono para intentar de nuevo.');
         }
@@ -108,42 +107,76 @@ export const VoiceOverlay: React.FC = () => {
     setIsProcessing(true);
     setStatusMessage('✨ Gemini 2.0 Flash procesando tu comando...');
 
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
+
     try {
-      const res = await fetch('/api/ai-voice', {
+      const categoriesPrompt = categories
+        ? categories.map((c: any) => `ID: "${c.id}", Name: "${c.name}", Type: "${c.type}"`).join('\n')
+        : '';
+
+      const promptText = `
+You are a voice transaction parser for DinER expense tracking app in Colombia.
+Extract transaction parameters from the following spoken voice command transcript:
+
+Spoken Transcript: "${transcript}"
+
+Available Categories:
+${categoriesPrompt}
+
+Currency is COP (Colombian Pesos). Note: Phrases like "45 mil", "45k", "45000" mean amount 45000.
+
+Return ONLY valid JSON matching this exact structure:
+{
+  "description": "Clean concise transaction description title string (e.g. McDonald's)",
+  "amount": numeric integer value (e.g. 45000),
+  "type": "expense" or "income",
+  "categoryId": "matched category ID string or null",
+  "tags": ["array", "of", "#lowercase_tags"]
+}
+`;
+
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+      const res = await fetch(geminiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          transcript,
-          categories,
+          contents: [{ parts: [{ text: promptText }] }],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.1,
+          },
         }),
       });
 
       if (res.ok) {
-        const parsed = await res.json();
-        if (parsed.amount && parsed.amount > 0) {
-          addTransaction({
-            listId: currentListId,
-            description: parsed.description || 'Voice Transaction',
-            amount: parsed.amount,
-            type: parsed.type || 'expense',
-            categoryId: parsed.categoryId || categories[0]?.id || 'cat-1',
-            tags: parsed.tags || [],
-            date: new Date().toISOString().split('T')[0],
-            recurrence: 'once',
-          });
-          setStatusMessage('¡Transacción registrada con éxito!');
-          setTimeout(() => {
-            closeSheet();
-          }, 800);
-        } else {
-          setStatusMessage('No pudimos detectar un monto claro. Inténtalo de nuevo.');
+        const data = await res.json();
+        const candidateText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (candidateText) {
+          const parsed = JSON.parse(candidateText);
+          if (parsed.amount && parsed.amount > 0) {
+            addTransaction({
+              listId: currentListId,
+              description: parsed.description || 'Voice Transaction',
+              amount: parsed.amount,
+              type: parsed.type || 'expense',
+              categoryId: parsed.categoryId || categories[0]?.id || 'cat-1',
+              tags: parsed.tags || [],
+              date: new Date().toISOString().split('T')[0],
+              recurrence: 'once',
+            });
+            setStatusMessage('¡Transacción registrada con éxito!');
+            setTimeout(() => {
+              closeSheet();
+            }, 800);
+            return;
+          }
         }
-      } else {
-        setStatusMessage('Error procesando el comando por voz.');
       }
+      setStatusMessage('No pudimos detectar un monto claro. Inténtalo de nuevo.');
     } catch (err) {
       console.error('Voice processing error:', err);
-      setStatusMessage('Error de conexión.');
+      setStatusMessage('Error procesando el comando.');
     } finally {
       setIsProcessing(false);
     }

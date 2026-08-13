@@ -61,9 +61,8 @@ export const TransactionSheet: React.FC = () => {
   // Dropdown states
   const [isRecurrenceOpen, setIsRecurrenceOpen] = useState(false);
 
-  // Refs for auto-focus and debounce
+  // Refs for auto-focus
   const descriptionInputRef = useRef<HTMLInputElement>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (editingTx) {
@@ -108,52 +107,97 @@ export const TransactionSheet: React.FC = () => {
     setAmount(formatted);
   };
 
-  // Immediate Instant + Gemini AI Auto-Categorization on description typing
-  const handleDescriptionChange = (val: string) => {
-    setDescription(val);
+  // Trigger Gemini AI parsing ONLY when user finishes description or clicks amount field!
+  const triggerAiCategorization = async () => {
+    if (!description.trim() || hasManuallySelectedCategory || isAiSuggesting) return;
 
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    if (!val.trim() || hasManuallySelectedCategory) return;
-
-    // 1. Instant local matching (0ms) so category updates BEFORE touching amount!
-    const localMatchedId = matchCategoryFromDescription(val, categories);
+    // 1. Instant local matching (0ms) first
+    const localMatchedId = matchCategoryFromDescription(description, categories);
     if (localMatchedId && !hasManuallySelectedCategory) {
       setSelectedCategoryId(localMatchedId);
       const catObj = categories.find((c) => c.id === localMatchedId);
       if (catObj) setTxType(catObj.type);
     }
 
-    // 2. Debounced Gemini 2.0 Flash AI parsing with spinner indicator (120ms)
-    debounceTimerRef.current = setTimeout(async () => {
-      setIsAiSuggesting(true);
-      try {
-        const res = await fetch('/api/ai-parse', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            description: val,
-            categories,
-            aiMemory,
-          }),
-        });
+    // 2. Direct Gemini 2.0 Flash AI parsing call when user leaves description or clicks amount!
+    setIsAiSuggesting(true);
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
 
-        if (res.ok) {
-          const data = await res.json();
-          if (data.categoryId && !hasManuallySelectedCategory) {
-            setSelectedCategoryId(data.categoryId);
-            if (data.type) setTxType(data.type);
-            setAiSourceTag(data.source === 'memory' ? '🧠 AI Memory' : '✨ Gemini AI');
+    try {
+      // Check AI Memory first
+      const descLower = description.toLowerCase().trim();
+      if (aiMemory) {
+        for (const [phrase, catId] of Object.entries(aiMemory)) {
+          if (descLower.includes(phrase.toLowerCase())) {
+            const matchedCat = categories.find((c) => c.id === catId);
+            if (matchedCat && !hasManuallySelectedCategory) {
+              setSelectedCategoryId(matchedCat.id);
+              setTxType(matchedCat.type);
+              setAiSourceTag('🧠 AI Memory');
+              setIsAiSuggesting(false);
+              return;
+            }
           }
         }
-      } catch (err) {
-        console.warn('AI parsing failed:', err);
-      } finally {
-        setIsAiSuggesting(false);
       }
-    }, 120);
+
+      if (!apiKey) {
+        setIsAiSuggesting(false);
+        return;
+      }
+
+      const categoriesPrompt = categories
+        ? categories.map((c: any) => `ID: "${c.id}", Name: "${c.name}", Type: "${c.type}"`).join('\n')
+        : '';
+
+      const promptText = `
+You are an expert financial expense categorizer for DinER mobile app.
+Categorize the following transaction description into the single best matching category from the available list.
+
+Transaction Description: "${description}"
+
+Available Categories:
+${categoriesPrompt}
+
+Return ONLY valid JSON matching this exact structure:
+{
+  "categoryId": "matched category ID string or null",
+  "type": "expense" or "income",
+  "suggestedEmoji": "single relevant emoji string for this specific transaction item"
+}
+`;
+
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+      const res = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: promptText }] }],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.1,
+          },
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const candidateText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (candidateText) {
+          const parsed = JSON.parse(candidateText);
+          if (parsed.categoryId && !hasManuallySelectedCategory) {
+            setSelectedCategoryId(parsed.categoryId);
+            if (parsed.type) setTxType(parsed.type);
+            setAiSourceTag('✨ Gemini AI');
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('AI parsing failed:', err);
+    } finally {
+      setIsAiSuggesting(false);
+    }
   };
 
   const handleCategorySelect = (catId: string) => {
@@ -265,18 +309,7 @@ export const TransactionSheet: React.FC = () => {
       {/* MonAI Bottom Sheet Card: Sits comfortably below Dynamic Island (h-[calc(100vh-68px)]), rounded top corners [36px] */}
       <div className="w-full max-w-[430px] mx-auto h-[calc(100vh-68px)] bg-[#131313] border-t border-white/10 rounded-t-[36px] px-5 pt-4 pb-[max(env(safe-area-inset-bottom,20px),20px)] flex flex-col justify-between shadow-2xl animate-slide-up relative overflow-y-auto no-scrollbar">
         {/* Top Header Row with Close Button ✕ in top right */}
-        <div className="flex items-center justify-between pt-1 mb-1">
-          {aiSourceTag ? (
-            <div className="px-2.5 py-1 rounded-full bg-[#34C759]/20 border border-[#34C759]/30 text-[#34C759] font-extrabold text-[11px] flex items-center gap-1 animate-fade-in">
-              <span>{aiSourceTag}</span>
-            </div>
-          ) : isAiSuggesting ? (
-            <div className="px-2.5 py-1 rounded-full bg-[#2A2A2C] text-[#8E8E93] font-bold text-[11px] flex items-center gap-1.5 animate-pulse">
-              <div className="w-3 h-3 border-2 border-white/20 border-t-[#34C759] rounded-full animate-spin" />
-              <span>✨ Gemini Analizando...</span>
-            </div>
-          ) : <div />}
-
+        <div className="flex items-center justify-end pt-1 mb-1">
           <button
             onClick={closeSheet}
             aria-label="Close"
@@ -288,71 +321,84 @@ export const TransactionSheet: React.FC = () => {
 
         {/* Main Content Group */}
         <div className="flex flex-col gap-3 my-auto">
-          {/* Small Delicate Date & Recurrence Pills (Sitting snugly right above Description) */}
-          <div className="flex items-center gap-2 mb-1">
-            {/* Date Chip */}
-            <div className="relative">
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
-              />
-              <div className="h-7 px-3 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center gap-1 text-[#F5F5F7] font-bold text-xs">
-                <span>Today</span>
-                <IconChevronDown className="w-3 h-3 text-[#8E8E93]" />
+          {/* Small Delicate Date, Recurrence Pills & AI Loading Indicator Row */}
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <div className="flex items-center gap-2">
+              {/* Date Chip */}
+              <div className="relative">
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
+                />
+                <div className="h-7 px-3 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center gap-1 text-[#F5F5F7] font-bold text-xs">
+                  <span>Today</span>
+                  <IconChevronDown className="w-3 h-3 text-[#8E8E93]" />
+                </div>
+              </div>
+
+              {/* Recurrence Chip */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsRecurrenceOpen(!isRecurrenceOpen)}
+                  className="h-7 px-3 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center gap-1 text-[#F5F5F7] font-bold text-xs"
+                >
+                  <span className="capitalize">{recurrence}</span>
+                  <IconChevronDown className="w-3 h-3 text-[#8E8E93]" />
+                </button>
+
+                {isRecurrenceOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsRecurrenceOpen(false)}
+                    />
+                    <div className="absolute left-0 top-9 w-40 bg-[#1C1C1E] border border-white/10 rounded-2xl p-1 shadow-elevation z-50 animate-scale-up">
+                      {recurrenceOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          onClick={() => {
+                            setRecurrence(opt.value as any);
+                            setIsRecurrenceOpen(false);
+                          }}
+                          className="w-full h-9 px-3 rounded-xl flex items-center justify-between text-left font-bold text-xs text-white hover:bg-[#2A2A2C]"
+                        >
+                          <span>{opt.label}</span>
+                          {recurrence === opt.value && (
+                            <IconCheck className="w-3.5 h-3.5 text-[#34C759]" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Recurrence Chip */}
-            <div className="relative">
-              <button
-                onClick={() => setIsRecurrenceOpen(!isRecurrenceOpen)}
-                className="h-7 px-3 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center gap-1 text-[#F5F5F7] font-bold text-xs"
-              >
-                <span className="capitalize">{recurrence}</span>
-                <IconChevronDown className="w-3 h-3 text-[#8E8E93]" />
-              </button>
-
-              {isRecurrenceOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setIsRecurrenceOpen(false)}
-                  />
-                  <div className="absolute left-0 top-9 w-40 bg-[#1C1C1E] border border-white/10 rounded-2xl p-1 shadow-elevation z-50 animate-scale-up">
-                    {recurrenceOptions.map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => {
-                          setRecurrence(opt.value as any);
-                          setIsRecurrenceOpen(false);
-                        }}
-                        className="w-full h-9 px-3 rounded-xl flex items-center justify-between text-left font-bold text-xs text-white hover:bg-[#2A2A2C]"
-                      >
-                        <span>{opt.label}</span>
-                        {recurrence === opt.value && (
-                          <IconCheck className="w-3.5 h-3.5 text-[#34C759]" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+            {/* Visual AI Loading Spinner Pill placed to the right of Once/Monthly pills */}
+            {aiSourceTag ? (
+              <div className="px-2.5 py-1 rounded-full bg-[#34C759]/20 border border-[#34C759]/30 text-[#34C759] font-extrabold text-[11px] flex items-center gap-1 animate-fade-in shrink-0">
+                <span>{aiSourceTag}</span>
+              </div>
+            ) : isAiSuggesting ? (
+              <div className="px-2.5 py-1 rounded-full bg-[#2A2A2C] border border-white/10 text-[#8E8E93] font-bold text-[11px] flex items-center gap-1.5 animate-pulse shrink-0">
+                <div className="w-3 h-3 border-2 border-white/20 border-t-[#34C759] rounded-full animate-spin" />
+                <span>✨ Gemini Analizando...</span>
+              </div>
+            ) : null}
           </div>
 
-          {/* Description Input Row with Left Loading Spinner Wheel */}
-          <div className="relative flex items-center gap-2">
-            {isAiSuggesting && (
-              <div className="w-4 h-4 border-2 border-white/20 border-t-[#34C759] rounded-full animate-spin shrink-0" />
-            )}
+          {/* Description Input Row */}
+          <div>
             <input
               ref={descriptionInputRef}
               type="text"
               placeholder="Description"
               value={description}
-              onChange={(e) => handleDescriptionChange(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
+              onBlur={triggerAiCategorization}
+              onKeyDown={(e) => e.key === 'Enter' && triggerAiCategorization()}
               className="w-full bg-transparent text-[32px] font-black text-[#F5F5F7] placeholder-[#3A3A3C] outline-none border-none leading-tight tracking-tight"
             />
           </div>
@@ -383,7 +429,7 @@ export const TransactionSheet: React.FC = () => {
               </button>
             </div>
 
-            {/* Colored Currency & Thousand-Separated Amount Input */}
+            {/* Colored Currency & Thousand-Separated Amount Input (Triggers AI on focus) */}
             <div className="flex items-center gap-2 flex-1">
               <span
                 className={`text-[32px] font-black tracking-tight ${
@@ -397,6 +443,7 @@ export const TransactionSheet: React.FC = () => {
                 inputMode="numeric"
                 placeholder="0"
                 value={amount}
+                onFocus={triggerAiCategorization}
                 onChange={(e) => handleAmountChange(e.target.value)}
                 className={`w-full bg-transparent text-[32px] font-black outline-none border-none tracking-tight ${
                   isExpense ? 'text-[#E8505B] placeholder-[#E8505B]/40' : 'text-[#34C759] placeholder-[#34C759]/40'
@@ -533,7 +580,7 @@ export const TransactionSheet: React.FC = () => {
                     value={newTagInput}
                     onChange={(e) => setNewTagInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddTagSubmit()}
-                    className="flex-1 h-9 px-3 rounded-xl bg-[#242426] text-white font-bold text-xs outline-none placeholder-[#8E8E93]"
+                    className="flex-1 h-9 px-3 rounded-xl bg-[#242426] text-[#F5F5F7] font-bold text-xs outline-none placeholder-[#8E8E93]"
                   />
                   <button
                     onClick={handleAddTagSubmit}

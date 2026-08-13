@@ -58,14 +58,15 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.3.1
-          name: DinER Native iOS App v3.3.1 (SideStore IPA)
+          tag_name: v3.3.2
+          name: DinER Native iOS App v3.3.2 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.3.1 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.3.2 (SideStore / AltStore Compatible)
             
-            ### 🎨 Instant AI Auto-Categorization & Native iOS Mic Permission Fixes:
-            - **Instant Auto-Categorization & Left Loading Spinner Wheel**: Category pre-selection triggers instantly upon typing description (0ms local + 120ms Gemini AI) with a subtle loading spinner wheel to the left of the Description field before touching the amount field.
-            - **Native iOS Microphone Permission Prompts**: Added `NSMicrophoneUsageDescription` and `NSSpeechRecognitionUsageDescription` to `Info.plist` and explicit `getUserMedia` call so iOS prompts permission modal cleanly for voice input.
+            ### ⚡ Focus-Triggered AI Categorization & Native iOS Voice Fix:
+            - **Focus / Leave Triggered AI Categorization**: Removed per-character AI typing triggers. AI auto-categorization now runs smoothly ONLY when you finish typing the description and focus on the amount field or leave the description input, eliminating model quota waste and stuttering.
+            - **Top Loading Spinner Placement**: Placed the `✨ Gemini Analizando...` spinner pill to the right of the `Today v` and `Once v` pills row.
+            - **Direct Client-Side Gemini REST API Execution for Voice**: Switched voice input processing to call Gemini REST API directly on client-side JS, eliminating native iOS connection errors (`/api/ai-voice` route failure).
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.
