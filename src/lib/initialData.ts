@@ -81,16 +81,8 @@ export const INITIAL_CATEGORIES: CategoryData[] = [
 
 export const INITIAL_TAGS: string[] = [
   '#debito', '#credito', '#mama', '#papa', '#gym', '#almuerzo',
-  '#icloud+', '#suscripción', '#carrro', '#movistar', '#apple', '#netflix', '#chatgpt'
+  '#icloud+', '#suscripción', '#carrro', '#movistar', '#apple', '#netflix', '#chatgpt', '#yo', '#miniña', '#cine', '#monai', '#applemusic', '#cash'
 ];
-
-// Bogota Local Dates
-const now = new Date();
-const todayIso = getLocalDateString(now);
-
-const yesterdayDate = new Date();
-yesterdayDate.setDate(now.getDate() - 1);
-const yesterdayIso = getLocalDateString(yesterdayDate);
 
 export const INITIAL_SUBSCRIPTIONS: SubscriptionData[] = [
   {
@@ -135,7 +127,7 @@ export const INITIAL_SUBSCRIPTIONS: SubscriptionData[] = [
     billingDay: 7,
     categoryId: 'cat-3',
     tags: ['#debito', '#gym'],
-    lastPaidDate: todayIso,
+    lastPaidDate: '2026-08-05',
     provider: 'Bodyfit',
     notes: 'Gimnasio principal',
     status: 'ACTIVE',
@@ -213,7 +205,319 @@ export const INITIAL_SUBSCRIPTIONS: SubscriptionData[] = [
 ];
 
 export const INITIAL_TRANSACTIONS: TransactionData[] = [
-  // TODAY EXPENSES (-$347,776)
+  // AUGUST 11, 2026 (-$30,400 Expense, +$65,362 Income)
+  {
+    id: 'tx-aug11-1',
+    listId: 'list-1',
+    description: 'Salchipapa',
+    amount: 26000,
+    type: 'expense',
+    categoryId: 'cat-4',
+    tags: ['#debito'],
+    date: '2026-08-11',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug11-2',
+    listId: 'list-1',
+    description: 'Pandebonos',
+    amount: 4400,
+    type: 'expense',
+    categoryId: 'cat-4',
+    tags: ['#debito'],
+    date: '2026-08-11',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug11-3',
+    listId: 'list-1',
+    description: 'Rembolso',
+    amount: 11362,
+    type: 'income',
+    categoryId: 'cat-15',
+    tags: ['#credito'],
+    date: '2026-08-11',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug11-4',
+    listId: 'list-1',
+    description: 'Ingreso Papa',
+    amount: 30000,
+    type: 'income',
+    categoryId: 'cat-2',
+    tags: ['#papa', '#debito'],
+    date: '2026-08-11',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug11-5',
+    listId: 'list-1',
+    description: 'Ingreso',
+    amount: 24000,
+    type: 'income',
+    categoryId: 'cat-13',
+    tags: ['#debito'],
+    date: '2026-08-11',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+
+  // AUGUST 10, 2026 (-$8,500 Expense, +$60,000 Income)
+  {
+    id: 'tx-aug10-1',
+    listId: 'list-1',
+    description: 'Apple Music',
+    amount: 8500,
+    type: 'expense',
+    categoryId: 'cat-6',
+    tags: ['#applemusic', '#credito'],
+    date: '2026-08-10',
+    recurrence: 'monthly',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug10-2',
+    listId: 'list-1',
+    description: 'Papá',
+    amount: 60000,
+    type: 'income',
+    categoryId: 'cat-2',
+    tags: ['#papa', '#cash'],
+    date: '2026-08-10',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+
+  // AUGUST 9, 2026 (-$124,464 Expense, +$30,000 Income)
+  {
+    id: 'tx-aug9-1',
+    listId: 'list-1',
+    description: 'MonAI',
+    amount: 14900,
+    type: 'expense',
+    categoryId: 'cat-6',
+    tags: ['#credito', '#monai'],
+    date: '2026-08-09',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug9-2',
+    listId: 'list-1',
+    description: 'Almuerzo arroz montañero',
+    amount: 20000,
+    type: 'expense',
+    categoryId: 'cat-4',
+    tags: ['#debito', '#almuerzo'],
+    date: '2026-08-09',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug9-3',
+    listId: 'list-1',
+    description: 'pandebonos',
+    amount: 10000,
+    type: 'expense',
+    categoryId: 'cat-4',
+    tags: ['#debito'],
+    date: '2026-08-09',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug9-4',
+    listId: 'list-1',
+    description: 'Uber',
+    amount: 33564,
+    type: 'expense',
+    categoryId: 'cat-5',
+    tags: ['#debito'],
+    date: '2026-08-09',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug9-5',
+    listId: 'list-1',
+    description: 'Salchipapa',
+    amount: 46000,
+    type: 'expense',
+    categoryId: 'cat-4',
+    tags: ['#debito'],
+    date: '2026-08-09',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug9-6',
+    listId: 'list-1',
+    description: 'Dinero recibido de mi niña',
+    amount: 30000,
+    type: 'income',
+    categoryId: 'cat-12',
+    tags: ['#debito', '#miniña'],
+    date: '2026-08-09',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+
+  // AUGUST 8, 2026 (-$86,432 Expense)
+  {
+    id: 'tx-aug8-1',
+    listId: 'list-1',
+    description: 'Uber',
+    amount: 5380,
+    type: 'expense',
+    categoryId: 'cat-5',
+    tags: ['#debito', '#yo', '#carrro'],
+    date: '2026-08-08',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug8-2',
+    listId: 'list-1',
+    description: 'Uber',
+    amount: 6821,
+    type: 'expense',
+    categoryId: 'cat-5',
+    tags: ['#debito', '#yo'],
+    date: '2026-08-08',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug8-3',
+    listId: 'list-1',
+    description: 'Uber',
+    amount: 32002,
+    type: 'expense',
+    categoryId: 'cat-5',
+    tags: ['#debito', '#yo', '#carrro'],
+    date: '2026-08-08',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug8-4',
+    listId: 'list-1',
+    description: 'Entradas cine',
+    amount: 23200,
+    type: 'expense',
+    categoryId: 'cat-14',
+    tags: ['#debito', '#cine'],
+    date: '2026-08-08',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug8-5',
+    listId: 'list-1',
+    description: 'Ajuste',
+    amount: 19029,
+    type: 'expense',
+    categoryId: 'cat-2',
+    tags: ['#debito'],
+    date: '2026-08-08',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+
+  // AUGUST 7, 2026 (-$77,400 Expense, +$25,326 Income)
+  {
+    id: 'tx-aug7-1',
+    listId: 'list-1',
+    description: 'Juego para mi niña',
+    amount: 3500,
+    type: 'expense',
+    categoryId: 'cat-12',
+    tags: ['#debito', '#miniña'],
+    date: '2026-08-07',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug7-2',
+    listId: 'list-1',
+    description: 'Apple',
+    amount: 16500,
+    type: 'expense',
+    categoryId: 'cat-7',
+    tags: ['#debito', '#apple-pay'],
+    date: '2026-08-07',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug7-3',
+    listId: 'list-1',
+    description: 'Apple',
+    amount: 18400,
+    type: 'expense',
+    categoryId: 'cat-7',
+    tags: ['#credito'],
+    date: '2026-08-07',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug7-4',
+    listId: 'list-1',
+    description: 'Arroz montañero',
+    amount: 39000,
+    type: 'expense',
+    categoryId: 'cat-4',
+    tags: ['#debito', '#almuerzo'],
+    date: '2026-08-07',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug7-5',
+    listId: 'list-1',
+    description: 'Ajuste',
+    amount: 5326,
+    type: 'income',
+    categoryId: 'cat-2',
+    tags: ['#debito'],
+    date: '2026-08-07',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-aug7-6',
+    listId: 'list-1',
+    description: 'Dinero recibido de primo',
+    amount: 20000,
+    type: 'income',
+    categoryId: 'cat-13',
+    tags: ['#debito'],
+    date: '2026-08-07',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+
+  // AUGUST 6, 2026 (-$6,471 Expense)
+  {
+    id: 'tx-aug6-1',
+    listId: 'list-1',
+    description: 'Uber mi niña',
+    amount: 6471,
+    type: 'expense',
+    categoryId: 'cat-5',
+    tags: ['#debito', '#miniña'],
+    date: '2026-08-06',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+
+  // AUGUST 5, 2026 (-$412,776 Expense, +$3,253,961 Income)
   {
     id: 'tx-1',
     listId: 'list-1',
@@ -222,7 +526,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     type: 'expense',
     categoryId: 'cat-3',
     tags: ['#debito', '#gym'],
-    date: todayIso,
+    date: '2026-08-05',
     recurrence: 'monthly',
     createdAt: new Date().toISOString(),
   },
@@ -234,7 +538,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     type: 'expense',
     categoryId: 'cat-1',
     tags: ['#credito', '#mama'],
-    date: todayIso,
+    date: '2026-08-05',
     recurrence: 'once',
     createdAt: new Date().toISOString(),
   },
@@ -246,7 +550,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     type: 'expense',
     categoryId: 'cat-1',
     tags: ['#debito', '#mama'],
-    date: todayIso,
+    date: '2026-08-05',
     recurrence: 'once',
     createdAt: new Date().toISOString(),
   },
@@ -258,7 +562,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     type: 'expense',
     categoryId: 'cat-5',
     tags: ['#debito', '#mama'],
-    date: todayIso,
+    date: '2026-08-05',
     recurrence: 'once',
     createdAt: new Date().toISOString(),
   },
@@ -270,12 +574,23 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     type: 'expense',
     categoryId: 'cat-4',
     tags: ['#credito', '#almuerzo'],
-    date: todayIso,
+    date: '2026-08-05',
+    recurrence: 'once',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'tx-9',
+    listId: 'list-1',
+    description: 'Arepas',
+    amount: 65000,
+    type: 'expense',
+    categoryId: 'cat-4',
+    tags: ['#debito'],
+    date: '2026-08-05',
     recurrence: 'once',
     createdAt: new Date().toISOString(),
   },
 
-  // TODAY INCOMES (+$313,797)
   {
     id: 'tx-6',
     listId: 'list-1',
@@ -284,7 +599,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     type: 'income',
     categoryId: 'cat-2',
     tags: ['#debito', '#papa'],
-    date: todayIso,
+    date: '2026-08-05',
     recurrence: 'once',
     createdAt: new Date().toISOString(),
   },
@@ -296,7 +611,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     type: 'income',
     categoryId: 'cat-2',
     tags: ['#debito', '#papa'],
-    date: todayIso,
+    date: '2026-08-05',
     recurrence: 'once',
     createdAt: new Date().toISOString(),
   },
@@ -308,26 +623,10 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     type: 'income',
     categoryId: 'cat-2',
     tags: ['#papa'],
-    date: todayIso,
+    date: '2026-08-05',
     recurrence: 'once',
     createdAt: new Date().toISOString(),
   },
-
-  // YESTERDAY EXPENSES (-$65,000)
-  {
-    id: 'tx-9',
-    listId: 'list-1',
-    description: 'Arepas',
-    amount: 65000,
-    type: 'expense',
-    categoryId: 'cat-4',
-    tags: ['#debito'],
-    date: yesterdayIso,
-    recurrence: 'once',
-    createdAt: new Date().toISOString(),
-  },
-
-  // YESTERDAY INCOMES (+$2,940,164)
   {
     id: 'tx-10',
     listId: 'list-1',
@@ -336,7 +635,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     type: 'income',
     categoryId: 'cat-2',
     tags: ['#debito', '#papa'],
-    date: yesterdayIso,
+    date: '2026-08-05',
     recurrence: 'once',
     createdAt: new Date().toISOString(),
   },
@@ -348,7 +647,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     type: 'income',
     categoryId: 'cat-15',
     tags: ['#credito'],
-    date: yesterdayIso,
+    date: '2026-08-05',
     recurrence: 'once',
     createdAt: new Date().toISOString(),
   },
@@ -360,12 +659,12 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     type: 'income',
     categoryId: 'cat-2',
     tags: ['#debito', '#papa'],
-    date: yesterdayIso,
+    date: '2026-08-05',
     recurrence: 'once',
     createdAt: new Date().toISOString(),
   },
 
-  // 8/4/26 EXPENSES (-$32,964)
+  // AUGUST 4, 2026 (-$32,964 Expense)
   {
     id: 'tx-13',
     listId: 'list-1',
@@ -379,7 +678,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     createdAt: new Date().toISOString(),
   },
 
-  // 8/3/26 EXPENSES (-$298,230)
+  // AUGUST 3, 2026 (-$298,230 Expense, +$147,000 Income)
   {
     id: 'tx-14',
     listId: 'list-1',
@@ -428,8 +727,6 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     recurrence: 'once',
     createdAt: new Date().toISOString(),
   },
-
-  // 8/3/26 INCOMES (+$147,000)
   {
     id: 'tx-18',
     listId: 'list-1',
@@ -443,7 +740,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     createdAt: new Date().toISOString(),
   },
 
-  // 8/2/26 EXPENSES (-$359,128)
+  // AUGUST 2, 2026 (-$359,128 Expense)
   {
     id: 'tx-19',
     listId: 'list-1',
@@ -517,7 +814,7 @@ export const INITIAL_TRANSACTIONS: TransactionData[] = [
     createdAt: new Date().toISOString(),
   },
 
-  // 8/1/26 EXPENSES (-$1,456,125)
+  // AUGUST 1, 2026 (-$1,456,125 Expense)
   {
     id: 'tx-25',
     listId: 'list-1',

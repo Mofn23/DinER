@@ -293,7 +293,7 @@ export const useAppStore = create<AppStore>()(
       },
     }),
     {
-      name: 'diner_app_storage_v2', // local storage key for iOS device
+      name: 'diner_app_storage_v5', // Local Storage key updated to v5 to force re-hydration with ALL new MonAI transactions!
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         currentListId: state.currentListId,
