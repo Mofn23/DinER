@@ -4,15 +4,21 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.3.3] - 2026-08-12
+
+### 🎙️ Extracción Robusta del Monto por Voz & Liberación del Micrófono (Solución al Punto Naranja 🟠)
+- **Extracción Inteligente de Montos en Español**:
+  - Incorporado un motor de parsing de expresiones habladas (ej: *"30 mil"*, *"30000"*, *"cincuenta mil"*, *"veinte mil"*) que garantiza detectar el valor numérico sin importar el formato devuelto por la transcripción de voz.
+- **Liberación del Micrófono de Hardware (Punto Naranja 🟠 de iOS)**:
+  - Agregada la llamada explícita a `track.stop()`, `track.enabled = false` y `recognition.abort()` al cerrar la pantalla de voz o desmontar el componente, apagando de inmediato el indicador de micrófono naranja en la barra de estado de iOS.
+
+---
+
 ## 📌 [v3.3.2] - 2026-08-12
 
 ### ⚡ Disparo de IA al Cambiar al Campo de Monto & Solución de Voz 100% Nativo iOS
-- **Categorización por IA Ejecutada al Tocar el Monto o Salir de Descripción**:
-  - Se eliminó la ejecución de la IA carácter por carácter al escribir para evitar consumo excesivo del modelo y parpadeos visuales (`stuttering`).
-  - Ahora la IA procesa la inferencia **únicamente cuando terminas de escribir el nombre y tocas el campo del monto** (o sales del campo de descripción).
-  - La **ruedita / píldora de carga `✨ Gemini Analizando...`** fue posicionada limpiamente al lado derecho de las píldoras de fecha (`Today v`) y frecuencia (`Once v`).
-- **Solución al Error de Conexión en Comandos de Voz**:
-  - Se configuró la ejecución directa de la API de Gemini 2.0 Flash desde el cliente en la app nativa iOS, solucionando el error de conexión por la ruta relativa en Capacitor.
+- **Categorización por IA Ejecutada al Tocar el Monto o Salir de Descripción**.
+- **Solución al Error de Conexión en Comandos de Voz**.
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "name": "diner",
-  "version": "3.3.2",
+  "version": "3.3.3",
   "description": "DinER Mobile Expense Tracker with Gemini AI",
   "type": "module",
   "scripts": {

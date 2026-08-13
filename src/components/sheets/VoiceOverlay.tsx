@@ -2,6 +2,50 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '@/lib/store';
 import { IconClose, IconMic, IconCheck } from '../common/Icons';
 
+// Helper to extract amounts from spoken Spanish text reliably (e.g., "30 mil", "30.000", "cincuenta mil")
+function parseSpanishAmount(text: string): number {
+  if (!text) return 0;
+  const lower = text.toLowerCase();
+
+  // 1. Check direct digit numbers with "mil" or "k" e.g., "30 mil", "30mil", "30 k"
+  const milMatch = lower.match(/(\d+)\s*(mil|k)/);
+  if (milMatch) {
+    return parseInt(milMatch[1], 10) * 1000;
+  }
+
+  // 2. Check formatted or raw digits e.g., "30.000", "50000"
+  const digitsMatch = lower.match(/\b\d+[\d\.]*\b/);
+  if (digitsMatch) {
+    const cleaned = digitsMatch[0].replace(/\./g, '');
+    const num = parseInt(cleaned, 10);
+    if (!isNaN(num) && num > 0) return num;
+  }
+
+  // 3. Spoken Spanish word numbers
+  const wordMap: Record<string, number> = {
+    'diez mil': 10000,
+    'veinte mil': 20000,
+    'treinta mil': 30000,
+    'cuarenta mil': 40000,
+    'cincuenta mil': 50000,
+    'sesenta mil': 60000,
+    'setenta mil': 70000,
+    'ochenta mil': 80000,
+    'noventa mil': 90000,
+    'cien mil': 100000,
+    'doscientos mil': 200000,
+    'quinientos mil': 500000,
+    'un millon': 1000000,
+    'un millón': 1000000,
+  };
+
+  for (const [phrase, val] of Object.entries(wordMap)) {
+    if (lower.includes(phrase)) return val;
+  }
+
+  return 0;
+}
+
 export const VoiceOverlay: React.FC = () => {
   const { activeSheet, closeSheet, addTransaction, currentListId, categories } = useAppStore();
 
@@ -19,6 +63,10 @@ export const VoiceOverlay: React.FC = () => {
     } else {
       stopSpeechRecognition();
     }
+
+    return () => {
+      stopSpeechRecognition();
+    };
   }, [activeSheet]);
 
   const requestMicPermissionAndStart = async () => {
@@ -30,7 +78,7 @@ export const VoiceOverlay: React.FC = () => {
       startSpeechRecognition();
     } catch (err: any) {
       console.warn('Microphone permission denied:', err);
-      setStatusMessage('Debes permitir acceso al micrófono en los ajustes de tu iPhone para usar esta función.');
+      setStatusMessage('Debes permitir acceso al micrófono en los ajustes de tu iPhone.');
     }
   };
 
@@ -41,7 +89,7 @@ export const VoiceOverlay: React.FC = () => {
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      setStatusMessage('Tu dispositivo no soporta reconocimiento de voz nativo. Escribe tu comando.');
+      setStatusMessage('Tu dispositivo no soporta reconocimiento de voz nativo.');
       return;
     }
 
@@ -85,20 +133,34 @@ export const VoiceOverlay: React.FC = () => {
     }
   };
 
+  // Forcefully release hardware microphone and turn off iOS status bar orange dot 🟠
   const stopSpeechRecognition = () => {
     if (recognitionRef.current) {
       try {
+        recognitionRef.current.abort();
         recognitionRef.current.stop();
       } catch {}
       recognitionRef.current = null;
     }
     if (mediaStreamRef.current) {
       try {
-        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current.getAudioTracks().forEach((track) => {
+          track.enabled = false;
+          track.stop();
+        });
+        mediaStreamRef.current.getTracks().forEach((track) => {
+          track.enabled = false;
+          track.stop();
+        });
       } catch {}
       mediaStreamRef.current = null;
     }
     setIsListening(false);
+  };
+
+  const handleClose = () => {
+    stopSpeechRecognition();
+    closeSheet();
   };
 
   const handleProcessVoiceCommand = async () => {
@@ -107,76 +169,113 @@ export const VoiceOverlay: React.FC = () => {
     setIsProcessing(true);
     setStatusMessage('✨ Gemini 2.0 Flash procesando tu comando...');
 
+    // Extract fallback amount immediately from transcript text
+    const fallbackAmount = parseSpanishAmount(transcript);
+
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
 
     try {
-      const categoriesPrompt = categories
-        ? categories.map((c: any) => `ID: "${c.id}", Name: "${c.name}", Type: "${c.type}"`).join('\n')
-        : '';
+      let parsedAmount = fallbackAmount;
+      let parsedDescription = transcript;
+      let parsedType: 'expense' | 'income' = 'expense';
+      let parsedCategoryId = categories[0]?.id || 'cat-1';
+      let parsedTags: string[] = [];
 
-      const promptText = `
+      if (apiKey) {
+        const categoriesPrompt = categories
+          ? categories.map((c: any) => `ID: "${c.id}", Name: "${c.name}", Type: "${c.type}"`).join('\n')
+          : '';
+
+        const promptText = `
 You are a voice transaction parser for DinER expense tracking app in Colombia.
-Extract transaction parameters from the following spoken voice command transcript:
-
-Spoken Transcript: "${transcript}"
+Extract transaction parameters from the spoken transcript: "${transcript}"
 
 Available Categories:
 ${categoriesPrompt}
 
-Currency is COP (Colombian Pesos). Note: Phrases like "45 mil", "45k", "45000" mean amount 45000.
-
-Return ONLY valid JSON matching this exact structure:
-{
-  "description": "Clean concise transaction description title string (e.g. McDonald's)",
-  "amount": numeric integer value (e.g. 45000),
-  "type": "expense" or "income",
-  "categoryId": "matched category ID string or null",
-  "tags": ["array", "of", "#lowercase_tags"]
-}
+Return ONLY raw JSON with keys "description", "amount" (integer), "type" ("expense" or "income"), "categoryId", "tags".
+Do not surround with markdown code blocks.
 `;
 
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-      const res = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: promptText }] }],
-          generationConfig: {
-            responseMimeType: 'application/json',
-            temperature: 0.1,
-          },
-        }),
-      });
+        const res = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: promptText }] }],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              temperature: 0.1,
+            },
+          }),
+        });
 
-      if (res.ok) {
-        const data = await res.json();
-        const candidateText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (candidateText) {
-          const parsed = JSON.parse(candidateText);
-          if (parsed.amount && parsed.amount > 0) {
-            addTransaction({
-              listId: currentListId,
-              description: parsed.description || 'Voice Transaction',
-              amount: parsed.amount,
-              type: parsed.type || 'expense',
-              categoryId: parsed.categoryId || categories[0]?.id || 'cat-1',
-              tags: parsed.tags || [],
-              date: new Date().toISOString().split('T')[0],
-              recurrence: 'once',
-            });
-            setStatusMessage('¡Transacción registrada con éxito!');
-            setTimeout(() => {
-              closeSheet();
-            }, 800);
-            return;
+        if (res.ok) {
+          const data = await res.json();
+          let rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          // Clean markdown backticks if any
+          rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+
+          if (rawText) {
+            try {
+              const aiParsed = JSON.parse(rawText);
+              if (aiParsed.amount && typeof aiParsed.amount === 'number' && aiParsed.amount > 0) {
+                parsedAmount = aiParsed.amount;
+              }
+              if (aiParsed.description) parsedDescription = aiParsed.description;
+              if (aiParsed.type) parsedType = aiParsed.type;
+              if (aiParsed.categoryId) parsedCategoryId = aiParsed.categoryId;
+              if (Array.isArray(aiParsed.tags)) parsedTags = aiParsed.tags;
+            } catch (err) {
+              console.warn('JSON parse error from Gemini text:', err);
+            }
           }
         }
       }
-      setStatusMessage('No pudimos detectar un monto claro. Inténtalo de nuevo.');
+
+      if (parsedAmount > 0) {
+        addTransaction({
+          listId: currentListId,
+          description: parsedDescription,
+          amount: parsedAmount,
+          type: parsedType,
+          categoryId: parsedCategoryId,
+          tags: parsedTags,
+          date: new Date().toISOString().split('T')[0],
+          recurrence: 'once',
+        });
+
+        stopSpeechRecognition();
+        setStatusMessage('¡Transacción registrada con éxito!');
+        setTimeout(() => {
+          closeSheet();
+        }, 600);
+      } else {
+        setStatusMessage('No pudimos detectar un monto claro en la frase. Intenta incluir el valor (ej: 30 mil).');
+      }
     } catch (err) {
       console.error('Voice processing error:', err);
-      setStatusMessage('Error procesando el comando.');
+      // Even if API throws, if fallbackAmount exists, save it!
+      if (fallbackAmount > 0) {
+        addTransaction({
+          listId: currentListId,
+          description: transcript,
+          amount: fallbackAmount,
+          type: 'expense',
+          categoryId: categories[0]?.id || 'cat-1',
+          tags: [],
+          date: new Date().toISOString().split('T')[0],
+          recurrence: 'once',
+        });
+        stopSpeechRecognition();
+        setStatusMessage('¡Transacción registrada con éxito!');
+        setTimeout(() => {
+          closeSheet();
+        }, 600);
+      } else {
+        setStatusMessage('No pudimos detectar un monto claro en la frase.');
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -192,7 +291,7 @@ Return ONLY valid JSON matching this exact structure:
           Comando por Voz IA
         </span>
         <button
-          onClick={closeSheet}
+          onClick={handleClose}
           className="w-10 h-10 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white active:scale-95 transition-transform"
         >
           <IconClose className="w-5 h-5 text-white" />
