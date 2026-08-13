@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
 import { filterTransactionsByPeriod, getCategoryTotals } from '@/lib/utils';
 import { checkAndNotifyUpcomingSubscriptions } from '@/lib/notifications';
@@ -10,6 +10,7 @@ import { TotalBlock } from '@/components/home/TotalBlock';
 import { BarChart } from '@/components/home/BarChart';
 import { TransactionList } from '@/components/home/TransactionList';
 import { FloatingControls } from '@/components/home/FloatingControls';
+import { SubscriptionsHubView } from '@/components/subscriptions/SubscriptionsHubView';
 
 // Sheets
 import { TransactionSheet } from '@/components/sheets/TransactionSheet';
@@ -38,6 +39,8 @@ export default function HomePage() {
     isSearchActive,
     searchQuery,
   } = useAppStore();
+
+  const [currentView, setCurrentView] = useState<'finance' | 'subscriptions'>('finance');
 
   // Register Service Worker & check subscription notifications on startup
   useEffect(() => {
@@ -110,38 +113,70 @@ export default function HomePage() {
     <main className="w-full h-full min-h-screen bg-[#0B0B0D] text-[#F5F5F7] flex flex-col justify-between overflow-x-hidden relative">
       {/* Scrollable Main Content Container */}
       <div className="flex-1 overflow-y-auto no-scrollbar px-5 pb-32">
-        {/* 1. Top Bar / Search Header */}
+        {/* Top Header & Search */}
         <TopBar />
 
-        {/* 2. Month Strip (visible when calendar is toggled) */}
-        {!isSearchActive && <MonthStrip />}
+        {/* View Segment Switcher: Gastos & Finanzas vs Suscripciones Hub */}
+        {!isSearchActive && (
+          <div className="flex items-center justify-between p-1 rounded-2xl bg-[#1C1C1E] border border-white/10 mb-4">
+            <button
+              onClick={() => setCurrentView('finance')}
+              className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
+                currentView === 'finance'
+                  ? 'bg-[#34C759] text-white shadow-sm'
+                  : 'text-[#8E8E93] hover:text-white'
+              }`}
+            >
+              Gastos & Finanzas 💳
+            </button>
+            <button
+              onClick={() => setCurrentView('subscriptions')}
+              className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
+                currentView === 'subscriptions'
+                  ? 'bg-[#34C759] text-white shadow-sm'
+                  : 'text-[#8E8E93] hover:text-white'
+              }`}
+            >
+              Suscripciones 📺
+            </button>
+          </div>
+        )}
 
-        {/* 3. Total Block (Dynamically reflects category filter total!) */}
-        <TotalBlock
-          netTotal={netTotal}
-          totalExpense={totalExpense}
-          totalIncome={totalIncome}
-        />
+        {currentView === 'finance' ? (
+          <>
+            {/* Month Strip (visible when calendar is toggled) */}
+            {!isSearchActive && <MonthStrip />}
 
-        {/* 4. Category Bar Chart */}
-        <BarChart
-          categoryTotals={categoryTotals}
-          selectedCategoryFilter={selectedCategoryFilter}
-          onSelectCategory={setSelectedCategoryFilter}
-        />
+            {/* Total Block */}
+            <TotalBlock
+              netTotal={netTotal}
+              totalExpense={totalExpense}
+              totalIncome={totalIncome}
+            />
 
-        {/* 5. Grouped Transaction List */}
-        <TransactionList
-          transactions={filteredListTx}
-          categories={categories}
-          onSelectTransaction={(txId) => openSheet('edit_tx', txId)}
-        />
+            {/* Category Bar Chart */}
+            <BarChart
+              categoryTotals={categoryTotals}
+              selectedCategoryFilter={selectedCategoryFilter}
+              onSelectCategory={setSelectedCategoryFilter}
+            />
+
+            {/* Grouped Transaction List */}
+            <TransactionList
+              transactions={filteredListTx}
+              categories={categories}
+              onSelectTransaction={(txId) => openSheet('edit_tx', txId)}
+            />
+          </>
+        ) : (
+          <SubscriptionsHubView />
+        )}
       </div>
 
-      {/* 6. Floating Controls */}
+      {/* Floating Controls */}
       <FloatingControls />
 
-      {/* 7. Sheet Modals & Overlays */}
+      {/* Sheet Modals & Overlays */}
       <TransactionSheet />
       <SettingsSheet />
       <CategoriesSheet />

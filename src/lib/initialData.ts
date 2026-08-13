@@ -33,6 +33,13 @@ export interface SubscriptionData {
   tags: string[];
   lastPaidDate?: string;
   createdAt: string;
+  provider?: string;
+  cancelUrl?: string;
+  cancelSteps?: string;
+  notes?: string;
+  trialEndDate?: string | null;
+  flaggedLowUsage?: boolean;
+  status?: 'ACTIVE' | 'TRIAL' | 'TO_CANCEL' | 'VERIFIED_CANCELLED';
 }
 
 export interface ListData {
@@ -74,7 +81,7 @@ export const INITIAL_CATEGORIES: CategoryData[] = [
 
 export const INITIAL_TAGS: string[] = [
   '#debito', '#credito', '#mama', '#papa', '#gym', '#almuerzo',
-  '#icloud+', '#suscripción', '#carrro'
+  '#icloud+', '#suscripción', '#carrro', '#movistar', '#apple', '#netflix', '#chatgpt'
 ];
 
 // Bogota Local Dates
@@ -97,6 +104,11 @@ export const INITIAL_SUBSCRIPTIONS: SubscriptionData[] = [
     categoryId: 'cat-6',
     tags: ['#icloud+', '#credito'],
     lastPaidDate: '2026-08-03',
+    provider: 'Apple',
+    cancelUrl: 'https://support.apple.com/subscriptions',
+    cancelSteps: 'Ajustes de iOS -> iCloud -> Gestionar almacenamiento',
+    notes: '200GB almacenamiento familiar',
+    status: 'ACTIVE',
     createdAt: new Date().toISOString(),
   },
   {
@@ -110,6 +122,7 @@ export const INITIAL_SUBSCRIPTIONS: SubscriptionData[] = [
     categoryId: 'cat-6',
     tags: ['#suscripción', '#credito'],
     lastPaidDate: '2026-08-03',
+    status: 'ACTIVE',
     createdAt: new Date().toISOString(),
   },
   {
@@ -123,6 +136,78 @@ export const INITIAL_SUBSCRIPTIONS: SubscriptionData[] = [
     categoryId: 'cat-3',
     tags: ['#debito', '#gym'],
     lastPaidDate: todayIso,
+    provider: 'Bodyfit',
+    notes: 'Gimnasio principal',
+    status: 'ACTIVE',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'sub-4',
+    listId: 'list-1',
+    name: 'Datos mamá',
+    emoji: '📱',
+    amount: 35000,
+    frequency: 'monthly',
+    billingDay: 1,
+    categoryId: 'cat-1',
+    tags: ['#debito', '#movistar', '#mama'],
+    provider: 'Movistar',
+    cancelUrl: 'https://www.movistar.co',
+    cancelSteps: 'Llamar al servicio al cliente o ingresar a Mi Movistar',
+    notes: 'Plan móvil familiar',
+    status: 'ACTIVE',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'sub-5',
+    listId: 'list-1',
+    name: 'Apple Music',
+    emoji: '🎵',
+    amount: 8500,
+    frequency: 'monthly',
+    billingDay: 15,
+    categoryId: 'cat-7',
+    tags: ['#credito', '#apple'],
+    provider: 'Apple',
+    cancelUrl: 'https://support.apple.com/subscriptions',
+    cancelSteps: 'Ajustes de iOS -> Apple ID -> Suscripciones',
+    notes: 'Música en alta definición',
+    status: 'ACTIVE',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'sub-6',
+    listId: 'list-1',
+    name: 'Netflix Premium',
+    emoji: '🍿',
+    amount: 44900,
+    frequency: 'monthly',
+    billingDay: 12,
+    categoryId: 'cat-6',
+    tags: ['#credito', '#netflix'],
+    provider: 'Netflix',
+    cancelUrl: 'https://www.netflix.com/youraccount',
+    cancelSteps: 'Cuenta -> Cancelar membresía',
+    notes: 'Plan 4K UHD',
+    status: 'ACTIVE',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'sub-7',
+    listId: 'list-1',
+    name: 'ChatGPT Plus',
+    emoji: '🤖',
+    amount: 84000,
+    frequency: 'monthly',
+    billingDay: 18,
+    categoryId: 'cat-6',
+    tags: ['#credito', '#chatgpt'],
+    provider: 'OpenAI',
+    cancelUrl: 'https://chatgpt.com',
+    cancelSteps: 'My Account -> Manage Subscription',
+    notes: 'Acceso GPT-4o',
+    status: 'ACTIVE',
+    flaggedLowUsage: false,
     createdAt: new Date().toISOString(),
   },
 ];

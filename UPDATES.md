@@ -4,6 +4,23 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.0.0] - 2026-08-12
+
+### 🚀 Fusión Completa DinER + Subscription Manager (Optimización de Cupo SideStore)
+- **Fusión Total de Ambas Aplicaciones**:
+  - Se unificaron las funcionalidades de **Subscription Manager** dentro del núcleo de **DinER**, liberando 1 cupo completo en la cuenta gratuita de desarrollador de SideStore.
+- **Sin Pérdida de Datos**:
+  - Se conservaron el 100% de las 35 transacciones reales de DinER y se integraron todas las suscripciones existentes (`Datos mamá`, `Apple Music`, `iCloud+`, `Netflix Premium`, `ChatGPT Plus`, `WhatsApp plus`, `Bodyfit Fitness Center`).
+- **Hub Completo de Suscripciones Integrado (`SubscriptionsHubView.tsx`)**:
+  - **📱 Todas**: Lista de suscripciones con botón de pago instantáneo a 1 tap.
+  - **⏰ Timeline**: Línea de tiempo cronológica con horizonte temporal de 7 días, 30 días, 90 días y 1 año.
+  - **💡 Fugas de Dinero & Proyecciones (`InsightsTab.tsx`)**: Detector de pruebas gratuitas (trials) por vencer y cálculo de dinero a ahorrar.
+  - **🚫 Centro de Cancelación (`CancellationTab.tsx`)**: Guías paso a paso para cancelar servicios y contador de dinero total recuperado.
+- **Selector de Vista Superior en Pantalla Principal**:
+  - Conmutador en la barra superior entre **Gastos & Finanzas 💳** y **Suscripciones 📺**.
+
+---
+
 ## 📌 [v2.0.0] - 2026-08-12
 
 ### 📱 Conversión a App Nativa iOS 100% Offline (SideStore Compatible)
@@ -11,28 +28,20 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
   - La aplicación ahora es **100% independiente y local**. Se eliminaron todas las dependencias de servidores remotos o Vercel.
 - **Almacenamiento Local Autónomo (Zustand Persist)**:
   - Implementación del middleware `persist` sobre `localStorage` local en el iPhone.
-  - Todas las transacciones, categorías personalizadas, presupuestos, suscripciones y configuraciones se guardan localmente en tu dispositivo y se conservan tras cerrar o reiniciar la app.
-- **Eliminación de Módulos Innecesarios de Widgets**:
-  - Removido el sistema de widgets para garantizar la máxima ligereza y estabilidad.
 - **Compilación Automatizada de Archivo `.ipa` (GitHub Actions Pipeline)**:
   - Creado el workflow automatizado `.github/workflows/build-ios.yml`.
-  - Cada vez que se hace push al repositorio, GitHub Actions compila automáticamente la aplicación nativa en formato `DinER.ipa` compatible con **SideStore** y **AltStore** y la publica en GitHub Releases.
 
 ---
 
 ## 📌 [v1.7.0] - 2026-08-07
 
 ### 🔔 Notificaciones Push para Suscripciones & PWA Service Worker
-- **Service Worker Nativo PWA (`public/sw.js`)**: Registro de Service Worker para notificaciones Push.
 
 ---
 
 ## 📌 [v1.6.0] - 2026-08-07
 
 ### 📺 Nueva Sección Completa de Suscripciones (Subscription Manager)
-- **Acceso desde Ajustes**: Nueva opción **"Suscripciones"** agregada dentro del panel de Ajustes (`SettingsSheet`).
-- **Tarjetas de Cálculo de Costos (Mensual vs Anual)**: Cálculo en tiempo real.
-- **Acción "Pagar Suscripción"**: Botón **Pagar** que genera transacciones automáticas.
 
 ---
 
