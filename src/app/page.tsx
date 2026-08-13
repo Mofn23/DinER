@@ -21,6 +21,7 @@ import { RecurrenceSheet } from '@/components/sheets/RecurrenceSheet';
 import { BudgetsSheet } from '@/components/sheets/BudgetsSheet';
 import { ListsSheet } from '@/components/sheets/ListsSheet';
 import { SubscriptionsSheet } from '@/components/sheets/SubscriptionsSheet';
+import { AiMemorySheet } from '@/components/sheets/AiMemorySheet';
 import { VoiceOverlay } from '@/components/sheets/VoiceOverlay';
 
 export default function HomePage() {
@@ -188,6 +189,7 @@ export default function HomePage() {
       <BudgetsSheet />
       <ListsSheet />
       <SubscriptionsSheet />
+      <AiMemorySheet />
       <VoiceOverlay />
     </main>
   );

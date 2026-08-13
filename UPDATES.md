@@ -4,13 +4,26 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.3.0] - 2026-08-12
+
+### 🤖 Integración Total de Inteligencia Artificial (Gemini 2.0 Flash) & Registro por Voz
+- **Auto-Categorización e Inferencia de Emojis con Gemini 2.0 Flash**:
+  - Al ingresar una descripción (ej: *"Almuerzo con mi niña 25000"*), la IA categoriza automáticamente el gasto o ingreso y selecciona el emoji contextual adecuado.
+- **Aprendizaje y Memoria IA (`Ajustes ➔ Aprendizaje IA`)**:
+  - Si categorizas manualmente *"Mi niña"* como **Amorcito**, la IA guarda la regla en su memoria. Las siguientes veces que escribas la frase, asignará **Amorcito** instantáneamente.
+  - Nueva sección en Ajustes para visualizar, añadir y gestionar las reglas aprendidas por la IA.
+- **Registro por Voz Nativo con Procesamiento IA**:
+  - Al tocar el botón de micrófono 🎙️, puedes hablar libremente (ej: *"Gasto de 45 mil pesos en hamburguesa de McDonald's con crédito"*). La IA analiza la transcripción, extrae el valor (`$45.000`), la descripción, categoría e imprime la transacción lista para guardar.
+- **Cero Configuración de API Key en la App**:
+  - Backend integrado de Gemini para que el usuario disfrute la IA directamente sin configurar nada.
+
+---
+
 ## 📌 [v3.2.8] - 2026-08-12
 
 ### 🎨 Ajuste de Borde Seguro Dynamic Island & Ubicación de Píldoras
-- **Ajuste de Margen Superior para Dynamic Island**:
-  - Ajustada la altura del modal a `h-[calc(100vh-68px)]` para que la tarjeta emerja y repose limpiamente por debajo del Dynamic Island y la barra de estado de iOS.
-- **Ubicación de Píldoras `Today v` y `Once v` sobre Descripción**:
-  - Trasladadas las píldoras de fecha y frecuencia para que queden ubicadas justo arriba del campo `Description`, prácticamente pegadas con un espaciado vertical súper sutil idéntico a MonAI.
+- **Ajuste de Margen Superior para Dynamic Island**.
+- **Ubicación de Píldoras `Today v` y `Once v` sobre Descripción**.
 
 ---
 

@@ -26,6 +26,7 @@ export type ActiveSheet =
   | 'budgets'
   | 'lists'
   | 'subscriptions'
+  | 'ai_memory'
   | 'voice';
 
 interface AppSettings {
@@ -44,6 +45,7 @@ interface AppStore {
   transactions: TransactionData[];
   budgets: BudgetData[];
   subscriptions: SubscriptionData[];
+  aiMemory: Record<string, string>; // User phrase -> categoryId rule mapping
   settings: AppSettings;
 
   activeType: 'expense' | 'income';
@@ -94,6 +96,10 @@ interface AppStore {
   deleteSubscription: (id: string) => void;
   paySubscription: (id: string) => void;
 
+  // AI Memory Rules
+  addAiRule: (phrase: string, categoryId: string) => void;
+  deleteAiRule: (phrase: string) => void;
+
   // Settings
   updateSettings: (settings: Partial<AppSettings>) => void;
 
@@ -103,6 +109,15 @@ interface AppStore {
   // Lists CRUD
   addList: (name: string) => void;
 }
+
+// Initial AI Memory default rules
+const INITIAL_AI_MEMORY: Record<string, string> = {
+  'mi niña': 'cat-12',
+  'amorcito': 'cat-12',
+  'bodyfit': 'cat-3',
+  'mamá': 'cat-1',
+  'papá': 'cat-2',
+};
 
 // Function to recover any saved subscriptions from existing localStorage keys
 function getSavedSubscriptionsFromLocalStorage(): SubscriptionData[] | null {
@@ -140,9 +155,10 @@ export const useAppStore = create<AppStore>()(
       transactions: INITIAL_TRANSACTIONS,
       budgets: INITIAL_BUDGETS,
       subscriptions: getSavedSubscriptionsFromLocalStorage() || INITIAL_SUBSCRIPTIONS,
+      aiMemory: INITIAL_AI_MEMORY,
       settings: {
         showIncome: true,
-        rollover: true, // Default to TRUE so balance rolls over seamlessly every month!
+        rollover: true,
         currency: 'COP',
         voiceLanguage: 'ES',
       },
@@ -278,6 +294,25 @@ export const useAppStore = create<AppStore>()(
         }));
       },
 
+      addAiRule: (phrase, categoryId) => {
+        const cleaned = phrase.toLowerCase().trim();
+        if (!cleaned) return;
+        set((state) => ({
+          aiMemory: {
+            ...state.aiMemory,
+            [cleaned]: categoryId,
+          },
+        }));
+      },
+
+      deleteAiRule: (phrase) => {
+        set((state) => {
+          const updated = { ...state.aiMemory };
+          delete updated[phrase.toLowerCase().trim()];
+          return { aiMemory: updated };
+        });
+      },
+
       updateSettings: (newSettings) => {
         set((state) => ({
           settings: { ...state.settings, ...newSettings },
@@ -329,6 +364,7 @@ export const useAppStore = create<AppStore>()(
         transactions: state.transactions,
         budgets: state.budgets,
         subscriptions: state.subscriptions,
+        aiMemory: state.aiMemory,
         settings: state.settings,
       }),
     }

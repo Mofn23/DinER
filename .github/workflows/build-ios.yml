@@ -58,14 +58,16 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.2.8
-          name: DinER Native iOS App v3.2.8 (SideStore IPA)
+          tag_name: v3.3.0
+          name: DinER Native iOS App v3.3.0 (Gemini 2.0 Flash AI & Voice IPA)
           body: |
-            ## DinER Native iOS App v3.2.8 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.3.0 (SideStore / AltStore Compatible)
             
-            ### 🎨 Card Top Clearance & Pill Placement Adjustments:
-            - **Dynamic Island Clearance**: Lowered top card position to `h-[calc(100vh-68px)]` so the top of the transaction modal sits cleanly below the Dynamic Island / iOS status bar notch.
-            - **Pill Placement Directly Above Description**: Moved `Today v` and `Once v` chips to sit snugly right above the `Description` text input with tight vertical spacing matching MonAI 1:1.
+            ### 🤖 Gemini 2.0 Flash AI & Voice Features:
+            - **Instant Gemini AI Auto-Categorization & Emoji Engine**: Automatically infers category (`Amorcito 💙`, `Comida 🍲`, etc.) and contextual emojis as you type transaction descriptions.
+            - **AI Memory & Learning Registry (Ajustes ➔ Aprendizaje IA)**: Remembers your custom rules (e.g. `Mi niña = Amorcito`). Overriding a category automatically teaches Gemini your custom rules for future instant recognition.
+            - **Voice Transaction Processing System**: Speak naturally into the red mic FAB (e.g., *"Gasto de 30 mil en almuerzo con tarjeta"*), and Gemini AI extracts amount, description, category, and tags to populate the transaction form automatically.
+            - **Zero User Configuration**: Server-side Gemini API key integration requires no key setup from the user inside the app.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.

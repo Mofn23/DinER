@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '@/lib/store';
 import { getLocalDateString } from '@/lib/utils';
-import { matchCategoryFromDescription } from '@/lib/autoCategory';
 import {
   IconClose,
   IconChevronDown,
@@ -20,11 +19,13 @@ export const TransactionSheet: React.FC = () => {
     tags,
     currentListId,
     settings,
+    aiMemory,
     addTransaction,
     updateTransaction,
     deleteTransaction,
     addCategory,
     addTag,
+    addAiRule,
   } = useAppStore();
 
   const isEditing = activeSheet === 'edit_tx' && Boolean(editingTransactionId);
@@ -43,6 +44,8 @@ export const TransactionSheet: React.FC = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [hasManuallySelectedCategory, setHasManuallySelectedCategory] = useState(false);
+  const [isAiSuggesting, setIsAiSuggesting] = useState(false);
+  const [aiSourceTag, setAiSourceTag] = useState<string | null>(null);
 
   // Inline Category Creator
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
@@ -57,8 +60,9 @@ export const TransactionSheet: React.FC = () => {
   // Dropdown states
   const [isRecurrenceOpen, setIsRecurrenceOpen] = useState(false);
 
-  // Refs for auto-focus
+  // Refs for auto-focus and debounce
   const descriptionInputRef = useRef<HTMLInputElement>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (editingTx) {
@@ -79,6 +83,7 @@ export const TransactionSheet: React.FC = () => {
       setSelectedCategoryId(categories[0]?.id || '');
       setSelectedTags([]);
       setHasManuallySelectedCategory(false);
+      setAiSourceTag(null);
     }
 
     if (activeSheet === 'add_tx' || activeSheet === 'edit_tx') {
@@ -102,27 +107,58 @@ export const TransactionSheet: React.FC = () => {
     setAmount(formatted);
   };
 
-  // Smart Auto-Categorization on description change
+  // Smart Hybrid Gemini 2.0 Flash AI Auto-Categorization
   const handleDescriptionChange = (val: string) => {
     setDescription(val);
-    if (!hasManuallySelectedCategory) {
-      const autoMatchedId = matchCategoryFromDescription(val, categories);
-      if (autoMatchedId) {
-        setSelectedCategoryId(autoMatchedId);
-        const catObj = categories.find((c) => c.id === autoMatchedId);
-        if (catObj) {
-          setTxType(catObj.type);
-        }
-      }
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
     }
+
+    if (!val.trim() || hasManuallySelectedCategory) return;
+
+    debounceTimerRef.current = setTimeout(async () => {
+      setIsAiSuggesting(true);
+      try {
+        const res = await fetch('/api/ai-parse', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            description: val,
+            categories,
+            aiMemory,
+          }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.categoryId && !hasManuallySelectedCategory) {
+            setSelectedCategoryId(data.categoryId);
+            if (data.type) setTxType(data.type);
+            setAiSourceTag(data.source === 'memory' ? '🧠 AI Memory' : '✨ Gemini AI');
+          }
+        }
+      } catch (err) {
+        console.warn('AI parsing failed:', err);
+      } finally {
+        setIsAiSuggesting(false);
+      }
+    }, 280);
   };
 
   const handleCategorySelect = (catId: string) => {
     setSelectedCategoryId(catId);
     setHasManuallySelectedCategory(true);
+    setAiSourceTag(null);
+
     const catObj = categories.find((c) => c.id === catId);
     if (catObj) {
       setTxType(catObj.type);
+    }
+
+    // Automatically save learned rule into AI Memory if description exists!
+    if (description.trim()) {
+      addAiRule(description.trim(), catId);
     }
   };
 
@@ -219,7 +255,17 @@ export const TransactionSheet: React.FC = () => {
       {/* MonAI Bottom Sheet Card: Sits comfortably below Dynamic Island (h-[calc(100vh-68px)]), rounded top corners [36px] */}
       <div className="w-full max-w-[430px] mx-auto h-[calc(100vh-68px)] bg-[#131313] border-t border-white/10 rounded-t-[36px] px-5 pt-4 pb-[max(env(safe-area-inset-bottom,20px),20px)] flex flex-col justify-between shadow-2xl animate-slide-up relative overflow-y-auto no-scrollbar">
         {/* Top Header Row with Close Button ✕ in top right */}
-        <div className="flex items-center justify-end pt-1 mb-1">
+        <div className="flex items-center justify-between pt-1 mb-1">
+          {aiSourceTag ? (
+            <div className="px-2.5 py-1 rounded-full bg-[#34C759]/20 border border-[#34C759]/30 text-[#34C759] font-extrabold text-[11px] flex items-center gap-1 animate-fade-in">
+              <span>{aiSourceTag}</span>
+            </div>
+          ) : isAiSuggesting ? (
+            <div className="px-2.5 py-1 rounded-full bg-[#2A2A2C] text-[#8E8E93] font-bold text-[11px] animate-pulse">
+              <span>✨ Gemini Analizando...</span>
+            </div>
+          ) : <div />}
+
           <button
             onClick={closeSheet}
             aria-label="Close"

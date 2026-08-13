@@ -23,6 +23,21 @@ export const SettingsSheet: React.FC = () => {
 
         {/* Options List */}
         <div className="flex flex-col gap-3 my-auto">
+          {/* AI Memory Registry Option */}
+          <button
+            onClick={() => openSheet('ai_memory')}
+            className="w-full h-14 px-4 rounded-2xl bg-[#1C1C1E] border border-white/10 flex items-center justify-between text-white font-bold text-base active:scale-95 transition-transform hover:border-white/20"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🧠</span>
+              <div className="flex flex-col text-left">
+                <span className="text-white font-extrabold">Aprendizaje IA (AI Memory)</span>
+                <span className="text-[#8E8E93] text-xs font-semibold">Reglas personalizadas de Gemini IA</span>
+              </div>
+            </div>
+            <IconChevronDown className="w-5 h-5 text-[#8E8E93] -rotate-90" />
+          </button>
+
           {/* Subscriptions Feature */}
           <button
             onClick={() => openSheet('subscriptions')}
@@ -113,7 +128,7 @@ export const SettingsSheet: React.FC = () => {
 
         {/* Footer info */}
         <div className="text-center text-[#8E8E93] text-xs font-bold pt-6">
-          DinER Native iOS v3.2.8
+          DinER Native iOS v3.3.0
         </div>
       </div>
     </div>
