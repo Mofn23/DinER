@@ -216,12 +216,23 @@ export const TransactionSheet: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end animate-fade-in overflow-hidden">
-      {/* MonAI Bottom Sheet Card: Rounded top corners [36px], full width, leaving top status bar space */}
-      <div className="w-full max-w-[430px] mx-auto h-[calc(100vh-44px)] bg-[#131313] border-t border-white/10 rounded-t-[36px] px-5 pt-4 pb-[max(env(safe-area-inset-bottom,20px),20px)] flex flex-col justify-between shadow-2xl animate-slide-up relative overflow-y-auto no-scrollbar">
-        {/* Top Header Row with Close Button */}
-        <div className="flex items-center justify-between pt-1 mb-2">
-          {/* Small Delicate Date & Recurrence Pills */}
-          <div className="flex items-center gap-2">
+      {/* MonAI Bottom Sheet Card: Sits comfortably below Dynamic Island (h-[calc(100vh-68px)]), rounded top corners [36px] */}
+      <div className="w-full max-w-[430px] mx-auto h-[calc(100vh-68px)] bg-[#131313] border-t border-white/10 rounded-t-[36px] px-5 pt-4 pb-[max(env(safe-area-inset-bottom,20px),20px)] flex flex-col justify-between shadow-2xl animate-slide-up relative overflow-y-auto no-scrollbar">
+        {/* Top Header Row with Close Button ✕ in top right */}
+        <div className="flex items-center justify-end pt-1 mb-1">
+          <button
+            onClick={closeSheet}
+            aria-label="Close"
+            className="w-9 h-9 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white active:scale-95 transition-transform shrink-0"
+          >
+            <IconClose className="w-4 h-4 text-white" />
+          </button>
+        </div>
+
+        {/* Main Content Group */}
+        <div className="flex flex-col gap-3 my-auto">
+          {/* Small Delicate Date & Recurrence Pills (Sitting snugly right above Description) */}
+          <div className="flex items-center gap-2 mb-1">
             {/* Date Chip */}
             <div className="relative">
               <input
@@ -274,18 +285,6 @@ export const TransactionSheet: React.FC = () => {
             </div>
           </div>
 
-          {/* Top Right Close Button ✕ */}
-          <button
-            onClick={closeSheet}
-            aria-label="Close"
-            className="w-9 h-9 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white active:scale-95 transition-transform shrink-0"
-          >
-            <IconClose className="w-4 h-4 text-white" />
-          </button>
-        </div>
-
-        {/* Main Content Group */}
-        <div className="flex flex-col gap-3 my-auto">
           {/* Description Input (MonAI 32px font-black with autoFocus) */}
           <div>
             <input

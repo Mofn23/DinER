@@ -4,15 +4,22 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.2.8] - 2026-08-12
+
+### 🎨 Ajuste de Borde Seguro Dynamic Island & Ubicación de Píldoras
+- **Ajuste de Margen Superior para Dynamic Island**:
+  - Ajustada la altura del modal a `h-[calc(100vh-68px)]` para que la tarjeta emerja y repose limpiamente por debajo del Dynamic Island y la barra de estado de iOS.
+- **Ubicación de Píldoras `Today v` y `Once v` sobre Descripción**:
+  - Trasladadas las píldoras de fecha y frecuencia para que queden ubicadas justo arriba del campo `Description`, prácticamente pegadas con un espaciado vertical súper sutil idéntico a MonAI.
+
+---
+
 ## 📌 [v3.2.7] - 2026-08-12
 
 ### 🎨 Tarjeta Estilo MonAI 1:1 en Transacciones & Eliminación de Animación de Gráficas
-- **Eliminación Total de la Animación de Colapso de Gráficas**:
-  - Removidos los efectos de escala, opacidad y movimiento al hacer scroll. La gráfica de barras ahora es completamente estática y limpia.
-- **Rediseño de la Tarjeta Modal de Agregar Transacción (`TransactionSheet`)**:
-  - La interfaz ahora se despliega como una tarjeta flotante desde la parte inferior con esquinas superiores redondeadas (`rounded-t-[36px]`), dejando únicamente la franja superior correspondiente a la barra de estado de iOS.
-- **Píldoras Sutiles y Pequeñas de Fecha & Frecuencia**:
-  - Las opciones `Today v` y `Once v` fueron reducidas a un tamaño delicado y compacto siguiendo 1:1 el diseño de MonAI.
+- **Eliminación Total de la Animación de Colapso de Gráficas**.
+- **Rediseño de la Tarjeta Modal de Agregar Transacción (`TransactionSheet`)**.
+- **Píldoras Sutiles y Pequeñas de Fecha & Frecuencia**.
 
 ---
 

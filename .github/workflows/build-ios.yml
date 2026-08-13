@@ -58,15 +58,14 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.2.7
-          name: DinER Native iOS App v3.2.7 (SideStore IPA)
+          tag_name: v3.2.8
+          name: DinER Native iOS App v3.2.8 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.2.7 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.2.8 (SideStore / AltStore Compatible)
             
-            ### 🎨 MonAI Card Sheet & Static Bar Chart Redesign:
-            - **Removed Bar Chart Scroll Animation**: Bar chart renders as a clean, static, fixed component with zero collapse or jitter.
-            - **MonAI Bottom Card Sheet Redesign**: Redesigned `TransactionSheet` into a full-bleed MonAI bottom card with rounded top corners (`rounded-t-[36px]`), leaving space for top status bar.
-            - **Delicate Date & Recurrence Chips**: Scaled down `Today v` and `Once v` pills into small, refined MonAI chips.
+            ### 🎨 Card Top Clearance & Pill Placement Adjustments:
+            - **Dynamic Island Clearance**: Lowered top card position to `h-[calc(100vh-68px)]` so the top of the transaction modal sits cleanly below the Dynamic Island / iOS status bar notch.
+            - **Pill Placement Directly Above Description**: Moved `Today v` and `Once v` chips to sit snugly right above the `Description` text input with tight vertical spacing matching MonAI 1:1.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.
