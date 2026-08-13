@@ -9,7 +9,7 @@ export const SettingsSheet: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-[#0B0B0D] flex flex-col justify-between animate-fade-in overflow-y-auto no-scrollbar">
-      <div className="w-full h-full max-w-[390px] mx-auto flex flex-col justify-between px-5 pt-12 pb-6 relative min-h-screen">
+      <div className="w-full h-full max-w-[390px] mx-auto flex flex-col justify-between px-5 pt-[max(env(safe-area-inset-top,48px),48px)] pb-6 relative min-h-screen">
         {/* Header */}
         <div className="flex items-center justify-between pt-2 mb-6">
           <h2 className="text-white font-black text-2xl">Settings</h2>
@@ -113,7 +113,7 @@ export const SettingsSheet: React.FC = () => {
 
         {/* Footer info */}
         <div className="text-center text-[#8E8E93] text-xs font-bold pt-6">
-          DinER Native iOS v2.0.0
+          DinER Native iOS v3.0.1
         </div>
       </div>
     </div>

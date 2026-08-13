@@ -45,10 +45,10 @@ export const TopBar: React.FC = () => {
     }
   };
 
-  // MonAI Search Mode Header
+  // MonAI Search Mode Header (safe area padded for Dynamic Island)
   if (isSearchActive) {
     return (
-      <div className="relative flex items-center justify-between py-3 px-1 border-b border-white/10 z-30 animate-fade-in">
+      <div className="relative flex items-center justify-between pt-[max(env(safe-area-inset-top,50px),50px)] pb-3 px-1 border-b border-white/10 z-30 animate-fade-in">
         {/* Giant Search Input Field */}
         <div className="flex-1 mr-3">
           <input
@@ -76,14 +76,14 @@ export const TopBar: React.FC = () => {
     );
   }
 
-  // Normal TopBar Mode
+  // Normal TopBar Mode (Padded for Dynamic Island & Status Bar safe area)
   return (
-    <div className="relative flex items-center justify-between py-4 px-1 z-30">
+    <div className="relative flex items-center justify-between pt-[max(env(safe-area-inset-top,50px),50px)] pb-4 px-1 z-30">
       {/* Left List Selector Pill */}
       <div className="relative">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="h-[56px] px-5 rounded-[28px] bg-[#1C1C1E] border border-white/10 flex items-center gap-2 text-white font-extrabold text-[17px] active:scale-95 transition-transform duration-150"
+          className="h-[52px] px-5 rounded-[26px] bg-[#1C1C1E] border border-white/10 flex items-center gap-2 text-white font-extrabold text-[16px] active:scale-95 transition-transform duration-150 shadow-sm"
         >
           <span>{currentList.name}</span>
           <IconChevronDown className="w-4 h-4 text-[#8E8E93]" />
@@ -96,7 +96,7 @@ export const TopBar: React.FC = () => {
               className="fixed inset-0 z-40"
               onClick={() => setIsDropdownOpen(false)}
             />
-            <div className="absolute left-0 top-[64px] w-64 bg-[#1C1C1E] border border-white/10 rounded-2xl p-2 shadow-elevation z-50 animate-scale-up">
+            <div className="absolute left-0 top-[60px] w-64 bg-[#1C1C1E] border border-white/10 rounded-2xl p-2 shadow-elevation z-50 animate-scale-up">
               {/* Lists */}
               <div className="flex flex-col gap-1">
                 {lists.map((l) => {

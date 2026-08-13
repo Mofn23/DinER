@@ -58,17 +58,15 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v2.0.0
-          name: DinER Native iOS App v2.0.0 (SideStore IPA)
+          tag_name: v3.0.1
+          name: DinER Native iOS App v3.0.1 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v2.0.0 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.0.1 (SideStore / AltStore Compatible)
             
-            ### 📱 Local Native Highlights:
-            - **100% Offline & Local Storage Persistence**: All transactions, categories, and subscriptions saved locally inside your iPhone.
-            - **Decoupled from Vercel**: Runs 100% standalone on device.
-            - **MonAI 1:1 Design System**: Dark theme `#0B0B0D`, Nunito typography, delicate bar chart capsules, animated 60fps numbers.
-            - **Smart Auto-Categorization**: Real-time keyword detection engine.
-            - **Subscription Manager**: Track monthly/annual costs and pay with 1 tap.
+            ### 🎨 Hotfix Highlights:
+            - **MonAI 1:1 Stylized App Icon**: Includes the custom neon coral 3D icon matching MonAI aesthetic.
+            - **iOS Dynamic Island & Status Bar Padding**: Added safe area top inset padding (`pt-[max(env(safe-area-inset-top,50px),50px)]`) so status bar clock and battery indicators never overlap app lists or settings buttons.
+            - **100% Offline & Local Storage Persistence**: All transactions and merged subscriptions saved locally inside your iPhone.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.
