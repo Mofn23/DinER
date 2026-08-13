@@ -4,13 +4,21 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.2.2] - 2026-08-12
+
+### 🎨 Proporciones de Píldoras Nivel MonAI 1:1
+- **Reducción de Píldora de Control Segmentado (Gastos vs Ingresos)**:
+  - Reducido el ancho máximo y padding de la píldora de alternar entre gastos e ingresos (`SegmentedControl`) para que se ubique de forma compacta y refinada justo debajo del saldo total.
+- **Ajuste de Píldora de Monto de Transacción (`AmountPill`)**:
+  - Ajustado el padding y tamaño de fuente de las píldoras de monto para que enmarquen ceñidamente solo el valor numérico, eliminando el exceso de espacio.
+
+---
+
 ## 📌 [v3.2.1] - 2026-08-12
 
 ### 🎨 Corrección MonAI 1:1 & Animación Responsive 1:1 de Scroll
-- **Eliminación de Píldoras en Transacciones (Transacciones Flotantes MonAI 1:1)**:
-  - Removidos los contenedores o píldoras de las filas de transacciones (`TransactionList.tsx`). Ahora flotan directamente sobre el fondo `#131313`, igual a MonAI.
-- **Animación de Colapso de Gráfica de Barras 1:1 con el Scroll (100% Touch Responsive)**:
-  - La gráfica de barras se encoge, escala y desvanece suavemente en tiempo real a medida que tu dedo desplaza la pantalla hacia abajo, respondiendo de forma 1:1 a cada píxel de scroll.
+- **Eliminación de Píldoras en Transacciones (Transacciones Flotantes MonAI 1:1)**.
+- **Animación de Colapso de Gráfica de Barras 1:1 con el Scroll (100% Touch Responsive)**.
 
 ---
 

@@ -58,14 +58,14 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.2.1
-          name: DinER Native iOS App v3.2.1 (SideStore IPA)
+          tag_name: v3.2.2
+          name: DinER Native iOS App v3.2.2 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.2.1 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.2.2 (SideStore / AltStore Compatible)
             
-            ### 🎨 MonAI 1:1 Design Fixes:
-            - **No Transaction Pill Cards**: Removed card backgrounds from individual transaction rows so transactions float directly over `#131313` background 1:1 with MonAI.
-            - **1:1 Touch Responsive Scroll Collapse Bar Chart**: Bar chart height, opacity, and scale dynamically transition in real-time 1:1 lockstep with your scroll position.
+            ### 🎨 MonAI Pill Proportions Redesign:
+            - **Compact Segmented Control Pill**: Reduced the size and max-width of the Gastos vs Ingresos toggle pill below the main total balance numbers, matching MonAI's compact scale.
+            - **Slim Amount Pill**: Reduced padding and font size of transaction amount pills so they snugly frame exact values.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.

@@ -25,7 +25,7 @@ export const TotalBlock: React.FC<TotalBlockProps> = ({
       </span>
 
       {/* Giant MonAI Balance Display (Cloned 1:1 scale & font size) */}
-      <div className="flex items-center gap-2 justify-center mb-5">
+      <div className="flex items-center gap-2 justify-center mb-4">
         {/* Sign Badge */}
         <div
           className={`w-7 h-7 rounded-full flex items-center justify-center text-white font-black text-base transition-colors duration-300 ${
@@ -49,8 +49,8 @@ export const TotalBlock: React.FC<TotalBlockProps> = ({
         </span>
       </div>
 
-      {/* Segmented Control Pill: Gastos vs Ingresos */}
-      <div className="w-full max-w-sm">
+      {/* Compact MonAI Segmented Control Pill: Gastos vs Ingresos */}
+      <div className="w-full flex justify-center">
         <SegmentedControl
           expenseAmount={totalExpense}
           incomeAmount={totalIncome}
