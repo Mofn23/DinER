@@ -1,19 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '@/lib/store';
+import { matchCategoryFromDescription } from '@/lib/autoCategory';
 import { IconClose, IconMic, IconCheck } from '../common/Icons';
 
-// Helper to extract amounts from spoken Spanish text reliably (e.g., "30 mil", "30.000", "cincuenta mil")
+// Helper to extract amounts from spoken Spanish text reliably
 function parseSpanishAmount(text: string): number {
   if (!text) return 0;
   const lower = text.toLowerCase();
 
-  // 1. Check direct digit numbers with "mil" or "k" e.g., "30 mil", "30mil", "30 k"
   const milMatch = lower.match(/(\d+)\s*(mil|k)/);
   if (milMatch) {
     return parseInt(milMatch[1], 10) * 1000;
   }
 
-  // 2. Check formatted or raw digits e.g., "30.000", "50000"
   const digitsMatch = lower.match(/\b\d+[\d\.]*\b/);
   if (digitsMatch) {
     const cleaned = digitsMatch[0].replace(/\./g, '');
@@ -21,7 +20,6 @@ function parseSpanishAmount(text: string): number {
     if (!isNaN(num) && num > 0) return num;
   }
 
-  // 3. Spoken Spanish word numbers
   const wordMap: Record<string, number> = {
     'diez mil': 10000,
     'veinte mil': 20000,
@@ -46,13 +44,35 @@ function parseSpanishAmount(text: string): number {
   return 0;
 }
 
+// Fallback short title summarizer (removes fluff like "gasto de 30 mil en", "con tarjeta", etc.)
+function cleanShortTitle(text: string): string {
+  let cleaned = text.toLowerCase();
+  cleaned = cleaned.replace(/gasto\s+(de\s+)?(\d+\s*mil|\d+)?\s*(pesos)?\s*(en\s+)?/gi, '');
+  cleaned = cleaned.replace(/ingreso\s+(de\s+)?(\d+\s*mil|\d+)?\s*(pesos)?\s*(de\s+)?/gi, '');
+  cleaned = cleaned.replace(/con\s+(la\s+)?tarjeta\s*(de\s+crédito|de\s+debito|credito|debito)?/gi, '');
+  cleaned = cleaned.replace(/por\s+valor\s+de\s*(\d+\s*mil|\d+)?/gi, '');
+  cleaned = cleaned.trim();
+
+  if (!cleaned) return 'Transacción';
+  // Capitalize first letter
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+}
+
 export const VoiceOverlay: React.FC = () => {
-  const { activeSheet, closeSheet, addTransaction, currentListId, categories } = useAppStore();
+  const { activeSheet, closeSheet, addTransaction, currentListId, categories, aiMemory } = useAppStore();
 
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [statusMessage, setStatusMessage] = useState('Presiona el micrófono y habla naturalmente');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [processingStage, setProcessingStage] = useState<string | null>(null);
+  const [parsedPreview, setParsedPreview] = useState<{
+    description: string;
+    amount: number;
+    categoryName: string;
+    categoryEmoji: string;
+    tags: string[];
+  } | null>(null);
 
   const recognitionRef = useRef<any>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
@@ -71,6 +91,8 @@ export const VoiceOverlay: React.FC = () => {
 
   const requestMicPermissionAndStart = async () => {
     try {
+      setParsedPreview(null);
+      setProcessingStage(null);
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaStreamRef.current = stream;
@@ -101,7 +123,7 @@ export const VoiceOverlay: React.FC = () => {
 
       recognition.onstart = () => {
         setIsListening(true);
-        setStatusMessage('Escuchando... Di ej: "Gasto de 30 mil en almuerzo con crédito"');
+        setStatusMessage('Escuchando... Di ej: "Gasto de 30 mil en KFC con crédito"');
       };
 
       recognition.onresult = (event: any) => {
@@ -167,34 +189,58 @@ export const VoiceOverlay: React.FC = () => {
     if (!transcript.trim()) return;
 
     setIsProcessing(true);
-    setStatusMessage('✨ Gemini 2.0 Flash procesando tu comando...');
+    stopSpeechRecognition();
+    setProcessingStage('✨ Gemini 2.0 Flash categorizando y creando resumen...');
 
-    // Extract fallback amount immediately from transcript text
     const fallbackAmount = parseSpanishAmount(transcript);
+    const fallbackTitle = cleanShortTitle(transcript);
+
+    // Initial local category & AI memory matching
+    let initialCatId = matchCategoryFromDescription(transcript, categories);
+    if (!initialCatId && aiMemory) {
+      const descLower = transcript.toLowerCase();
+      for (const [phrase, catId] of Object.entries(aiMemory)) {
+        if (descLower.includes(phrase.toLowerCase())) {
+          initialCatId = catId;
+          break;
+        }
+      }
+    }
 
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
 
-    try {
-      let parsedAmount = fallbackAmount;
-      let parsedDescription = transcript;
-      let parsedType: 'expense' | 'income' = 'expense';
-      let parsedCategoryId = categories[0]?.id || 'cat-1';
-      let parsedTags: string[] = [];
+    let parsedAmount = fallbackAmount;
+    let parsedDescription = fallbackTitle;
+    let parsedType: 'expense' | 'income' = transcript.toLowerCase().includes('ingreso') ? 'income' : 'expense';
+    let parsedCategoryId = initialCatId || categories[0]?.id || 'cat-1';
+    let parsedTags: string[] = [];
 
+    if (transcript.toLowerCase().includes('crédito') || transcript.toLowerCase().includes('credito')) {
+      parsedTags.push('#credito');
+    }
+
+    try {
       if (apiKey) {
         const categoriesPrompt = categories
-          ? categories.map((c: any) => `ID: "${c.id}", Name: "${c.name}", Type: "${c.type}"`).join('\n')
+          ? categories.map((c: any) => `ID: "${c.id}", Name: "${c.name}", Type: "${c.type}", Emoji: "${c.emoji}"`).join('\n')
           : '';
 
         const promptText = `
-You are a voice transaction parser for DinER expense tracking app in Colombia.
-Extract transaction parameters from the spoken transcript: "${transcript}"
+You are a voice transaction AI parser for DinER expense app in Colombia.
+Extract structured transaction info from this spoken transcript: "${transcript}"
 
 Available Categories:
 ${categoriesPrompt}
 
-Return ONLY raw JSON with keys "description", "amount" (integer), "type" ("expense" or "income"), "categoryId", "tags".
-Do not surround with markdown code blocks.
+INSTRUCTIONS:
+1. "description": Extract ONLY a concise short place/item title (e.g. "KFC", "Uber", "Almuerzo", "Zara", "Mercado"). Do NOT include words like "Gasto de 30 mil en".
+2. "amount": Integer COP value (e.g., 30000 for 30 mil).
+3. "type": "expense" or "income".
+4. "categoryId": Exact ID of best matching category from list (e.g., KFC -> Comida cat-4).
+5. "tags": Array of lowercase hashtag strings (e.g., ["#credito", "#kfc"]).
+
+Return ONLY raw JSON: {"description": "...", "amount": 30000, "type": "expense", "categoryId": "cat-4", "tags": ["#credito"]}
+Do NOT surround with markdown code blocks.
 `;
 
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
@@ -214,16 +260,15 @@ Do not surround with markdown code blocks.
         if (res.ok) {
           const data = await res.json();
           let rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-          // Clean markdown backticks if any
           rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
 
           if (rawText) {
             try {
               const aiParsed = JSON.parse(rawText);
+              if (aiParsed.description) parsedDescription = aiParsed.description;
               if (aiParsed.amount && typeof aiParsed.amount === 'number' && aiParsed.amount > 0) {
                 parsedAmount = aiParsed.amount;
               }
-              if (aiParsed.description) parsedDescription = aiParsed.description;
               if (aiParsed.type) parsedType = aiParsed.type;
               if (aiParsed.categoryId) parsedCategoryId = aiParsed.categoryId;
               if (Array.isArray(aiParsed.tags)) parsedTags = aiParsed.tags;
@@ -234,7 +279,20 @@ Do not surround with markdown code blocks.
         }
       }
 
+      // Match category object for preview UI
+      const catObj = categories.find((c) => c.id === parsedCategoryId) || categories[0];
+
       if (parsedAmount > 0) {
+        setProcessingStage(null);
+        setParsedPreview({
+          description: parsedDescription,
+          amount: parsedAmount,
+          categoryName: catObj.name,
+          categoryEmoji: catObj.emoji,
+          tags: parsedTags,
+        });
+
+        // Add transaction
         addTransaction({
           listId: currentListId,
           description: parsedDescription,
@@ -246,35 +304,36 @@ Do not surround with markdown code blocks.
           recurrence: 'once',
         });
 
-        stopSpeechRecognition();
-        setStatusMessage('¡Transacción registrada con éxito!');
+        setStatusMessage('¡Transacción categorizada y agregada!');
         setTimeout(() => {
           closeSheet();
-        }, 600);
+        }, 1200);
       } else {
-        setStatusMessage('No pudimos detectar un monto claro en la frase. Intenta incluir el valor (ej: 30 mil).');
+        setProcessingStage(null);
+        setStatusMessage('No pudimos detectar un monto claro en la frase (ej: 30 mil).');
       }
     } catch (err) {
       console.error('Voice processing error:', err);
-      // Even if API throws, if fallbackAmount exists, save it!
-      if (fallbackAmount > 0) {
+      const catObj = categories.find((c) => c.id === parsedCategoryId) || categories[0];
+      if (parsedAmount > 0) {
         addTransaction({
           listId: currentListId,
-          description: transcript,
-          amount: fallbackAmount,
-          type: 'expense',
-          categoryId: categories[0]?.id || 'cat-1',
-          tags: [],
+          description: parsedDescription,
+          amount: parsedAmount,
+          type: parsedType,
+          categoryId: parsedCategoryId,
+          tags: parsedTags,
           date: new Date().toISOString().split('T')[0],
           recurrence: 'once',
         });
         stopSpeechRecognition();
-        setStatusMessage('¡Transacción registrada con éxito!');
+        setStatusMessage('¡Transacción registrada!');
         setTimeout(() => {
           closeSheet();
-        }, 600);
+        }, 1000);
       } else {
-        setStatusMessage('No pudimos detectar un monto claro en la frase.');
+        setProcessingStage(null);
+        setStatusMessage('No se pudo procesar la voz.');
       }
     } finally {
       setIsProcessing(false);
@@ -285,17 +344,27 @@ Do not surround with markdown code blocks.
 
   return (
     <div className="fixed inset-0 z-50 bg-[#131313]/95 backdrop-blur-md flex flex-col justify-between p-6 animate-fade-in">
-      {/* Top Header */}
-      <div className="flex items-center justify-between pt-[max(env(safe-area-inset-top,40px),40px)]">
-        <span className="text-[#8E8E93] font-black text-sm uppercase tracking-wider">
-          Comando por Voz IA
-        </span>
-        <button
-          onClick={handleClose}
-          className="w-10 h-10 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white active:scale-95 transition-transform"
-        >
-          <IconClose className="w-5 h-5 text-white" />
-        </button>
+      {/* Top Header & Floating AI Processing Pill */}
+      <div className="flex flex-col gap-3 pt-[max(env(safe-area-inset-top,40px),40px)]">
+        <div className="flex items-center justify-between">
+          <span className="text-[#8E8E93] font-black text-sm uppercase tracking-wider">
+            Comando por Voz IA
+          </span>
+          <button
+            onClick={handleClose}
+            className="w-10 h-10 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center text-white active:scale-95 transition-transform"
+          >
+            <IconClose className="w-5 h-5 text-white" />
+          </button>
+        </div>
+
+        {/* Floating Top AI Processing Pill Banner */}
+        {processingStage && (
+          <div className="w-full py-2.5 px-4 rounded-full bg-[#2A2A2C] border border-[#34C759]/30 text-[#34C759] font-extrabold text-xs flex items-center justify-center gap-2 animate-pulse shadow-elevation">
+            <div className="w-3.5 h-3.5 border-2 border-white/20 border-t-[#34C759] rounded-full animate-spin" />
+            <span>{processingStage}</span>
+          </div>
+        )}
       </div>
 
       {/* Mic Animation & Transcript Group */}
@@ -316,9 +385,32 @@ Do not surround with markdown code blocks.
         <p className="text-white font-extrabold text-lg max-w-xs">{statusMessage}</p>
 
         {/* Live Transcript Bubble */}
-        {transcript && (
+        {transcript && !parsedPreview && (
           <div className="w-full max-w-sm p-4 rounded-2xl bg-[#1C1C1E] border border-white/10 text-[#F5F5F7] font-bold text-base shadow-elevation animate-scale-up">
             "{transcript}"
+          </div>
+        )}
+
+        {/* Parsed Result Preview Banner */}
+        {parsedPreview && (
+          <div className="w-full max-w-sm p-4 rounded-2xl bg-[#1C1C1E] border border-[#34C759]/40 flex flex-col gap-2 shadow-2xl animate-scale-up text-left">
+            <div className="flex items-center justify-between">
+              <span className="text-white font-black text-xl">{parsedPreview.description}</span>
+              <span className="text-[#34C759] font-black text-lg">
+                ${parsedPreview.amount.toLocaleString('es-CO')} COP
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="px-3 py-1 rounded-full bg-[#2A2A2C] text-xs font-extrabold text-white flex items-center gap-1.5">
+                <span>{parsedPreview.categoryEmoji}</span>
+                <span>{parsedPreview.categoryName}</span>
+              </div>
+              {parsedPreview.tags.map((tag) => (
+                <span key={tag} className="text-xs font-bold text-[#8E8E93]">
+                  {tag}
+                </span>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -335,7 +427,7 @@ Do not surround with markdown code blocks.
           }`}
         >
           <IconCheck className="w-5 h-5 text-white" />
-          <span>{isProcessing ? 'Procesando IA...' : 'Guardar Transacción de Voz'}</span>
+          <span>{isProcessing ? 'Procesando IA...' : 'Procesar con IA y Guardar'}</span>
         </button>
       </div>
     </div>

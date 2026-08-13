@@ -58,14 +58,15 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.3.3
-          name: DinER Native iOS App v3.3.3 (SideStore IPA)
+          tag_name: v3.3.4
+          name: DinER Native iOS App v3.3.4 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.3.3 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.3.4 (SideStore / AltStore Compatible)
             
-            ### 🎙️ Robust Voice Amount Detection & Hardware Mic Release (Orange Dot Fix):
-            - **Robust Spanish Amount Extraction**: Integrated fallback regex parser for spoken amounts (e.g., *"30 mil"*, *"30000"*, *"cincuenta mil"*), ensuring spoken voice commands never fail with "no se puede detectar un monto".
-            - **Hardware Microphone Release (Orange Dot 🟠 Fix)**: Added `track.stop()`, `track.enabled = false`, and `recognition.abort()` on modal close & unmount, immediately turning off the orange microphone status indicator dot on iOS.
+            ### 🎙️ Floating AI Processing Pill, Title Summarization & Smart Categorization:
+            - **Short Title Summarization**: Gemini AI & local cleaners extract a short clean name (e.g. *"KFC"*, *"Uber"*, *"Almuerzo"*) instead of setting the entire spoken transcript as the title.
+            - **100% Precise Category & Tag Parsing**: Spoken places like *"KFC"* automatically map to `Comida 🍲` and tag `#credito`.
+            - **Floating Top AI Processing Pill Banner**: Shows an animated floating processing banner `✨ Gemini 2.0 Flash categorizando y creando resumen...` and displays a preview card (`🍲 KFC • $30.000 COP • #credito`) before smoothly saving and closing.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.

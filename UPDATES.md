@@ -4,13 +4,24 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.3.4] - 2026-08-12
+
+### 🎙️ Resumen Inteligente del Nombre por Voz, Píldora Flotante de IA & Categorización Exacta
+- **Resumen Corto de Nombre (ej: "KFC")**:
+  - Gemini IA y los limpiadores locales extraen un nombre representativo corto (ej. *"KFC"*, *"Uber"*, *"Almuerzo"*) en lugar de colocar la transcripción hablada completa como título.
+- **Categorización Exacta & Emojis**:
+  - Lugares hablados como *"KFC"* o *"McDonald's"* son categorizados automáticamente en `Comida 🍲` con sus correspondientes etiquetas (`#credito`).
+- **Píldora Flotante Superior de Procesamiento IA & Tarjeta Preview**:
+  - Al presionar procesar voz, se despliega una píldora flotante animada `✨ Gemini 2.0 Flash categorizando y creando resumen...`.
+  - Muestra una tarjeta de vista previa (`🍲 KFC • $30.000 COP • #credito`) antes de guardar y cerrar suavemente la pantalla.
+
+---
+
 ## 📌 [v3.3.3] - 2026-08-12
 
 ### 🎙️ Extracción Robusta del Monto por Voz & Liberación del Micrófono (Solución al Punto Naranja 🟠)
-- **Extracción Inteligente de Montos en Español**:
-  - Incorporado un motor de parsing de expresiones habladas (ej: *"30 mil"*, *"30000"*, *"cincuenta mil"*, *"veinte mil"*) que garantiza detectar el valor numérico sin importar el formato devuelto por la transcripción de voz.
-- **Liberación del Micrófono de Hardware (Punto Naranja 🟠 de iOS)**:
-  - Agregada la llamada explícita a `track.stop()`, `track.enabled = false` y `recognition.abort()` al cerrar la pantalla de voz o desmontar el componente, apagando de inmediato el indicador de micrófono naranja en la barra de estado de iOS.
+- **Extracción Inteligente de Montos en Español**.
+- **Liberación del Micrófono de Hardware (Punto Naranja 🟠 de iOS)**.
 
 ---
 
