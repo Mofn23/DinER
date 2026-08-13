@@ -18,38 +18,38 @@ export const TotalBlock: React.FC<TotalBlockProps> = ({
   const isPositive = netTotal >= 0;
 
   return (
-    <div className="flex flex-col items-center my-4 px-2">
+    <div className="flex flex-col items-center my-4 px-2 animate-cross-dissolve">
       {/* "Total" Label */}
-      <span className="text-[15px] font-bold text-[#8E8E93] tracking-wide mb-1">
+      <span className="text-[13px] font-extrabold text-[#8E8E93] tracking-wider uppercase mb-1">
         Total
       </span>
 
-      {/* Main Giant Total Row with Animated Ticking Number */}
-      <div className="flex items-center gap-3 justify-center mb-5">
+      {/* Giant MonAI Balance Display (Cloned 1:1 scale & font size) */}
+      <div className="flex items-center gap-2 justify-center mb-5">
         {/* Sign Badge */}
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-black text-lg transition-colors duration-300 ${
+          className={`w-7 h-7 rounded-full flex items-center justify-center text-white font-black text-base transition-colors duration-300 ${
             isPositive ? 'bg-[#34C759]' : 'bg-[#E8505B]'
           }`}
         >
           {isPositive ? '+' : '−'}
         </div>
 
-        {/* Giant Ticking Number */}
+        {/* Giant Ticking Balance Number */}
         <AnimatedNumber
           value={Math.abs(netTotal)}
           duration={380}
           formatter={(val) => val.toLocaleString('en-US')}
-          className="text-[64px] leading-none font-black text-[#F5F5F7] tracking-tight"
+          className="text-[54px] sm:text-[60px] leading-none font-black text-[#F5F5F7] tracking-tight"
         />
 
         {/* Currency Suffix */}
-        <span className="text-[24px] font-bold text-[#8E8E93] self-end mb-2">
+        <span className="text-[20px] font-bold text-[#8E8E93] self-end mb-1">
           {settings.currency}
         </span>
       </div>
 
-      {/* Segmented Control: Expense vs Income */}
+      {/* Segmented Control Pill: Gastos vs Ingresos */}
       <div className="w-full max-w-sm">
         <SegmentedControl
           expenseAmount={totalExpense}

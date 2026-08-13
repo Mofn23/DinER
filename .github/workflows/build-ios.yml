@@ -58,16 +58,17 @@ jobs:
       - name: Release IPA on GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.1.0
-          name: DinER Native iOS App v3.1.0 (SideStore IPA)
+          tag_name: v3.2.0
+          name: DinER Native iOS App v3.2.0 (SideStore IPA)
           body: |
-            ## DinER Native iOS App v3.1.0 (SideStore / AltStore Compatible)
+            ## DinER Native iOS App v3.2.0 (SideStore / AltStore Compatible)
             
-            ### 📈 Major Transaction Sync & UX Highlights:
-            - **Exact MonAI Balance Match**: Loaded all transactions from August 6 to August 11, perfectly matching MonAI's exact net available balance (`+$688,759 COP`), expenses (`$2,892,890 COP`) and incomes (`$3,581,649 COP`).
-            - **Auto-Focus Description Field**: Description input in Add Transaction sheet opens the iOS keyboard automatically on open.
-            - **Thousand Separator Amount Formatting**: Amounts format dynamically with thousand separators (e.g. `30.000 COP`).
-            - **Dynamic Date Relative Labels**: Fixed date labeling logic so transactions dynamically transition from `Today` -> `Yesterday` -> `M/D/YY` (e.g. `8/10/26`) as days pass.
+            ### 🎨 MonAI Design 1:1 Redesign Highlights:
+            - **MonAI Exact Background Color (#131313)**: Updated entire app background from `#0B0B0D` to `#131313`.
+            - **MonAI Transaction Pill Cards**: Enclosed transaction list items into rounded pill cards (`bg-[#1C1C1E] border border-white/10 rounded-[22px] p-3.5`).
+            - **Giant Total Balance Typography**: Cloned MonAI scale & size for the main total balance display with green/red sign badges and COP suffix.
+            - **Scroll-Driven Chart Bar Shrink Animation**: Category bar charts collapse and shrink smoothly as you scroll down to view transactions.
+            - **Fluid Cross-Dissolve Transitions**: Added cross-dissolve fade animations when toggling between Gastos & Suscripciones, and switching income/expense filters.
             
             ### 🚀 SideStore Installation Instructions:
             1. Download `DinER.ipa` attached below to your iPhone.

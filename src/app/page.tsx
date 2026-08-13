@@ -41,6 +41,7 @@ export default function HomePage() {
   } = useAppStore();
 
   const [currentView, setCurrentView] = useState<'finance' | 'subscriptions'>('finance');
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Register Service Worker & check subscription notifications on startup
   useEffect(() => {
@@ -52,6 +53,15 @@ export default function HomePage() {
     }
     checkAndNotifyUpcomingSubscriptions(subscriptions);
   }, [subscriptions]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const scrollTop = e.currentTarget.scrollTop;
+    if (scrollTop > 70 && !isScrolled) {
+      setIsScrolled(true);
+    } else if (scrollTop <= 70 && isScrolled) {
+      setIsScrolled(false);
+    }
+  };
 
   // 1. Filter transactions by current list
   const listTx = transactions.filter((t) => t.listId === currentListId);
@@ -110,15 +120,18 @@ export default function HomePage() {
   });
 
   return (
-    <main className="w-full h-full min-h-screen bg-[#0B0B0D] text-[#F5F5F7] flex flex-col justify-between overflow-x-hidden relative">
+    <main className="w-full h-full min-h-screen bg-[#131313] text-[#F5F5F7] flex flex-col justify-between overflow-x-hidden relative">
       {/* Scrollable Main Content Container */}
-      <div className="flex-1 overflow-y-auto no-scrollbar px-5 pb-32">
+      <div
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto no-scrollbar px-5 pb-32 transition-colors duration-300"
+      >
         {/* Top Header & Search */}
         <TopBar />
 
         {/* View Segment Switcher: Gastos & Finanzas vs Suscripciones Hub */}
         {!isSearchActive && (
-          <div className="flex items-center justify-between p-1 rounded-2xl bg-[#1C1C1E] border border-white/10 mb-4">
+          <div className="flex items-center justify-between p-1 rounded-2xl bg-[#1C1C1E] border border-white/10 mb-4 animate-fade-in">
             <button
               onClick={() => setCurrentView('finance')}
               className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
@@ -143,7 +156,7 @@ export default function HomePage() {
         )}
 
         {currentView === 'finance' ? (
-          <>
+          <div className="animate-cross-dissolve">
             {/* Month Strip (visible when calendar is toggled) */}
             {!isSearchActive && <MonthStrip />}
 
@@ -154,11 +167,12 @@ export default function HomePage() {
               totalIncome={totalIncome}
             />
 
-            {/* Category Bar Chart */}
+            {/* Category Bar Chart (Shrinks smoothly on scroll) */}
             <BarChart
               categoryTotals={categoryTotals}
               selectedCategoryFilter={selectedCategoryFilter}
               onSelectCategory={setSelectedCategoryFilter}
+              isCollapsed={isScrolled}
             />
 
             {/* Grouped Transaction List */}
@@ -167,9 +181,11 @@ export default function HomePage() {
               categories={categories}
               onSelectTransaction={(txId) => openSheet('edit_tx', txId)}
             />
-          </>
+          </div>
         ) : (
-          <SubscriptionsHubView />
+          <div className="animate-cross-dissolve">
+            <SubscriptionsHubView />
+          </div>
         )}
       </div>
 

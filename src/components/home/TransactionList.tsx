@@ -2,7 +2,6 @@ import React from 'react';
 import { TransactionData, CategoryData } from '@/lib/initialData';
 import { DayHeader, CategoryAvatar, AmountPill } from '../common/BaseUI';
 import { formatDateHeader } from '@/lib/utils';
-import { useAppStore } from '@/lib/store';
 
 interface TransactionListProps {
   transactions: TransactionData[];
@@ -17,7 +16,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
 }) => {
   if (transactions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="flex flex-col items-center justify-center py-16 text-center animate-cross-dissolve">
         <span className="text-5xl mb-3">💸</span>
         <h3 className="text-white font-extrabold text-[17px] mb-1">
           No transactions yet
@@ -41,7 +40,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   const sortedDates = Array.from(grouped.keys()).sort((a, b) => (a < b ? 1 : -1));
 
   return (
-    <div className="flex flex-col gap-4 pb-28">
+    <div className="flex flex-col gap-5 pb-28 animate-cross-dissolve">
       {sortedDates.map((dateStr) => {
         const dayTxs = grouped.get(dateStr) || [];
         const dateLabel = formatDateHeader(dateStr);
@@ -52,12 +51,12 @@ export const TransactionList: React.FC<TransactionListProps> = ({
         }, 0);
 
         return (
-          <div key={dateStr} className="flex flex-col">
-            {/* Day Header */}
+          <div key={dateStr} className="flex flex-col gap-2">
+            {/* Day Header Pill */}
             <DayHeader dateLabel={dateLabel} netAmount={dayNet} />
 
-            {/* Transaction Rows */}
-            <div className="flex flex-col gap-3">
+            {/* MonAI Pill Transaction Cards */}
+            <div className="flex flex-col gap-2.5">
               {dayTxs.map((tx) => {
                 const category = categories.find((c) => c.id === tx.categoryId) || {
                   name: 'General',
@@ -70,30 +69,30 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                   <button
                     key={tx.id}
                     onClick={() => onSelectTransaction(tx.id)}
-                    className="w-full flex items-center justify-between p-3 rounded-2xl bg-[#1C1C1E] border border-white/5 active:scale-[0.98] transition-transform duration-150 text-left"
+                    className="w-full flex items-center justify-between p-3.5 rounded-[22px] bg-[#1C1C1E] border border-white/10 hover:border-white/20 active:scale-[0.98] transition-all duration-200 text-left shadow-sm"
                   >
-                    {/* Left Avatar */}
+                    {/* Left Category Emoji Avatar */}
                     <CategoryAvatar
                       emoji={category.emoji}
                       tint={category.tint}
                       isRecurring={isRecurring}
-                      size={64}
+                      size={52}
                     />
 
-                    {/* Middle Info Column */}
-                    <div className="flex-1 ml-3.5 mr-2 overflow-hidden flex flex-col gap-0.5">
-                      <span className="text-[#8E8E93] text-[14px] font-bold truncate">
+                    {/* Middle Title & Details Column (MonAI delicate typography) */}
+                    <div className="flex-1 ml-3.5 mr-2 overflow-hidden flex flex-col justify-center gap-0.5">
+                      <span className="text-[#8E8E93] text-[13px] font-bold tracking-tight truncate">
                         {category.name}
                       </span>
-                      <span className="text-[#F5F5F7] text-[17px] font-extrabold truncate">
+                      <span className="text-[#F5F5F7] text-[16px] font-extrabold tracking-tight truncate leading-tight">
                         {tx.description}
                       </span>
                       {tx.tags && tx.tags.length > 0 && (
-                        <div className="flex items-center gap-1.5 mt-1 overflow-x-auto no-scrollbar">
+                        <div className="flex items-center gap-1 mt-1 overflow-x-auto no-scrollbar">
                           {tx.tags.map((tag) => (
                             <span
                               key={tag}
-                              className="px-2 py-0.5 rounded-full bg-[#1E1E20] text-[#8E8E93] text-[13px] font-bold shrink-0"
+                              className="px-2 py-0.5 rounded-full bg-[#2A2A2C] text-[#8E8E93] text-[11px] font-extrabold tracking-tight shrink-0"
                             >
                               {tag}
                             </span>
@@ -102,7 +101,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                       )}
                     </div>
 
-                    {/* Right Amount Pill */}
+                    {/* Right MonAI Amount Pill */}
                     <AmountPill amount={tx.amount} type={tx.type} />
                   </button>
                 );

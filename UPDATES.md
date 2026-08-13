@@ -4,37 +4,43 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
+## 📌 [v3.2.0] - 2026-08-12
+
+### 🎨 Rediseño Nivel MonAI 1:1 & Animaciones Fluidas
+- **Color de Fondo Exacto de MonAI (`#131313`)**:
+  - Cambiado el tono de fondo global de `#0B0B0D` a **`#131313`** para una inmersión idéntica a MonAI.
+- **Transacciones en Píldoras Redondeadas (Pill Cards)**:
+  - Cada transacción ahora está encapsulada dentro de su propia tarjeta redondeada (`bg-[#1C1C1E] border border-white/10 rounded-[22px] p-3.5`).
+- **Tipografía Delicada & Kerning MonAI**:
+  - Ajustados los pesos de fuente y espaciados para lograr la tipografía fina y delicada de MonAI.
+- **Formato Gigante de Saldo Restante 1:1**:
+  - Clonada la presentación a escala de los números gigantes con insignia circular verde/roja y sufijo COP.
+- **Animación de Barras Encogibles al Deslizar (Scroll Shrink)**:
+  - Las barras del gráfico de categorías se encogen y colapsan suavemente hacia arriba al hacer scroll hacia abajo para explorar transacciones.
+- **Transiciones con Animación de Desvanecimiento (Cross-Dissolve)**:
+  - Añadida animación fluida de desvanecimiento al cambiar entre Gastos 💳 y Suscripciones 📺, y al alternar entre Gastos e Ingresos.
+
+---
+
 ## 📌 [v3.1.0] - 2026-08-12
 
 ### 📈 Sincronización Total de Transacciones MonAI & Mejoras de UX
-- **Carga Completa de Transacciones Reales (MonAI Match 1:1)**:
-  - Extraídas e integradas todas las transacciones del 6 al 11 de Agosto desde las capturas de pantalla (`ft1` a `ft6`).
-  - Coincidencia **100% exacta con los balances de MonAI**:
-    - **Saldo Disponible Neto**: `+$688,759 COP`
-    - **Gastos Totales**: `$2,892,890 COP`
-    - **Ingresos Totales**: `$3,581,649 COP`
-- **Teclado Automático (`autoFocus`)**:
-  - Al abrir la hoja de agregar transacción, el cursor se posiciona automáticamente en el campo de descripción para desplegar el teclado de iOS al instante.
-- **Formato con Separadores de Miles (ej. `$30.000`)**:
-  - El campo de monto ahora formatea los valores numéricos con separador de miles en tiempo real mientras escribes (ej. `30.000`).
-- **Corrección de Lógica Dinámica de Fechas**:
-  - Ajustada la clasificación de fechas según la zona horaria oficial de Colombia (`America/Bogota`).
-  - Las transacciones muestran dinámicamente **`Today`** el día actual, cambian a **`Yesterday`** al día siguiente y pasan a fecha formateada **`M/D/YY`** (ej. `8/10/26`) automáticamente con el paso de los días.
+- **Carga Completa de Transacciones Reales (MonAI Match 1:1)**: Coincidencia 100% exacta con los balances de MonAI (`+$688,759 COP`).
+- **Teclado Automático (`autoFocus`)**: Cursor automático en descripción.
+- **Formato con Separadores de Miles (ej. `$30.000`)**.
+- **Corrección de Lógica Dinámica de Fechas**.
 
 ---
 
 ## 📌 [v3.0.2] - 2026-08-12
 
 ### ✏️ Edición Completa de Suscripciones (Edit Subscription Feature)
-- **Botón de Edición por Tarjeta (Ícono de Lápiz ✏️)**: Agregada la edición completa de suscripciones.
 
 ---
 
 ## 📌 [v3.0.1] - 2026-08-12
 
 ### 📱 Ícono Estilo MonAI 1:1 & Borde Seguro para Dynamic Island
-- **Ícono Nivel MonAI (`AppIcon`)**: Creado e integrado el ícono oficial 3D neón.
-- **Margen de Borde Seguro de iOS (`Dynamic Island & Status Bar Padding`)**: Implementado padding superior seguro.
 
 ---
 

@@ -12,12 +12,14 @@ interface BarChartProps {
   categoryTotals: CategoryTotal[];
   selectedCategoryFilter: string | null;
   onSelectCategory: (catId: string | null) => void;
+  isCollapsed?: boolean;
 }
 
 export const BarChart: React.FC<BarChartProps> = ({
   categoryTotals,
   selectedCategoryFilter,
   onSelectCategory,
+  isCollapsed = false,
 }) => {
   // If a category filter is active, show the floating filter chip and hide the chart bar track
   if (selectedCategoryFilter) {
@@ -26,7 +28,7 @@ export const BarChart: React.FC<BarChartProps> = ({
     )?.category;
 
     return (
-      <div className="flex justify-end my-3 px-1">
+      <div className="flex justify-end my-3 px-1 animate-cross-dissolve">
         <button
           onClick={() => onSelectCategory(null)}
           className="h-10 px-4 rounded-full bg-[#2A2A2C] border border-white/10 flex items-center gap-2 text-white font-extrabold text-[15px] shadow-elevation active:scale-95 transition-all duration-150"
@@ -43,7 +45,7 @@ export const BarChart: React.FC<BarChartProps> = ({
 
   if (categoryTotals.length === 0) {
     return (
-      <div className="h-[120px] flex items-center justify-center text-[#8E8E93] text-sm my-3 font-semibold">
+      <div className="h-[120px] flex items-center justify-center text-[#8E8E93] text-sm my-3 font-semibold animate-cross-dissolve">
         No data for selected period
       </div>
     );
@@ -55,26 +57,26 @@ export const BarChart: React.FC<BarChartProps> = ({
   const MAX_HEIGHT = 280;
 
   return (
-    <div className="my-4 overflow-x-auto no-scrollbar py-2">
+    <div
+      className={`my-4 overflow-x-auto no-scrollbar py-2 transition-all duration-300 ease-out animate-cross-dissolve ${
+        isCollapsed ? 'max-h-0 opacity-0 py-0 my-0 overflow-hidden scale-y-0' : 'max-h-[320px] opacity-100'
+      }`}
+    >
       <div className="flex items-end gap-2.5 min-w-max px-1">
         {categoryTotals.map(({ category, total }) => {
           const heightRatio = total / maxTotal;
           const calculatedHeight = Math.round(heightRatio * MAX_HEIGHT);
           const isSelected = selectedCategoryFilter === category.id;
 
-          // MonAI aesthetic: Short bars render as delicate horizontal capsules (52px high),
-          // while taller bars stretch vertically up to 280px.
           const isTall = calculatedHeight > 76;
-          const barHeight = isTall
-            ? calculatedHeight
-            : MIN_CAPSULE_HEIGHT;
+          const barHeight = isTall ? calculatedHeight : MIN_CAPSULE_HEIGHT;
 
           return (
             <button
               key={category.id}
               onClick={() => onSelectCategory(category.id)}
               style={{ height: `${barHeight}px` }}
-              className={`rounded-[22px] transition-all duration-150 active:scale-95 shrink-0 flex ${
+              className={`rounded-[22px] transition-all duration-300 ease-out active:scale-95 shrink-0 flex ${
                 isTall
                   ? 'w-[86px] p-3 flex-col justify-end items-center'
                   : 'w-[92px] h-[52px] items-center justify-center px-2.5'
@@ -95,7 +97,7 @@ export const BarChart: React.FC<BarChartProps> = ({
                   </span>
                 </div>
               ) : (
-                /* Short delicate capsule content (emoji + amount in horizontal row) */
+                /* Short delicate capsule content */
                 <div className="flex items-center justify-center gap-1.5">
                   <span className="text-[20px] leading-none select-none">
                     {category.emoji}
