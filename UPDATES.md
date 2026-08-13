@@ -4,16 +4,19 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ---
 
-## 📌 [v1.8.0] - 2026-08-07
+## 📌 [v2.0.0] - 2026-08-12
 
-### 📱 Integración Widget Minimalista iOS (WidgetKit & Capacitor)
-- **Diseño Ultra-Minimalista**:
-  - Muestra exclusivamente tu **Saldo Restante** (`+ $841,738 COP`) con píldora verde de incremento y el **Gasto del Mes** (`- $2,559,223 COP`) en tipografía roja `#E8505B`.
-- **Código Nativo Swift / SwiftUI WidgetKit (`DinERWidget.swift`)**:
-  - Código Swift SwiftUI nativo en `ios/App/DinERWidget/DinERWidget.swift` con fondo oscuro `#0B0B0D` e integración con App Groups de iOS (`group.com.diner.app`).
-  - Acción deep-link `diner://add` al tocar el Widget para abrir la app directamente en la pantalla de agregar transacción.
-- **Vista Previa e Instalación en Ajustes (`WidgetPreviewSheet.tsx`)**:
-  - Nueva opción **"📱 Widget de iOS"** en el panel de Ajustes para previsualizar el Widget en vivo, sincronizar datos con un clic y consultar la guía paso a paso de instalación en iPhone.
+### 📱 Conversión a App Nativa iOS 100% Offline (SideStore Compatible)
+- **Desconexión Completa de Servidores / Vercel**:
+  - La aplicación ahora es **100% independiente y local**. Se eliminaron todas las dependencias de servidores remotos o Vercel.
+- **Almacenamiento Local Autónomo (Zustand Persist)**:
+  - Implementación del middleware `persist` sobre `localStorage` local en el iPhone.
+  - Todas las transacciones, categorías personalizadas, presupuestos, suscripciones y configuraciones se guardan localmente en tu dispositivo y se conservan tras cerrar o reiniciar la app.
+- **Eliminación de Módulos Innecesarios de Widgets**:
+  - Removido el sistema de widgets para garantizar la máxima ligereza y estabilidad.
+- **Compilación Automatizada de Archivo `.ipa` (GitHub Actions Pipeline)**:
+  - Creado el workflow automatizado `.github/workflows/build-ios.yml`.
+  - Cada vez que se hace push al repositorio, GitHub Actions compila automáticamente la aplicación nativa en formato `DinER.ipa` compatible con **SideStore** y **AltStore** y la publica en GitHub Releases.
 
 ---
 
@@ -21,7 +24,6 @@ Este documento lleva el registro cronológico completo de todas las actualizacio
 
 ### 🔔 Notificaciones Push para Suscripciones & PWA Service Worker
 - **Service Worker Nativo PWA (`public/sw.js`)**: Registro de Service Worker para notificaciones Push.
-- **Sistema Inteligente de Notificaciones (`notifications.ts`)**: Evaluación diaria de vencimiento de suscripciones.
 
 ---
 

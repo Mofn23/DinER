@@ -1,0 +1,80 @@
+name: Build iOS IPA (SideStore Compatible)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-ios-ipa:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js Static Export
+        run: npm run build
+
+      - name: Add & Sync Capacitor iOS
+        run: |
+          npx cap add ios || true
+          npx cap sync ios
+
+      - name: Build iOS Xcode App & Package IPA
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath build/App.xcarchive archive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+          mkdir -p build/Payload
+          cp -r build/App.xcarchive/Products/Applications/App.app build/Payload/
+          cd build
+          zip -r DinER.ipa Payload
+          cd ../..
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DinER-iOS-IPA
+          path: ios/App/build/DinER.ipa
+
+      - name: Release IPA on GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v2.0.0
+          name: DinER Native iOS App v2.0.0 (SideStore IPA)
+          body: |
+            ## DinER Native iOS App v2.0.0 (SideStore / AltStore Compatible)
+            
+            ### 📱 Local Native Highlights:
+            - **100% Offline & Local Storage Persistence**: All transactions, categories, and subscriptions saved locally inside your iPhone.
+            - **Decoupled from Vercel**: Runs 100% standalone on device.
+            - **MonAI 1:1 Design System**: Dark theme `#0B0B0D`, Nunito typography, delicate bar chart capsules, animated 60fps numbers.
+            - **Smart Auto-Categorization**: Real-time keyword detection engine.
+            - **Subscription Manager**: Track monthly/annual costs and pay with 1 tap.
+            
+            ### 🚀 SideStore Installation Instructions:
+            1. Download `DinER.ipa` attached below to your iPhone.
+            2. Open **SideStore** (or AltStore) on your iPhone.
+            3. Tap **My Apps** ➔ **`+`** ➔ Select `DinER.ipa`.
+            4. Enjoy DinER running 100% natively on your iPhone!
+          files: ios/App/build/DinER.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
